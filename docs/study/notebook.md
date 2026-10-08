@@ -360,3 +360,58 @@ or `tableFile` Function1 on a uniformFixedValue; the choice is made when the cas
 Benchmark standing: AIJ cases are the reference set for urban flow and dispersion CFD (AIJ
 guidelines 2008); COST 732 and VDI 3783/9 are the European counterparts and the source of the pass
 marks. Case H is openly licensed (CC BY 4.0).
+
+---
+
+# Part C. Building a case by hand: V1 step by step (started 2026-10-08)
+
+Format from here on: each step says what the program is, where it is, what file it reads, what
+each number means, the exact command, what comes out, and what to check. The case being built is
+validation/V1/case_by_hand. The order of building any OpenFOAM case:
+1. the box of air and its outer faces (blockMesh)
+2. the building cut out of the box (STL, surfaceFeatureExtract, snappyHexMesh)
+3. list the patches and decide what each one does physically
+4. boundary conditions, one field file at a time (0/U, 0/p, 0/k, ...)
+5. initial values inside the domain
+6. constants and models (constant/transportProperties, turbulenceProperties, system/fvSchemes, fvSolution)
+7. run control and monitors (system/controlDict), then run
+8. inspect: log, checkMesh, residuals, monitors, pictures
+
+Before any command in a new terminal: `source ~/opt/openfoam2606.sh` (puts every OpenFOAM program
+on the path for that terminal).
+
+## C1. The box of air: blockMesh
+
+- Program: blockMesh. Reads system/blockMeshDict. Writes constant/polyMesh (the mesh).
+- Needs system/controlDict, fvSchemes and fvSolution to exist, even if they are placeholders,
+  because every OpenFOAM program loads the case the way the solver does.
+- File: validation/V1/case_by_hand/system/blockMeshDict. Numbers: xMin..zMax are the corners of
+  the air box in metres (inlet 5H upstream of the building, outlet 15H downstream, sides 5H, top
+  6H); dx is the cell size (0.04 m = coarse grid); nx, ny, nz are computed from them.
+- `vertices`: the 8 corners. `blocks`: one hex block split into nx*ny*nz uniform cells
+  (simpleGrading 1 1 1 = no stretching). `edges ()`: empty because every edge is straight; filled
+  only for arcs or splines. `boundary`: the outer faces grouped and named; each face is four vertex
+  numbers ordered so the normal points outwards. Types: patch (generic), wall (solid, needed for
+  wall functions), symmetry, empty (2-D), cyclic (periodic).
+- Command: `blockMesh`, then `checkMesh`. Result 2026-10-08: 168,300 cells, 5 patches, Mesh OK.
+- No building yet: blockMesh only makes blocks. The building's faces are made by snappyHexMesh.
+
+## C2a. The building shape: an STL file
+
+- STL = plain-text list of triangles, the universal CAD export format. OpenFOAM reads STL, never
+  makes it. For a box we write it with our own script geometry/make_box_stl.py.
+- Command: `python3 geometry/make_box_stl.py -0.1 -0.05 0  0 0.05 0.2  building  validation/V1/case_by_hand/constant/triSurface/building.stl`
+  Arguments: min corner (x y z), max corner (x y z), name inside the file, output path.
+- The folder constant/triSurface is where snappyHexMesh looks for surfaces; the name is fixed.
+- Inside: 12 `facet` blocks, each one triangle with 3 `vertex` lines in metres and a `normal`
+  pointing outwards. STL files are ignored by Git; the script is what is kept.
+
+## C2b. The sharp edges: surfaceFeatureExtract
+
+- Program: surfaceFeatureExtract. Reads system/surfaceFeatureExtractDict and the STL. Writes
+  constant/triSurface/building.eMesh and constant/extendedFeatureEdgeMesh/ (both ignored by Git).
+- Why: the mesher keeps corners sharp only where it knows an edge is. A box has 8 corners, 12 edges.
+- Numbers: `includedAngle 150` means an edge counts as sharp if its two faces meet at less than 150
+  degrees (a box has 90). `extractionMethod extractFromSurface` means find edges from the triangle
+  angles.
+- Command: `surfaceFeatureExtract`. Check in the output: 8 feature points, 12 feature edges.
