@@ -344,3 +344,19 @@ fit atmospheric turbulence (stress/k ratio lower than 0.3). V1 inlet decision fo
 What V1 reproduces: mean velocity at the measured points (hit rate >= 0.66) and mean concentration
 (FAC2 >= 0.5, fractional bias within 0.3), Project.md section 5. Dimensionless concentration
 C* = c U_H H^2 / Q makes tunnel and CFD comparable.
+
+## 13. V1 inlet decision: measured profiles, and why no inlet can be fully consistent (2026-10-08) (story step 6)
+
+Fit of the V0 log-law family to the tunnel approach flow: z0 = 11.7 mm, u* = 0.448 m/s, U within
+2.9 % rms; u* agrees with sqrt(-u'w') = 0.44 from the data. But k = u*^2/sqrt(Cmu) = 0.67 against
+measured 0.45, because the measured -u'w'/k = 0.415, not sqrt(0.09) = 0.3. With Cmu = 0.09 no inlet
+matches U, k and the ground wall function at once; one must choose what gives.
+Decision 0003: measured U and k tabulated; epsilon = sqrt(Cmu) k dU/dz (local equilibrium, AIJ
+guideline); omega = epsilon/(Cmu k). The ground inconsistency is measured by an empty-domain run of
+the V1 box (V0 tooling), and the log-law inlet is run once as the inflow sensitivity.
+In OpenFOAM a tabulated inlet profile is `timeVaryingMappedFixedValue` reading
+constant/boundaryData/inlet/points and the field files, or, for a 1-D profile, a `codedFixedValue`
+or `tableFile` Function1 on a uniformFixedValue; the choice is made when the case is built.
+Benchmark standing: AIJ cases are the reference set for urban flow and dispersion CFD (AIJ
+guidelines 2008); COST 732 and VDI 3783/9 are the European counterparts and the source of the pass
+marks. Case H is openly licensed (CC BY 4.0).
