@@ -1,0 +1,17 @@
+_sampler
+{
+    type                    sets;
+    libs                    (sampling);
+    setFormat               raw;
+    interpolationScheme     cell;
+    writeControl            writeTime;
+    enabled                 false;   // template only; the named samplers below enable it
+    sets
+    {
+@stationSets
+    }
+}
+samples_U       { ${_sampler} fields (U); enabled true; }
+samples_k       { ${_sampler} fields (k); enabled true; }
+samples_diss    { ${_sampler} fields (@dissipation); enabled true; }
+samples_nut     { ${_sampler} fields (nut); enabled true; }

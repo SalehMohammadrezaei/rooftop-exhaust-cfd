@@ -1,0 +1,19 @@
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    inlet
+    {
+        type            atmBoundaryLayerInletVelocity;
+        #include        "include/ABLConditions"
+        value           uniform (0 0 0);
+    }
+    ground  { type noSlip; }
+    top
+    {
+@topU
+    }
+    sides   { type symmetry; }
+    outlet  { type inletOutlet; inletValue uniform (0 0 0); value $internalField; }
+}

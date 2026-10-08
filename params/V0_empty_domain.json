@@ -1,0 +1,61 @@
+{
+  "family": "V0",
+  "description": "Empty-domain neutral ABL homogeneity check on the applied domain (Project.md section 5, step V0).",
+  "solver": "simpleFoam",
+  "inputs": {
+    "H_m":        {"value": 15.0,  "kind": "model",     "note": "Hall height, Project.md section 3"},
+    "Uref_mps":   {"value": 10.0,  "kind": "model",     "note": "U_H at roof height; sweep speed from Project.md section 4"},
+    "Zref_m":     {"value": 15.0,  "kind": "model",     "note": "Reference height = H"},
+    "z0_m":       {"value": 0.3,   "kind": "model",     "note": "Aerodynamic roughness length, suburban/industrial, Project.md section 4"},
+    "d_m":        {"value": 0.0,   "kind": "model",     "note": "Displacement height, none"},
+    "kappa":      {"value": 0.40,  "kind": "empirical", "note": "von Karman; 0.40 is the value for which sigmaEps=1.11 makes the RH profiles an exact k-eps solution (HW 2007 p.358)"},
+    "Cmu":        {"value": 0.09,  "kind": "empirical", "note": "Standard"},
+    "nu_m2ps":    {"value": 1.5e-5,"kind": "measured",  "note": "Air at ~20 C, kinematic viscosity, standard tables"},
+    "sigmaEps_HW":{"value": 1.11,  "kind": "empirical", "note": "Hargreaves & Wright 2007 modification for standard k-epsilon only"}
+  },
+  "domain": {
+    "x_upstream_H": 8, "x_downstream_H": 20, "z_top_H": 9,
+    "y_width_m": 12.0, "ny": 3,
+    "note": "x and z from Project.md section 4; y is a thin 3-cell slab (dx-sized cells) with symmetry sides because V0 has no building; one cell would fail checkMesh's determinant test",
+    "kind": "numerical"
+  },
+  "numerics": {
+    "dx_m": 4.0,
+    "endTime": 3000, "writeInterval": 500,
+    "residualControl": 1e-6,
+    "kind": "numerical",
+    "note": "dx = far-field size of Project.md section 7; endTime and residualControl chosen from the smoke test, where all residuals were flat by iteration ~1000"
+  },
+  "monitor": {
+    "stations_x_H": [-8, -7.933, -4, 0, 10, 20],
+    "station_names": ["inletPatch", "inletCell", "xm4H", "building", "x10H", "outlet"],
+    "probe_xyz": [0.0, 6.0, 15.0],
+    "note": "Profiles along z at each station; probe of U at the building position at roof height, written every iteration"
+  },
+  "acceptance": {
+    "quantity": "max relative change of U and of k between inlet patch and x=0 (building position), 0 < z < 3H",
+    "limit_pct": 5.0,
+    "source": "Project.md section 5, V0 row; fixed before the runs"
+  },
+  "variants": {
+    "closure": {
+      "kEpsilonHW":  {"model": "kEpsilon",    "coeffs": "sigmaEps 1.11", "dissipation": "epsilon", "note": "Standard k-eps with HW fix; reference, known to maintain profiles"},
+      "realizableKE":{"model": "realizableKE","coeffs": "",              "dissipation": "epsilon", "note": "Project.md section 6 candidate baseline"},
+      "kOmegaSST":   {"model": "kOmegaSST",   "coeffs": "",              "dissipation": "omega",   "note": "Project.md section 6 candidate baseline"}
+    },
+    "wallset": {
+      "std": {"epsilonWF": "epsilonWallFunction",    "omegaWF": "omegaWallFunction",    "note": "As in the official tutorial; nut is z0-aware, dissipation is not"},
+      "atm": {"epsilonWF": "atmEpsilonWallFunction", "omegaWF": "atmOmegaWallFunction", "note": "Fully z0-consistent set (Parente et al. 2011)"}
+    },
+    "top": {
+      "fixedShear": {"note": "tau = u*^2, Richards & Hoxey; HW 2007"},
+      "slip":       {"note": "Project.md section 4 alternative"}
+    },
+    "mesh": {
+      "A": {"first_cell_m": 4.0, "nz": 34,  "note": "uniform 4 m, y/z0 = 6.7, applied far-field size"},
+      "B": {"first_cell_m": 1.0, "nz": 40,  "note": "graded, first cell 1 m, y/z0 = 1.7, building refinement reaching the ground"},
+      "C": {"first_cell_m": 0.5, "nz": 46,  "note": "graded, first cell 0.5 m, y/z0 = 0.8, the 0.5 m building refinement reaching the ground (added 2026-10-08 after meshes A and B)"}
+    }
+  },
+  "decision_log": "docs/decisions/0002-v0-setup.md"
+}

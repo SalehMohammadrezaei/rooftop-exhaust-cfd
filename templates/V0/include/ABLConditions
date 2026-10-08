@@ -1,0 +1,9 @@
+// Generated from @paramsFile by workflow/make_case.py. Do not edit by hand.
+kappa                @kappa;
+Cmu                  @Cmu;
+flowDir              (1 0 0);
+zDir                 (0 0 1);
+Uref                 @Uref;
+Zref                 @Zref;
+z0                   uniform @z0;
+d                    uniform @d;

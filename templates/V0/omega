@@ -1,0 +1,24 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object omega; }
+dimensions      [0 0 -1 0 0 0 0];
+#include        "include/ABLConditions"
+internalField   uniform @omegaInit;
+boundaryField
+{
+    inlet
+    {
+        type            atmBoundaryLayerInletOmega;
+        #include        "include/ABLConditions"
+        value           uniform 0;
+    }
+    ground
+    {
+        type            @omegaWF;
+        Cmu             $Cmu;
+        kappa           $kappa;
+        z0              $z0;      // read by the atm variant, ignored by the standard one
+        value           $internalField;
+    }
+    top     { type zeroGradient; }
+    sides   { type symmetry; }
+    outlet  { type inletOutlet; inletValue $internalField; value $internalField; }
+}
