@@ -298,3 +298,49 @@ run with one line in the parameter file if the building mesh needs it.
 
 Numbers: results/V0/summary.md. All 30 cases: mass closed to 1e-6 %, profiles flat between the last
 two written times to better than 1e-3 %.
+
+## 11. Why we validate when OpenFOAM is "already validated" (2026-10-08) (story step 6, entering V1)
+
+Verification: does the code solve the equations it claims to solve? OpenFOAM has that; the smoke
+test was a small piece of it (the ABL inlet reproduced its own analytical profile).
+Validation: do the equations and settings we chose reproduce reality for this class of flow? That
+depends on our choices, so nobody can do it for us:
+- RANS closure: calibrated on simple shear flows; around a bluff building the roof separation bubble
+  and wake length are known to be wrong by model-dependent amounts. V0 had no building.
+- Turbulent Schmidt number: free constant 0.3 to 1.0 in the literature; scales plume spread
+  directly. Fixed in V1 against measured concentration.
+- Mesh and wall treatment on smooth walls (y+ rules of entry 8 return).
+- Our inflow: V0 showed it survives an empty box; V1 shows whether a building sees the right
+  approach flow.
+What validation buys: (1) a model-form uncertainty band (e.g. hit rate, FAC2) that every applied
+result inherits; (2) a calibrated setup frozen and carried unchanged to the data hall.
+Rule: acceptance numbers fixed before the run, reported whether met or not. A validation tuned until
+it passes validates nothing.
+Ladder: V1 (AIJ Case H) separation, wake, scalar transport; V2 (Concordia stack) roof-level dilution
+versus stack height, the design variable; V2b the tunnel-to-full-scale jump. Chiller
+self-recirculation has no public data; its credibility rests on V1 and V2 and the report says so.
+
+## 12. V1: what the AIJ Case H experiment measured (2026-10-08) (story step 6, V1 starts)
+
+Source: data/raw/aij_caseH (Zenodo 15429872, CC BY 4.0; Yoshie 2016).
+Geometry: 0.1 x 0.1 x 0.2 m block (H = 0.2 m). Origin at the base of the leeward wall on the centre
+line: building x in [-0.1, 0], y in [-0.05, 0.05], z in [0, 0.2].
+Source: 4 mm floor hole at 0.25H behind the leeward wall, x = +0.05, y = 0; ethylene,
+Q = 5.83e-6 m3/s. Re = 43,000 on H and U_H.
+Measurements (RS_caseH.csv, 876 points, 826 with both U and c): vertical plane y = 0, horizontal
+planes z/H = 1/16, 1/4, 1/2; x from -1H to +2H; mean U, V, W, rms, k, <c> in ppm, c_rms.
+Missing value -999.9.
+Approach flow (AF_caseH.csv, 18 heights at x = -2.5H, no building):
+| Quantity | Value |
+|---|---|
+| U_H | 3.23 m/s |
+| power-law exponent (z/H 0.4 to 2) | about 0.27 |
+| I_u at H | 22 % |
+| k at H | 0.45 m2/s2, nearly constant from 0.1H to 1.75H |
+| u* from -u'w' | about 0.44 m/s |
+Observation: k is nearly constant over the building height (the constant-k form of entry 6 in a real
+tunnel). But u*^2/sqrt(Cmu) = 0.65 overestimates the measured 0.45 by ~45 %: Cmu = 0.09 does not
+fit atmospheric turbulence (stress/k ratio lower than 0.3). V1 inlet decision follows from this.
+What V1 reproduces: mean velocity at the measured points (hit rate >= 0.66) and mean concentration
+(FAC2 >= 0.5, fractional bias within 0.3), Project.md section 5. Dimensionless concentration
+C* = c U_H H^2 / Q makes tunnel and CFD comparable.
