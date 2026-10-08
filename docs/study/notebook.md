@@ -468,3 +468,24 @@ the same ratio 1.4. Changing the level instead refines by 2 and only locally.
   three cell sizes and the building hole with sharp corners.
 - Result of C2 on 2026-10-08 (Saleh's own run): 292,563 cells (161,085 at 40 mm, 46,926 at 20 mm,
   84,552 at 10 mm), 6 patches, 4,640 polyhedra on the level transitions (normal), Mesh OK.
+
+## C3. What each patch does physically (the plan for the field files)
+
+| Patch | Physical rule | OpenFOAM pattern |
+|---|---|---|
+| inlet | measured profile of U and k enters | fixedProfile from a CSV table |
+| outlet | air leaves, pressure uniform | p fixedValue 0; others inletOutlet (zeroGradient with a backflow guard) |
+| ground, building | smooth solid walls | noSlip + wall functions |
+| top, sides | far away, no friction, nothing crosses | slip |
+Pressure is fixed only at the outlet; everywhere else it floats (zeroGradient).
+
+## C4a. The inlet tables: validation/V1/make_inlet_profiles.py
+
+- Reads data/raw/aij_caseH/AF_caseH.csv (18 heights). Writes constant/inletProfiles/U.csv
+  (z,Ux,Uy,Uz), k.csv, epsilon.csv, omega.csv in the case. A row at z = 0 and one at z = 1.2 m
+  (domain top, values held) are added so the table spans the inlet patch.
+- epsilon = sqrt(Cmu) k dU/dz with dU/dz = u*/(kappa (z + z0)) from the log-law fit (u* 0.448,
+  z0 0.0117). Lesson: finite differences of measured points give noise (slopes 1.2 to 6.5 1/s
+  between neighbours near z = H, epsilon jumping 5x). Use a fitted, smooth slope. Decision 0003 addendum.
+- omega = epsilon/(Cmu k). Values at z = H: U 3.23, k 0.453, epsilon 0.72, omega 17.7.
+- Command: `python3 validation/V1/make_inlet_profiles.py data/raw/aij_caseH/AF_caseH.csv validation/V1/case_by_hand`

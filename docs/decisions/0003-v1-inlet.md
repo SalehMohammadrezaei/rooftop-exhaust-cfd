@@ -28,3 +28,9 @@ no benefit over the measured profiles.
 ## Also confirmed
 Case H stays as the V1 benchmark (AIJ set; hit rate 0.66 per VDI 3783/9, FAC2 0.5 and FB 0.3 per
 COST 732). CEDVAL A1-1 noted as a possible stretch item, not on the ladder.
+
+## Addendum (Saleh, 2026-10-08): slope for epsilon
+dU/dz in epsilon = sqrt(Cmu) k dU/dz is taken from the log-law fit of the measured U
+(u* = 0.448 m/s, z0 = 11.7 mm), not from finite differences of the 18 measured points, which are
+dominated by measurement noise (slopes jumping 1.2 to 6.5 1/s between neighbouring heights near z = H).
+Measured U and k are used unchanged. Script: validation/V1/make_inlet_profiles.py.
