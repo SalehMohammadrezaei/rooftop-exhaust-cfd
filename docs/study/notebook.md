@@ -415,3 +415,56 @@ on the path for that terminal).
   degrees (a box has 90). `extractionMethod extractFromSurface` means find edges from the triangle
   angles.
 - Command: `surfaceFeatureExtract`. Check in the output: 8 feature points, 12 feature edges.
+
+## C2c. The mesher: snappyHexMesh, and how its numbers were chosen
+
+- Program: snappyHexMesh. Reads system/snappyHexMeshDict, the STL, the feature edges and
+  constant/polyMesh from blockMesh. `-overwrite` replaces constant/polyMesh in place.
+- Stages, switched at the top of the file: castellatedMesh (refine and remove cells inside the
+  building), snap (move cut faces onto the surface and corners onto the edges), addLayers (prism
+  layers; off for V1, Project.md section 7).
+- Block `geometry`: `building` is the STL (its name becomes the patch name). `nearBox` and
+  `wakeBox` are invisible searchableBox regions used only to say "refine inside me".
+- Block `castellatedMeshControls`: a level n cell is the background cell halved n times
+  (40, 20, 10, 5, 2.5 mm for levels 0 to 4). `refinementSurfaces building level (2 2)` and
+  `patchInfo type wall`: 10 mm cells on the building, and the cut faces become patch "building" of
+  type wall. `features ... level 2`: same on the sharp edges. `refinementRegions`: nearBox level 2
+  (10 mm), wakeBox level 1 (20 mm); the 1e15 is a distance the "inside" mode ignores.
+  `nCellsBetweenLevels 3`: three cells of each level between two sizes (gentle transition).
+  `locationInMesh`: a point in open air; cells connected to it are kept, the building interior is
+  deleted.
+- Block `snapControls`: `explicitFeatureSnap true` uses the extracted edges. `meshQualityControls`
+  are limits the snapper may not violate.
+- Command: `snappyHexMesh -overwrite` then `checkMesh`. Result 2026-10-08: 292,556 cells, 6 patches
+  (building: wall, 850 faces), max non-orthogonality 25 deg, Mesh OK. About one minute serial.
+
+How the numbers were chosen (rule for any case):
+1. Smallest feature and cells across it (AIJ: 10 across the building width 0.1 m -> 10 mm). That is
+   the finest cell. Level 2 here is the coarsest acceptable grid, right for the coarse level of a
+   grid study.
+2. Background so the finest size is reached in 2 or 3 levels (40 mm -> 10 mm in 2). Each level
+   costs 8x cells in the refined volume: nearBox at level 2 ~84k cells, level 3 ~670k, level 4
+   ~5.4M. Level 4 also puts y+ near 40 (first cell 1.25 mm), closing the wall-function window.
+3. Refinement regions around gradients and measurements with margin; far field at background.
+4. Domain from the guideline (AIJ: 5H in, 15H out, 5H sides, 6H top).
+5. locationInMesh in open air.
+6. y+ from the finest wall cell against the intended wall treatment (10 mm -> y = 5 mm -> y+ ~150).
+7. checkMesh: if non-orthogonality or skewness are high, raise nCellsBetweenLevels or grow the boxes.
+Grid study: shrink the background (40 -> 28 -> 20 mm) keeping the levels, so every zone refines by
+the same ratio 1.4. Changing the level instead refines by 2 and only locally.
+
+## C2d. Looking at the mesh: ParaView client-server from another PC
+
+- The workstation has no display, so the heavy part (pvserver) runs there and the ParaView GUI
+  runs on the PC. Both must be the same version (workstation: 5.11.2).
+- On the workstation: `pvserver --force-offscreen-rendering --server-port=11111` (prints
+  "Waiting for client..."; one client at a time; exits when the client disconnects).
+- Tunnel the port over the SSH connection VS Code already uses: Ports tab -> Forward a Port -> 11111,
+  or on the PC `ssh -L 11111:localhost:11111 <ssh host name>`.
+- ParaView on the PC: File -> Connect -> Add Server: Client / Server, host localhost, port 11111,
+  Configure -> Manual -> Save -> Connect. Then File -> Open the case's `case.foam` (an empty file
+  that tells ParaView "this folder is an OpenFOAM case"), Apply.
+- First look: representation "Surface With Edges"; Filters -> Slice, normal Y, Apply: shows the
+  three cell sizes and the building hole with sharp corners.
+- Result of C2 on 2026-10-08 (Saleh's own run): 292,563 cells (161,085 at 40 mm, 46,926 at 20 mm,
+  84,552 at 10 mm), 6 patches, 4,640 polyhedra on the level transitions (normal), Mesh OK.
