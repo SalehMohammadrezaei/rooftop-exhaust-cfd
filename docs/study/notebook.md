@@ -837,3 +837,48 @@ asks for three levels and the grid convergence index needs them, but the expecta
 will confirm grid independence, not pass the validation.
 
 Results: results/V1/coarse_realizableKE_run1.json, results/V1/medium_realizableKE_run1.json.
+
+## C11. The second closure: k-omega SST on the medium grid (2026-10-09, set up and run by Saleh)
+
+Saleh copied the medium case, changed the one word RASModel to kOmegaSST, and ran it; the log
+confirms the model and the run started from clean fields. The run behaved differently from the two
+k-epsilon runs. It did not meet the residual targets and stopped at the 2000-iteration cap, with
+the pressure residual flat at about 9e-4 from iteration 1000 onward instead of falling. The probes
+explain why. The wake-cavity probe settled at -0.70 m/s by iteration 750 and stayed within 0.1
+percent, and the reattachment probe at 0.267 m/s within 0.6 percent. The roof probe did not settle:
+between iterations 1000 and 2000 it cycled slowly between 0.40 and 0.47 m/s, mean 0.436, amplitude
+plus or minus 8 percent. That is the roof separation bubble breathing, a known behaviour of SST on
+sharp-edged roofs in a steady solver: the model predicts a larger, more unsteady bubble than
+k-epsilon, and SIMPLE cannot find a steady state for it. Rule 5 applies: the roof quantity is
+reported as cycle average and amplitude, the rest as converged. If a steady run will not settle,
+the brief's answer is to run it transient and average (section 6, no URANS stage as a design tool,
+but as a numerical necessity).
+
+The sampled result, with y+ on the building averaging 49 (SST computes a smaller wall friction):
+
+| Metric | realizable k-epsilon | k-omega SST | Pass mark |
+|---|---|---|---|
+| Hit rate on U | 0.60 | 0.62 | 0.66, not met by either |
+| Hit rate on V, W | 0.71, 0.71 | 0.71, 0.67 | reported |
+| Hit rate on k | 0.22 | 0.29 | reported |
+
+By region the two models fail in different places:
+
+| Region | rKE hit rate | SST hit rate | rKE bias | SST bias |
+|---|---|---|---|---|
+| upstream | 0.78 | 0.87 | -0.02 | -0.13 |
+| above roof | 0.72 | 0.60 | +0.05 | -0.56 |
+| beside building | 0.76 | 0.79 | -0.42 | -0.40 |
+| near wake | 0.51 | 0.48 | -0.51 | -0.60 |
+| far wake | 0.47 | 0.50 | -0.62 | -0.61 |
+
+Reading. Both models leave the wake 0.5 to 0.6 m/s too slow; SST adds a too-large roof bubble (the
+roof points are 0.56 m/s slow) and a stronger reversed flow in the cavity (-0.70 against -0.40).
+The wake deficit is therefore common to both linear eddy-viscosity closures and is not a mesh
+effect (C10). This is the model-form limitation the brief expects RANS to have in a bluff-body
+wake, and the reason the ladder includes a scale-resolving run of this same case (V1-LES) to
+measure it. Before concluding, the remaining planned runs are the fine grid (grid convergence
+index), the inflow sensitivity with the log-law inlet (decision 0003), and the empty-domain drift
+check; none of them is expected to move the wake by half a metre per second.
+
+Results: results/V1/medium_kOmegaSST_run1.json.
