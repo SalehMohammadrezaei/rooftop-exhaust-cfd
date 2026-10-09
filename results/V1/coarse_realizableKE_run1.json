@@ -1,0 +1,16 @@
+{
+ "case": "case_by_hand",
+ "time": "397",
+ "points_missing": 0,
+ "hit_rate_U": 0.59,
+ "n_U": 826,
+ "hit_rate_V": 0.682,
+ "n_V": 826,
+ "hit_rate_W": 0.705,
+ "n_W": 826,
+ "hit_rate_k": 0.214,
+ "n_k": 826,
+ "hit_rate_UVW": 0.659,
+ "pass_velocity": false,
+ "acceptance": "hit rate on U >= 0.66 (VDI 3783/9: D = 0.25, W = 0.05 U_H)"
+}

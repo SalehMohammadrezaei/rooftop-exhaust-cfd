@@ -1,0 +1,7 @@
+/*  Step 7b: how to split the mesh across cores.  16 cores agreed 2026-10-09 (~18,000 cells each;
+    below ~20,000 per core the communication cost outweighs the gain).                          */
+FoamFile { version 2.0; format ascii; class dictionary; object decomposeParDict; }
+
+numberOfSubdomains 16;
+
+method          scotch;          // graph partitioner: balances cells and minimises the cut between pieces; no geometry input needed

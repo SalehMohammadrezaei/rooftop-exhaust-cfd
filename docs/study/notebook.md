@@ -60,6 +60,58 @@ docs/decisions/0002-v0-setup.md every setup choice and its reason
 ```
 Generated cases live outside the repository in ~/scratch/openfoam_cases/V0/<closure>_<wallset>_<top>_<mesh>/.
 
+
+## The universal recipe: running any OpenFOAM case, start to finish
+
+Every case, every time, in this order. Replace <case> with the case folder and N with the agreed
+core count. Lines starting with # are comments, not commands.
+
+```
+# 1. Go to the case folder and load OpenFOAM (once per terminal)
+cd /mnt/d/Saleh/openfoam_project/validation/V1/<case>
+source ~/opt/openfoam2606.sh
+
+# 2. Check the machine before using cores (CLAUDE.md rule 12)
+cat /proc/loadavg          # first number = cores in use; the machine has 192
+nproc
+
+# 3. Mesh (skip if constant/polyMesh is already the mesh you want)
+blockMesh                 > log.blockMesh 2>&1
+surfaceFeatureExtract     > log.surfaceFeatureExtract 2>&1     # only if there is an STL
+snappyHexMesh -overwrite  > log.snappyHexMesh 2>&1             # only if there is an STL; never forget -overwrite
+checkMesh                 > log.checkMesh 2>&1
+grep -E "Mesh OK|Failed|cells:" log.checkMesh                  # must say Mesh OK; note the cell count
+
+# 4. Fresh fields and the initial guess
+rm -rf 0 && cp -r 0.orig 0
+setExprFields             > log.setExprFields 2>&1             # only if system/setExprFieldsDict exists
+
+# 5. Split for parallel (N must match numberOfSubdomains in system/decomposeParDict)
+decomposePar              > log.decomposePar 2>&1
+
+# 6. Solve, in the background, output to a log
+mpirun -np N simpleFoam -parallel > log.simpleFoam 2>&1 &
+
+# 7. Watch it (second terminal; Ctrl+C stops the watching, not the solver)
+watch -n 2 tail -n 12 log.simpleFoam
+tail -n 2 postProcessing/probesWake/0/U                        # the primary quantity, every iteration
+
+# 8. When "End" appears at the bottom of log.simpleFoam: merge, check, sample, score
+reconstructPar -latestTime                   > log.reconstructPar 2>&1
+simpleFoam -postProcess -func yPlus -latestTime        | grep "y+"
+simpleFoam -postProcess -func samplePoints -latestTime > log.sample 2>&1
+python3 ../metrics.py . --data ../../../data/raw/aij_caseH/RS_caseH.csv --out ../../../results/V1/<name>.json
+```
+
+What "converged" means before you trust step 8 (rule 5): the probe values at the last two written
+iterations differ by less than 1 %, and the inlet and outlet flow sums in postProcessing/flowIn and
+flowOut agree within 1 %. The line "SIMPLE solution converged in N iterations" is only the stop
+signal.
+
+To rerun the same case with one change: copy the folder (`cp -r <case> <newcase>`), in the copy
+delete the old output (`rm -rf processor* [1-9]* postProcessing log.* constant/polyMesh`), change
+the one number, and start the recipe again from step 3.
+
 ---
 
 # Part B. Entries
@@ -605,3 +657,75 @@ Convection schemes:
 for ~200 iterations, then switch back with `startFrom latestTime`.
 Gradients: Gauss linear; cellLimited on U against overshoots at sharp edges. Laplacians: Gauss
 linear corrected on orthogonal meshes; limited corrected 0.33 on snappyHexMesh meshes.
+
+## C7a. Run control and monitors: system/controlDict
+
+- `application simpleFoam`; `deltaT 1` so one time step = one SIMPLE iteration; `endTime 2000` is
+  the cap (residualControl may stop earlier); `writeInterval 250` writes all fields every 250
+  iterations (restart points, and the last two writes give the flatness check of rule 5).
+  `startFrom latestTime` lets a restart continue. `runTimeModifiable yes`: the solver re-reads this
+  file every iteration, so endTime can be raised while it runs.
+- `functions` = monitors (function objects), each writes under postProcessing/<name>/:
+  `probes` of U and k at three measured wake points (the primary convergence quantity: the wake
+  settles last); `forces` on the building (convergence monitor only; `rhoInf 1.2` turns p/rho into
+  newtons); `surfaceFieldValue` sum of phi on inlet and outlet (mass balance); `fieldMinMax`.
+- Why probes in the wake: the recirculating air is slow and the roof separation point wanders for
+  many iterations; residuals can be flat while the wake is still moving.
+
+## C7b. Parallel run: decomposeParDict and the run sequence
+
+- GPU: no; the standard solvers are CPU only (Project.md section 10 cost trap).
+- Cores: speed-up stops paying below ~20,000 cells per core. 292k cells -> 16 cores (~18k each).
+  Check the load first (rule 12): `cat /proc/loadavg`, `nproc`.
+- system/decomposeParDict: `numberOfSubdomains 16; method scotch;` (scotch balances cells and
+  minimises the interface between pieces; hierarchical/simple need a manual n (nx ny nz)).
+- Sequence: `rm -rf 0 && cp -r 0.orig 0` -> `setExprFields` -> `decomposePar` ->
+  `mpirun -np 16 simpleFoam -parallel > log.simpleFoam 2>&1` -> `reconstructPar`.
+  Watch the log in a second terminal: `tail -f log.simpleFoam`; stop watching with Ctrl+C
+  (that stops tail, not the solver).
+
+## C7c. First V1 run (coarse grid, realizableKE, 16 cores, 2026-10-09, run by Saleh)
+
+- 0.3 s per iteration; residualControl met at iteration 397 (cap 2000).
+- Probes (rule 5 check) between the writes at 250 and 397: wake-cavity Ux -0.454 -> -0.455 m/s
+  (0.2 %), reattachment Ux 0.470 -> 0.469 (0.3 %), drag 0.11027 -> 0.11026 N. Converged.
+- Reversed flow at the cavity probe = the recirculation behind the block.
+- `tail -f` on /mnt/d can fail ("No data available") because D: is a Windows bridge mount; use
+  `watch -n 2 tail -n 12 log.simpleFoam`. Large runs go on native Linux storage for this reason.
+- After the run: `reconstructPar -latestTime` (merge the processor pieces),
+  `simpleFoam -postProcess -func yPlus -latestTime` (y+ per wall patch; building must be 30..300).
+
+## C8a. Comparing with the tunnel: sampling at the measured points
+
+- validation/V1/make_sample_points.py writes system/samplePoints: a `sets` function object of
+  `type cloud` with the 826 measured (x y z), `interpolationScheme cellPoint` (interpolates to the
+  exact point), fields U and k. Included in controlDict's functions block, so future runs write it
+  at every write time; for an existing result run `simpleFoam -postProcess -func samplePoints -latestTime`.
+  Output: postProcessing/samplePoints/<time>/measured_U.xy (x y z Ux Uy Uz) and measured_k.xy.
+- validation/V1/metrics.py: hit rate q = fraction of points with |CFD - exp| <= 0.25 |exp| or
+  |CFD - exp| <= 0.05 U_H (VDI 3783/9 values), per component. Acceptance q(U) >= 0.66, fixed in
+  Project.md section 5. FAC2 and fractional bias for concentration come when the scalar is added.
+
+## C8b. First validation result (coarse grid, realizableKE, measured inlet, run 1, 2026-10-09)
+
+- y+: building min 24, mean 98, max 288 (inside 30..300 except a few bottom-corner faces);
+  ground max 414 in the 40 mm far field (outside the window, upstream floor only; noted).
+- Sampling: the raw writer puts all fields of one set in one file, columns sorted by field name:
+  measured_k_U.xy = x y z k Ux Uy Uz. (The metrics script was corrected for this.)
+- Hit rate (VDI 3783/9, D = 0.25, W = 0.05 U_H), 826 points:
+  U 0.59 (pass mark 0.66: NOT MET), V 0.68, W 0.71, all components 0.66, k 0.21.
+  Reported as it stands; the pass mark does not move (CLAUDE.md rule 4).
+- File: results/V1/coarse_realizableKE_run1.json.
+
+## C9. Repeating the run on a finer grid: lessons from the medium-grid attempt (2026-10-09)
+
+- To refine everything by 1.43: change only `dx` in blockMeshDict (0.04 -> 0.028). The snappy
+  levels are relative to the background, so nothing there changes. Cells: 168,300 -> 495,962
+  background (2.95x), 292,563 -> 843,456 after snapping (2.9x).
+- Copy the case before changing it and delete the old run's output in the copy (processor*,
+  numbered folders, postProcessing, logs, constant/polyMesh).
+- `snappyHexMesh` without `-overwrite` does NOT replace constant/polyMesh: it writes the
+  castellated mesh to a folder `1` and the snapped mesh to `2`, as if they were time steps. The
+  solver would then start from "time 2". Always `snappyHexMesh -overwrite`, and redirect long
+  programs to a log: `snappyHexMesh -overwrite > log.snappyHexMesh 2>&1`.
+- Two people (or a person and a script) must not touch the same case folder at the same time.
