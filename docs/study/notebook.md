@@ -1035,3 +1035,29 @@ everywhere. The right description is the one in decision V1-2: measured profile 
 smooth floor, and the near-floor inconsistency of C14 accepted and reported as it is. The
 sensitivity is kept in the record as evidence for that choice, not as a candidate.
 Result: results/V1/medium_realizableKE_roughfloor_run1.json. The smooth floor remains the baseline.
+
+## C16. The tracer: first pass and the balance check (2026-10-09)
+
+The six tracers ran for 500 iterations on the converged flow in 4.5 minutes. The first scores
+looked encouraging: FAC2 of 0.60 at Sct = 0.4 falling to 0.47 at 0.9, with a fractional bias of
+-0.53 to -0.82, meaning the CFD concentrations average 1.7 to 2.3 times the measured ones. But
+before reading anything into that, the balance check of rule 5 was applied: the tracer flux leaving
+the outlet, computed from phi times s over the outlet faces, was only 62 percent of the injected
+Q at Sct = 0.4 and 91 percent at 0.9. A converged passive scalar with no sinks must leave at
+exactly the rate it enters. The run was therefore not converged, and the FAC2 and FB numbers from
+it are not results.
+
+Why 500 iterations was too few. In a steady solver the scalar is not marched in time; each
+iteration relaxes the field toward the solution of the transport equation, and with a factor of
+0.7 the information about the source spreads across the domain over many iterations. The lower
+the Schmidt number, the more diffusive the plume, the larger the volume it fills, and the longer
+it takes. The velocity residuals say nothing about this, because the velocity was converged
+before the tracers started.
+
+What was changed. The run continues from iteration 1095 for 2500 more, with two monitors added
+to controlDict: a surfaceFieldValue on the outlet with weightField sXX, which writes the tracer
+flux every iteration, and the six tracers added to the wake probes. Convergence is then judged
+on the outlet flux reaching Q within 1 percent and the probe values being flat, exactly as for the
+velocity. The scalarTransport entry resetOnStartUp was set to false so the continuation keeps the
+fields instead of zeroing them. General lesson: every transported quantity gets its own balance
+and its own monitor; a scalar added by a function object is no exception.
