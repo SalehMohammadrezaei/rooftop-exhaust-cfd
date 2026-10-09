@@ -1,0 +1,40 @@
+{
+ "cells": {
+  "coarse": 292563,
+  "medium": 843456,
+  "fine": 2318750
+ },
+ "refinement_ratio_mean": 1.412,
+ "cavity_Ux": {
+  "fine": -0.3849779881,
+  "medium": -0.3992697549,
+  "coarse": -0.4545554606,
+  "rel_change_fine_medium_pct": 3.712359470351753,
+  "order_p": 3.92,
+  "GCI_fine_pct": 1.62,
+  "richardson_extrapolated": -0.37999543205034014
+ },
+ "reattach_Ux": {
+  "fine": 0.771926457,
+  "medium": 0.6412098893,
+  "coarse": 0.4686790292,
+  "rel_change_fine_medium_pct": 16.933811053453756,
+  "order_p": 0.8,
+  "GCI_fine_pct": 66.17,
+  "richardson_extrapolated": 1.1805623585193725
+ },
+ "drag_N": {
+  "fine": 0.1163995728,
+  "medium": 0.11567258767,
+  "coarse": 0.11026200986,
+  "rel_change_fine_medium_pct": 0.6245599640207702,
+  "order_p": 5.82,
+  "GCI_fine_pct": 0.12,
+  "richardson_extrapolated": 0.11651241510191451
+ },
+ "hit_rate_U": {
+  "coarse": 0.59,
+  "medium": 0.604,
+  "fine": 0.609
+ }
+}

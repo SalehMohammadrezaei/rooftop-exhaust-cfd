@@ -928,3 +928,42 @@ its convection scheme is div(phi,s) in fvSchemes through the schemesField entry,
 solver is the "s.*" entry in fvSolution. The source is an fvOptions block inside the function
 object with selectionMode points and volumeMode absolute, meaning the number given is the total
 rate in field units times cubic metres per second.
+
+## C13. The fine grid and the grid convergence index (2026-10-09)
+
+The fine grid, 2,318,750 cells, converged at iteration 985 in 22 minutes on 16 cores, with the
+wake-cavity probe flat to 0.2 percent between the writes at 750 and 985. Building y+ averages 45
+with a minimum of 3 on a few corner faces: the finer the cells, the lower y+, and on the next
+refinement the wall-function assumption would start to break at the corners. This is the practical
+floor of the wall-function approach on this geometry.
+
+The hit rate on U moved from 0.59 to 0.60 to 0.61 across the three grids. The grid convergence
+index (validation/V1/gci.py, Celik et al. 2008) with a mean refinement ratio of 1.41:
+
+| Quantity | coarse | medium | fine | observed order p | GCI of the fine value |
+|---|---|---|---|---|---|
+| wake-cavity probe Ux, m/s | -0.455 | -0.399 | -0.385 | 3.9 | 1.6 % |
+| reattachment probe Ux, m/s | 0.469 | 0.641 | 0.772 | 0.8 | 66 % |
+| drag force, N | 0.1103 | 0.1157 | 0.1164 | 5.8 | 0.1 % |
+
+How to read this. The drag and the cavity velocity are grid-converged: the three values approach
+a limit at a high observed order and the remaining uncertainty is small. The reattachment probe
+is not: at that point, 1.5H behind the building at half height, the velocity keeps rising with
+refinement at first order, which means the end of the recirculation zone is moving upstream as the
+mesh gets finer. A GCI of 66 percent is not a defect of the index; it is the index doing its job,
+saying that a single-point value in a steep gradient on the edge of the recirculation is not
+resolved on these grids. The point-by-point hit rate, however, barely moves, because the wake is
+too slow by 0.5 to 0.6 m/s on every grid:
+
+| Region | hit rate coarse / medium / fine | bias coarse / medium / fine, m/s |
+|---|---|---|
+| upstream | 0.81 / 0.78 / 0.77 | -0.05 / -0.02 / -0.02 |
+| above roof | 0.64 / 0.72 / 0.72 | +0.03 / +0.05 / +0.12 |
+| beside building | 0.72 / 0.76 / 0.78 | -0.45 / -0.42 / -0.41 |
+| near wake | 0.49 / 0.51 / 0.52 | -0.53 / -0.51 / -0.47 |
+| far wake | 0.44 / 0.47 / 0.47 | -0.68 / -0.62 / -0.58 |
+
+So the picture from C10 stands with one refinement: the recirculation length does shorten with
+grid resolution, by a few percent per level, but extrapolating the trend would not close a half
+metre per second gap, and the hit rate would need a different model to reach 0.66. Results:
+results/V1/fine_realizableKE_run1.json and results/V1/gci_realizableKE.json.
