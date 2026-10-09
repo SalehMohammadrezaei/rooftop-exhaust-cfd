@@ -1017,3 +1017,21 @@ then showed the residuals falling by two orders per call. Two general lessons: e
 quantity in a steady run needs a relaxation factor, including ones added by function objects; and
 when a run dies with a signal, rerun it serially with FOAM_SIGFPE=false to see the numbers instead
 of a stack trace.
+
+## C15. The rough-floor sensitivity: a clear negative (2026-10-09)
+
+Decision 0005 asked whether a rough floor at the fitted z0 of 11.7 mm would hold the tunnel's
+near-floor velocity deficit better than the smooth wall. The answer is no, and strongly so. With
+the rough-wall set on the whole floor the hit rate on U fell from 0.60 to 0.34. The lowest
+measurement plane, 2.5 mm above the floor, dropped from 0.51 to 0.05, and the upstream region from
+0.78 to 0.44 with a bias of -0.40 m/s; the wake became slower still. The roof plane at z/H = 0.5
+was unaffected (0.69 against 0.77).
+
+Why. The z0 fitted to the approach flow describes the roughness elements upstream of the test
+section, which built the boundary layer over a long fetch. The test-section floor itself is
+smooth, and the measurements at 2.5 mm sit in a thin smooth-wall layer that re-forms quickly on it.
+Putting the upstream roughness under the model drags the whole lower flow down by 0.4 to 0.8 m/s
+everywhere. The right description is the one in decision V1-2: measured profile at the inlet,
+smooth floor, and the near-floor inconsistency of C14 accepted and reported as it is. The
+sensitivity is kept in the record as evidence for that choice, not as a candidate.
+Result: results/V1/medium_realizableKE_roughfloor_run1.json. The smooth floor remains the baseline.
