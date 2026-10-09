@@ -1061,3 +1061,41 @@ on the outlet flux reaching Q within 1 percent and the probe values being flat, 
 velocity. The scalarTransport entry resetOnStartUp was set to false so the continuation keeps the
 fields instead of zeroing them. General lesson: every transported quantity gets its own balance
 and its own monitor; a scalar added by a function object is no exception.
+
+## C17. The tracer result (2026-10-09)
+
+With 3000 iterations the tracers are converged by every test: the outlet flux equals the injected
+Q within 0.05 percent for all six Schmidt numbers from iteration 2600 on, having been 62 to 91
+percent at 500 iterations, and the tracer values at the three wake probes changed by less than
+0.002 percent over the last 500 iterations. The scores on the 490 points where the tunnel
+measured more than 1 ppm:
+
+| Sct | FAC2 | FB | MG | pass |
+|---|---|---|---|---|
+| 0.4 | 0.57 | -0.56 | 1.20 | FAC2 met, FB not met |
+| 0.5 | 0.55 | -0.65 | 1.22 | FAC2 met, FB not met |
+| 0.6 | 0.51 | -0.71 | 1.21 | FAC2 met, FB not met |
+| 0.7 | 0.50 | -0.76 | 1.19 | FAC2 marginal, FB not met |
+| 0.8 | 0.48 | -0.80 | 1.16 | not met |
+| 0.9 | 0.47 | -0.83 | 1.13 | not met |
+
+Reading the two bias measures together. FB is the fractional bias of the arithmetic means, and
+it is dominated by the high-concentration points near the source: negative FB means the CFD mean
+is higher, here 1.8 to 2.3 times the measured mean. MG is the geometric mean of the point ratios
+and says what a typical point does: the CFD is 13 to 22 percent high. So most points are close and
+a few near-source points are far too high. Where, by region at Sct 0.4: the far wake beyond 1H is
+excellent, FAC2 0.90 and FB +0.07; the near wake within 1H has the CFD mean 1.8 times the measured;
+and the points beside and above the building have it 3.5 times too high. On the centre plane the
+CFD mean is 2.5 times the measurement. The picture is the velocity story seen from the scalar
+side: the recirculation behind the block is too long and too strong, so the tracer released into
+it accumulates there and is carried up the leeward wall and around the sides instead of being
+swept downstream and spread laterally. Where the flow is right, beyond 1H, the concentration is
+right too.
+
+On the Schmidt number. Lower Sct means more turbulent diffusion of the scalar, and it improves
+every metric here because it partly compensates the missing mixing of the flow model. That is
+exactly why a Sct fixed on V1 alone would be a tuned number: 0.4 looks best because the wake is
+wrong. Project.md section 6 fixes one value from V1 and V2 together; V2 has a rooftop stack with
+momentum, a different flow, and will say whether 0.4 is a property of the scalar closure or a
+patch on this wake. The whole sweep is kept as the Schmidt sensitivity band.
+Results: results/V1/tracer_report_medium_realizableKE.json, results/V1/summary.md.

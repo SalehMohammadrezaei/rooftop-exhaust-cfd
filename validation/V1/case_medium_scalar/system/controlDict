@@ -49,12 +49,12 @@ functions
         log             false;
     }
 
-    flux_s04 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); weightField s04; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
-    flux_s05 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); weightField s05; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
-    flux_s06 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); weightField s06; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
-    flux_s07 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); weightField s07; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
-    flux_s08 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); weightField s08; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
-    flux_s09 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); weightField s09; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
+    flux_s04 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation weightedSum; fields (phi); weightField s04; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
+    flux_s05 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation weightedSum; fields (phi); weightField s05; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
+    flux_s06 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation weightedSum; fields (phi); weightField s06; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
+    flux_s07 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation weightedSum; fields (phi); weightField s07; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
+    flux_s08 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation weightedSum; fields (phi); weightField s08; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
+    flux_s09 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation weightedSum; fields (phi); weightField s09; writeControl timeStep; writeFields false; log false; }   // tracer flux out; must approach Q = 5.83e-6
     flowIn  { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name inlet;  operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
     flowOut { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
 
