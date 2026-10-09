@@ -1,0 +1,16 @@
+/*  Step 5: initial guess for U inside the domain.  setExprFields overwrites the internalField of
+    0/U with the log-law fit of the measured approach flow (u* 0.448 m/s, z0 11.7 mm, kappa 0.4).
+    Run after copying 0.orig to 0, before the solver.  Cells inside the building do not exist, so
+    nothing needs masking.  k, epsilon, omega keep their uniform roof-height values.             */
+FoamFile { version 2.0; format ascii; class dictionary; object setExprFieldsDict; }
+
+expressions
+(
+    Uprofile
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+        variables   ( "ustar = 0.448" "z0 = 0.0117" "kappa = 0.4" );
+        expression  #{ vector( ustar/kappa * log((pos().z() + z0)/z0), 0, 0 ) #};
+    }
+);

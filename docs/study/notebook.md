@@ -967,3 +967,29 @@ So the picture from C10 stands with one refinement: the recirculation length doe
 grid resolution, by a few percent per level, but extrapolating the trend would not close a half
 metre per second gap, and the hit rate would need a different model to reach 0.66. Results:
 results/V1/fine_realizableKE_run1.json and results/V1/gci_realizableKE.json.
+
+## C14. Inflow sensitivity and the empty-domain drift check (2026-10-09)
+
+Inflow sensitivity. The same medium case with the log-law inlet family instead of the measured
+tables, so with 49 percent more inflow turbulence, converged at iteration 1255 with the probes
+flat from 750. The hit rate on U rose from 0.60 to 0.63, still short of 0.66, and the wake bias
+shrank from -0.51 to -0.38 m/s in the near wake and from -0.62 to -0.44 in the far wake. The roof
+went the other way, from +0.05 to +0.19 m/s, because more inflow turbulence shortens the roof
+bubble too. So inflow turbulence is part of the wake story, worth about a quarter of the deficit,
+and the measured value, being the tunnel's, is the right baseline; the difference between the two
+runs is the inflow contribution to the uncertainty band that Project.md section 7 asks for.
+
+Empty-domain drift check. The same box without the building, measured inlet, realizable
+k-epsilon, 2000 iterations with the profile at the windward-wall position flat to 0.5 percent in U
+between the last two writes. Above z = 0.075 m the profile is maintained: at the tunnel station
+2.5H upstream the CFD velocity matches the measurement within 0.05 m/s at every height from 0.075
+to 0.6 m, and k within 0.05 m2/s2 at roof height. Below 0.075 m it is not: the measured profile has
+0.65 m/s at 10 mm and 1.13 m/s at 25 mm, while the CFD has 1.8 to 2.0 m/s there. The reason is the
+floor. The tunnel's near-floor deficit was created by roughness elements upstream of the test
+section; our floor is a smooth wall function that knows nothing about them, so it accelerates the
+lowest cells toward a smooth-wall profile over the 5H fetch. Measured in the same way as V0, the
+maximum relative change below 3H is 29 percent at the tunnel station and 40 percent at the
+windward-wall position, all of it in the first cell. This is a real inconsistency between the
+inlet and the floor, of the kind entry 7 warned about, and 312 of the 826 measured points sit at
+2.5 mm above the floor, inside it. Decision 0005 adds one sensitivity run with the rough-wall set
+on the floor at the fitted z0 of 11.7 mm, queued behind the tracer.
