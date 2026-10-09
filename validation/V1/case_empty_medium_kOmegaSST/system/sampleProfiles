@@ -1,0 +1,17 @@
+/*  Empty-domain drift check (decision 0003 safeguard 1): vertical profiles of U and k at the
+    inlet, the tunnel measurement station (-2.5H), -1H, the windward wall position (-0.5H... -0.1 m),
+    the building origin and +2H.  Compare with the inlet table and the AF measurements.  */
+sampleProfiles
+{
+    type sets; libs (sampling); setFormat raw; interpolationScheme cell; writeControl writeTime;
+    fields (U k);
+    sets
+    {
+        inletPatch { type face; axis z; start (-1.1 0.0 0); end (-1.1 0.0 1.2); }
+        x_m2p5H { type face; axis z; start (-0.493 0.0 0); end (-0.493 0.0 1.2); }
+        x_m1H { type face; axis z; start (-0.3 0.0 0); end (-0.3 0.0 1.2); }
+        windwardWall { type face; axis z; start (-0.1 0.0 0); end (-0.1 0.0 1.2); }
+        building0 { type face; axis z; start (0.0 0.0 0); end (0.0 0.0 1.2); }
+        x_p2H { type face; axis z; start (0.4 0.0 0); end (0.4 0.0 1.2); }
+    }
+}

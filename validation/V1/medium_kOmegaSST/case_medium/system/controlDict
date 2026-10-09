@@ -1,0 +1,63 @@
+/*  Step 7: run control and monitors.  Iterations, output, and what to record every iteration.  */
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+
+application     simpleFoam;
+
+startFrom       latestTime;      // continue from the last written iteration if restarted
+startTime       0;
+stopAt          endTime;
+endTime         2000;            // upper limit; residualControl may stop it earlier
+deltaT          1;               // one "time step" = one SIMPLE iteration
+
+writeControl    timeStep;
+writeInterval   250;             // write all fields every 250 iterations (restart points and the flatness check)
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  10;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable yes;           // the solver re-reads this file each iteration: endTime can be changed while running
+
+functions
+{
+    #include "samplePoints"
+    probesWake                   // primary quantity for convergence: U and k at three measured points on the centre plane
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (U k);
+        writeControl    timeStep;
+        probeLocations
+        (
+            (-0.075 0 0.21)      // just above the roof near the windward edge: separation
+            ( 0.10  0 0.10)      // in the wake cavity, 0.5H behind, half height
+            ( 0.30  0 0.10)      // 1.5H behind, where the wake reattaches
+        );
+    }
+
+    forcesBuilding               // drag on the model; a convergence monitor only (Project.md section 2)
+    {
+        type            forces;
+        libs            (forces);
+        patches         (building);
+        rho             rhoInf;  // incompressible: supply a density to turn p/rho into a force
+        rhoInf          1.2;
+        CofR            (-0.05 0 0.1);
+        writeControl    timeStep;
+        log             false;
+    }
+
+    flowIn  { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name inlet;  operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flowOut { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+
+    minMax
+    {
+        type            fieldMinMax;
+        libs            (fieldFunctionObjects);
+        fields          (U k);
+        writeControl    timeStep;
+        writeInterval   10;
+        log             false;
+    }
+}

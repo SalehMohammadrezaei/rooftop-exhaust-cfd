@@ -882,3 +882,49 @@ index), the inflow sensitivity with the log-law inlet (decision 0003), and the e
 check; none of them is expected to move the wake by half a metre per second.
 
 Results: results/V1/medium_kOmegaSST_run1.json.
+
+## C12. The remaining V1 runs and how each was set up (2026-10-09, run by the queue script)
+
+After the three building runs, four more cases close the velocity part of V1 and open the
+concentration part. Saleh asked for these to be run and reported in one go. Each is a copy of an
+existing case with one deliberate change, which is the pattern for every sensitivity study: change
+one thing, keep everything else, so the difference in the result has one cause.
+
+The fine grid (case_fine). Built from the hand-built files with dx = 0.02 m: 2,318,750 cells,
+2.75 times the medium grid, same snappy settings, Mesh OK. It completes the three-level grid study
+the brief asks for. With three grids the grid convergence index can be computed
+(validation/V1/gci.py): from three values of a quantity on grids with a constant refinement ratio
+r, the observed order of convergence is p = ln((f_coarse - f_medium)/(f_medium - f_fine)) / ln r,
+and the uncertainty of the fine value is GCI = 1.25 |f_medium - f_fine| / |f_fine| / (r^p - 1).
+The quantities used are the two wake probes, the drag force and the hit rate.
+
+The inflow sensitivity (case_medium_loglaw). The medium case with the inlet switched from the
+measured tables to the V0 log-law family, atmBoundaryLayerInletVelocity, InletK, InletEpsilon,
+with the fitted z0 = 11.7 mm and Uref 3.23 m/s at 0.2 m in an include/ABLConditions file, exactly
+as in V0. Velocity is the same within 3 percent; k is 0.67 instead of 0.45, 49 percent more
+inflow turbulence. The ground stays the smooth wall function, because it is the tunnel floor. Its
+purpose is to measure how much of the wake deficit is inflow turbulence rather than model.
+
+The empty-domain drift check (case_empty_medium_realizableKE and _kOmegaSST). The medium case
+with the building removed: blockMesh only, no snappyHexMesh, and the building entry deleted from
+every field file, since a patch that does not exist in the mesh must not appear in the fields.
+The force monitor and the point sampling are removed too, and a sampleProfiles function object
+writes vertical lines of U and k at the inlet, at the tunnel measurement station 2.5H upstream, at
+1H upstream, at the windward wall position, at the building origin and at 2H downstream. The
+comparison is the same as V0: how much the measured inlet profile has changed by the time it
+reaches where the building would be. This is safeguard 1 of decision 0003.
+
+The tracer (case_medium_scalar). The converged medium-grid realizable k-epsilon flow, continued
+for 500 more iterations with residualControl removed, so the flow is effectively frozen while six
+passive scalars are solved on it by the scalarTransport function object, one per turbulent Schmidt
+number from 0.4 to 0.9. Each scalar is a volume fraction with diffusivity D = nu + nut/Sct, a
+source of Q = 5.83e-6 m3/s placed in the cell containing the floor hole, clean air at the inlet
+and zero flux through every wall. The dimensionless concentration C* = c U_H H^2 / Q is compared
+with the tunnel on points where the measured concentration exceeds the 1 ppm noise floor, with
+FAC2 and fractional bias as the metrics. All of this is decision 0004, written for Saleh to
+confirm or revoke. In OpenFOAM terms, a function object that solves an equation lives in
+controlDict like any monitor; its field files sit in the restart time folder (595/s04 and so on),
+its convection scheme is div(phi,s) in fvSchemes through the schemesField entry, and its linear
+solver is the "s.*" entry in fvSolution. The source is an fvOptions block inside the function
+object with selectionMode points and volumeMode absolute, meaning the number given is the total
+rate in field units times cubic metres per second.

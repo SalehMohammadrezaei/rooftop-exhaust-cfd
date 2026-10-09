@@ -1,0 +1,11 @@
+// Inflow sensitivity (decision 0003 safeguard 2): the V0 log-law family fitted to the tunnel
+// approach flow (notebook entry 13): z0 = 11.7 mm, u* = 0.448 m/s. k = u*^2/sqrt(Cmu) = 0.67,
+// 49 % above the measured 0.45.
+kappa                0.40;
+Cmu                  0.09;
+flowDir              (1 0 0);
+zDir                 (0 0 1);
+Uref                 3.23;
+Zref                 0.2;
+z0                   uniform 0.0117;
+d                    uniform 0.0;

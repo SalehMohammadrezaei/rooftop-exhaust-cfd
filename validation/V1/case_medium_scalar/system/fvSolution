@@ -1,0 +1,46 @@
+/*  Step 6d: how the linear systems are solved and how the SIMPLE loop is controlled.  Numerical.  */
+FoamFile { version 2.0; format ascii; class dictionary; object fvSolution; }
+
+solvers
+{
+    p
+    {
+        solver          GAMG;                 // multigrid: the right tool for the pressure equation
+        smoother        GaussSeidel;
+        tolerance       1e-7;                 // absolute: stop when the residual is below this
+        relTol          0.01;                 // relative: or when it has dropped by this factor this iteration
+    }
+
+    "(s|s04|s05|s06|s07|s08|s09)"
+    {
+        solver          smoothSolver;
+        smoother        GaussSeidel;
+        tolerance       1e-10;
+        relTol          0.01;
+    }
+
+    "(U|k|epsilon|omega)"
+    {
+        solver          smoothSolver;         // cheap iterative solver, fine for the transport equations
+        smoother        GaussSeidel;
+        tolerance       1e-8;
+        relTol          0.1;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    consistent      yes;                      // SIMPLEC: allows the higher relaxation factors below
+
+    // residualControl removed: the flow is already converged; the run continues for the tracers
+}
+
+relaxationFactors                             // under-relaxation: fraction of the new value accepted each iteration
+{
+    equations
+    {
+        U               0.9;
+        "(k|epsilon|omega)" 0.7;
+    }
+}

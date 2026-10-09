@@ -1,0 +1,40 @@
+/*  Step 4e: dissipation rate, used by realizableKE (and any k-epsilon model).  Ignored by SST.  */
+FoamFile { version 2.0; format ascii; class volScalarField; object epsilon; }
+
+dimensions      [0 2 -3 0 0 0 0];        // m2/s3
+
+internalField   uniform 0.72;            // the inlet value at roof height
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/epsilon.csv";
+            nHeaderLine         1;
+            refColumn           0;
+            componentColumns    (1);
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);
+        origin          0;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    ground      { type epsilonWallFunction; value $internalField; }   // smooth wall: epsilon in the first cell set from the log law
+
+    top         { type slip; }
+    sides       { type slip; }
+}

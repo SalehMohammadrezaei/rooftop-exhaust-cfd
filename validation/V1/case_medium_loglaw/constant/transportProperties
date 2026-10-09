@@ -1,0 +1,6 @@
+/*  Step 6a: the fluid.  Air at tunnel temperature (~20 C): kinematic viscosity 1.5e-5 m2/s.
+    Density does not appear: simpleFoam is incompressible and works with p/rho.  (measured, standard tables)  */
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+
+transportModel  Newtonian;
+nu              1.5e-05;

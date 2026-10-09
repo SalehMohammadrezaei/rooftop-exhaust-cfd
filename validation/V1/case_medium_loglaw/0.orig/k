@@ -1,0 +1,30 @@
+/*  Step 4d: turbulent kinetic energy.  Same six patches; inlet from the measured table,
+    walls through a wall function, outlet guarded, top and sides slip.                          */
+FoamFile { version 2.0; format ascii; class volScalarField; object k; }
+
+dimensions      [0 2 -2 0 0 0 0];        // m2/s2
+
+internalField   uniform 0.45;            // the measured value at roof height; a reasonable guess everywhere
+
+boundaryField
+{
+    inlet
+    {
+        type            atmBoundaryLayerInletK;
+        #include        "include/ABLConditions"
+        value           uniform 0;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    ground      { type kqRWallFunction; value $internalField; }   // zero gradient at a wall; the name says "k, q, R wall function"
+    building    { type kqRWallFunction; value $internalField; }
+
+    top         { type slip; }
+    sides       { type slip; }
+}

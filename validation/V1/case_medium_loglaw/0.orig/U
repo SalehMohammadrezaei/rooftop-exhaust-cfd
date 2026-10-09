@@ -1,0 +1,29 @@
+/*  INFLOW SENSITIVITY CASE: inlet = log-law family (see include/ABLConditions). Step 4b: velocity.  One entry per patch; the names must match constant/polyMesh/boundary.  */
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+
+dimensions      [0 1 -1 0 0 0 0];        // m/s  (kg m s K mol A cd)
+
+internalField   uniform (0 0 0);         // starting guess inside the domain: air at rest (step 5 discusses this)
+
+boundaryField
+{
+    inlet
+    {
+        type            atmBoundaryLayerInletVelocity;
+        #include        "include/ABLConditions"
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            inletOutlet;     // zeroGradient where air leaves; if air tries to come back in,
+        inletValue      uniform (0 0 0); // it enters with this value instead (the backflow guard)
+        value           uniform (0 0 0);
+    }
+
+    ground      { type noSlip; }         // solid wall: U = 0 on the surface
+    building    { type noSlip; }
+
+    top         { type slip; }           // nothing crosses, no friction
+    sides       { type slip; }
+}

@@ -1,0 +1,40 @@
+/*  Step 4e: specific dissipation rate, used by kOmegaSST.  Ignored by k-epsilon models.  */
+FoamFile { version 2.0; format ascii; class volScalarField; object omega; }
+
+dimensions      [0 0 -1 0 0 0 0];        // 1/s
+
+internalField   uniform 17.6;            // the inlet value at roof height
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/omega.csv";
+            nHeaderLine         1;
+            refColumn           0;
+            componentColumns    (1);
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);
+        origin          0;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    ground      { type omegaWallFunction; value $internalField; }   // smooth wall: omega in the first cell from the log law
+
+    top         { type slip; }
+    sides       { type slip; }
+}

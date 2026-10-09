@@ -1,0 +1,18 @@
+/*  Step 4f: turbulent viscosity.  Not solved for; computed by the model from k and epsilon/omega.
+    Its file exists because the WALL FUNCTION for velocity lives here: at a wall, nut is set so that
+    the wall shear stress follows the log law (entry 7 of the notebook, smooth-wall version).      */
+FoamFile { version 2.0; format ascii; class volScalarField; object nut; }
+
+dimensions      [0 2 -1 0 0 0 0];        // m2/s, like nu
+
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet       { type calculated; value uniform 0; }   // "calculated": the model fills it in, nothing imposed
+    outlet      { type calculated; value uniform 0; }
+    top         { type calculated; value uniform 0; }
+    sides       { type calculated; value uniform 0; }
+
+    ground      { type nutkWallFunction; value uniform 0; }   // smooth-wall log law, u* from k (Cmu^1/4 sqrt(k)); needs 30 < y+ < 300
+}

@@ -1,0 +1,141 @@
+/*  Tracer transport on the converged flow (decision 0004): six passive scalars, one per Sct.
+    D = nu + nut/Sct (alphaDt = 1/Sct).  Source: Q = 5.83e-6 m3/s of tracer injected into the cell
+    containing the floor hole at (0.05, 0, 0): C* = s U_H H^2 / Q is then directly comparable.  */
+s04Transport
+{
+    type            scalarTransport;
+    libs            (solverFunctionObjects);
+    field           s04;
+    schemesField    s;              // all tracers share the div(phi,s) scheme and the "s" solver settings
+    alphaD          1;              // molecular: D = nu
+    alphaDt         2.500000;         // turbulent: nut / Sct, Sct = 0.4
+    bounded01       false;
+    resetOnStartUp  true;
+    fvOptions
+    {
+        source
+        {
+            type            scalarSemiImplicitSource;
+            selectionMode   points;
+            points          ((0.05 0 0.003));   // the floor hole, 0.25H behind the leeward wall
+            volumeMode      absolute;           // the rate below is the total, in field-units * m3/s
+            sources         { s04 (5.83e-6 0); } // (Su Sp): explicit rate Q, no implicit part
+        }
+    }
+    writeControl    writeTime;
+}
+s05Transport
+{
+    type            scalarTransport;
+    libs            (solverFunctionObjects);
+    field           s05;
+    schemesField    s;              // all tracers share the div(phi,s) scheme and the "s" solver settings
+    alphaD          1;              // molecular: D = nu
+    alphaDt         2.000000;         // turbulent: nut / Sct, Sct = 0.5
+    bounded01       false;
+    resetOnStartUp  true;
+    fvOptions
+    {
+        source
+        {
+            type            scalarSemiImplicitSource;
+            selectionMode   points;
+            points          ((0.05 0 0.003));   // the floor hole, 0.25H behind the leeward wall
+            volumeMode      absolute;           // the rate below is the total, in field-units * m3/s
+            sources         { s05 (5.83e-6 0); } // (Su Sp): explicit rate Q, no implicit part
+        }
+    }
+    writeControl    writeTime;
+}
+s06Transport
+{
+    type            scalarTransport;
+    libs            (solverFunctionObjects);
+    field           s06;
+    schemesField    s;              // all tracers share the div(phi,s) scheme and the "s" solver settings
+    alphaD          1;              // molecular: D = nu
+    alphaDt         1.666667;         // turbulent: nut / Sct, Sct = 0.6
+    bounded01       false;
+    resetOnStartUp  true;
+    fvOptions
+    {
+        source
+        {
+            type            scalarSemiImplicitSource;
+            selectionMode   points;
+            points          ((0.05 0 0.003));   // the floor hole, 0.25H behind the leeward wall
+            volumeMode      absolute;           // the rate below is the total, in field-units * m3/s
+            sources         { s06 (5.83e-6 0); } // (Su Sp): explicit rate Q, no implicit part
+        }
+    }
+    writeControl    writeTime;
+}
+s07Transport
+{
+    type            scalarTransport;
+    libs            (solverFunctionObjects);
+    field           s07;
+    schemesField    s;              // all tracers share the div(phi,s) scheme and the "s" solver settings
+    alphaD          1;              // molecular: D = nu
+    alphaDt         1.428571;         // turbulent: nut / Sct, Sct = 0.7
+    bounded01       false;
+    resetOnStartUp  true;
+    fvOptions
+    {
+        source
+        {
+            type            scalarSemiImplicitSource;
+            selectionMode   points;
+            points          ((0.05 0 0.003));   // the floor hole, 0.25H behind the leeward wall
+            volumeMode      absolute;           // the rate below is the total, in field-units * m3/s
+            sources         { s07 (5.83e-6 0); } // (Su Sp): explicit rate Q, no implicit part
+        }
+    }
+    writeControl    writeTime;
+}
+s08Transport
+{
+    type            scalarTransport;
+    libs            (solverFunctionObjects);
+    field           s08;
+    schemesField    s;              // all tracers share the div(phi,s) scheme and the "s" solver settings
+    alphaD          1;              // molecular: D = nu
+    alphaDt         1.250000;         // turbulent: nut / Sct, Sct = 0.8
+    bounded01       false;
+    resetOnStartUp  true;
+    fvOptions
+    {
+        source
+        {
+            type            scalarSemiImplicitSource;
+            selectionMode   points;
+            points          ((0.05 0 0.003));   // the floor hole, 0.25H behind the leeward wall
+            volumeMode      absolute;           // the rate below is the total, in field-units * m3/s
+            sources         { s08 (5.83e-6 0); } // (Su Sp): explicit rate Q, no implicit part
+        }
+    }
+    writeControl    writeTime;
+}
+s09Transport
+{
+    type            scalarTransport;
+    libs            (solverFunctionObjects);
+    field           s09;
+    schemesField    s;              // all tracers share the div(phi,s) scheme and the "s" solver settings
+    alphaD          1;              // molecular: D = nu
+    alphaDt         1.111111;         // turbulent: nut / Sct, Sct = 0.9
+    bounded01       false;
+    resetOnStartUp  true;
+    fvOptions
+    {
+        source
+        {
+            type            scalarSemiImplicitSource;
+            selectionMode   points;
+            points          ((0.05 0 0.003));   // the floor hole, 0.25H behind the leeward wall
+            volumeMode      absolute;           // the rate below is the total, in field-units * m3/s
+            sources         { s09 (5.83e-6 0); } // (Su Sp): explicit rate Q, no implicit part
+        }
+    }
+    writeControl    writeTime;
+}

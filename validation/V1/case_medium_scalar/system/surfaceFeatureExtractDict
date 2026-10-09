@@ -1,0 +1,11 @@
+/*  Step 2a: extract the sharp edges of the building so snappyHexMesh can snap cells onto them.
+    Output: constant/extendedFeatureEdgeMesh/building.extendedFeatureEdgeMesh  (not committed)   */
+FoamFile { version 2.0; format ascii; class dictionary; object surfaceFeatureExtractDict; }
+
+building.stl
+{
+    extractionMethod    extractFromSurface;
+    includedAngle       150;      // edges between faces meeting at less than 150 deg are "features"; a box has 90 deg edges
+    subsetFeatures { nonManifoldEdges no; openEdges yes; }
+    writeObj            no;
+}
