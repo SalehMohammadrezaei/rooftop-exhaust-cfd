@@ -592,71 +592,145 @@ Pressure is fixed only at the outlet; everywhere else it floats (zeroGradient).
 
 ## C6. Physics and numerics: four files
 
-- constant/transportProperties: `Newtonian`, `nu 1.5e-05` (air, m2/s). No density: simpleFoam is
-  incompressible.
-- constant/turbulenceProperties: `simulationType RAS`, `RASModel realizableKE` or `kOmegaSST`;
-  `printCoeffs on` writes the constants to the log. Switching closure = one word here.
-- system/fvSchemes (discretisation):
-  `ddtSchemes steadyState` (no time derivative; SIMPLE iterates).
-  `gradSchemes Gauss linear`; `grad(U) cellLimited Gauss linear 1` (bounded gradient for U).
-  `divSchemes default none` forces every convection term to be listed:
-  `div(phi,U) bounded Gauss linearUpwind limited` (second-order upwind for momentum);
-  `div(phi,k|epsilon|omega) bounded Gauss limitedLinear 1` (second-order TVD for turbulence);
-  the `bounded` prefix subtracts the continuity error, helping steady convergence.
-  `laplacianSchemes Gauss linear limited corrected 0.33` (diffusion with non-orthogonal correction;
-  our max non-orthogonality is 26 deg). `wallDist meshWave` (wall distance for SST and y+).
-  AIJ guideline: no first-order upwind for the final result.
-- system/fvSolution (linear solvers and loop control):
-  `p GAMG tolerance 1e-7 relTol 0.01` (multigrid for pressure); `U k epsilon omega smoothSolver
-  GaussSeidel tolerance 1e-8 relTol 0.1`. tolerance is absolute, relTol is the per-iteration
-  reduction (entry 4).
-  `SIMPLE consistent yes` (SIMPLEC) with `relaxationFactors U 0.9, turbulence 0.7`.
-  `residualControl p 1e-5, U 1e-6, k/epsilon/omega 1e-6`: stops the run when all initial residuals
-  are below; a convenience, the real convergence check is the monitors (rule 5).
+With the mesh built and every patch given its rule, the solver still needs to know three things:
+what fluid this is, which turbulence model closes the equations, and how the equations are turned
+into numbers and solved. Four files carry that, two in constant (the physics) and two in system
+(the numerics).
 
-### C6 extended: how to choose the numerics (fvSolution and fvSchemes)
+### C6a. The fluid: constant/transportProperties
 
-One SIMPLE iteration: solve momentum for U with the current p; build and solve the pressure
-equation; correct U for continuity; solve k and epsilon/omega. Four or five linear systems
-A x = b with one unknown per cell.
+Two lines. `transportModel Newtonian` says the viscosity does not depend on the shear rate, which is
+true for air. `nu 1.5e-05` is the kinematic viscosity in m2/s, air at about 20 C from standard tables
+(a measured input). There is no density in the file because simpleFoam is an incompressible solver:
+it divides the whole momentum equation by density, which is why its pressure is p/rho in m2/s2.
+Density only comes back when a force in newtons is wanted, and then it is supplied to the force
+monitor as `rhoInf 1.2`.
 
-Linear solvers:
+### C6b. The turbulence model: constant/turbulenceProperties
+
+`simulationType RAS` selects Reynolds-averaged modelling, as the brief requires for every design
+run. `RASModel realizableKE` picks the closure; the other candidate in Project.md section 6 is
+`kOmegaSST`, and switching between them is this one word, because both the epsilon and the omega
+files exist in 0.orig and each model reads the one it needs. `printCoeffs on` makes the solver
+print the model constants at start-up, so the log records them; for realizableKE they are
+A0 4, C2 1.9, sigmak 1, sigmaEps 1.2 (seen in the sampling run of 2026-10-09). Nothing is
+changed from the defaults: the Hargreaves and Wright sigmaEps 1.11 belongs to the standard
+k-epsilon model and the atmospheric inlet, not to this tunnel case.
+
+### C6c. How each term is discretised: system/fvSchemes
+
+Think of the equations term by term. Each kind of term has its own block in this file, and each
+block says how that term becomes numbers on the mesh.
+
+Time derivative, `ddtSchemes steadyState`: there is none. SIMPLE marches in iterations, not in
+time, so the time derivative is simply switched off. A transient run would say Euler or backward.
+
+Gradients, `gradSchemes Gauss linear`: a gradient is built from face values that are interpolated
+linearly between the two cell centres. That is second order and the standard choice. For the
+velocity we add `grad(U) cellLimited Gauss linear 1`: the same gradient but clipped so that it
+never predicts a face value outside the range of the neighbouring cells. Without it the sharp
+edges of the building produce overshoots in the first iterations.
+
+Convection, the `divSchemes` block: this is the choice that decides accuracy, because convection
+dominates the flow around a bluff body. `default none` is deliberate: it forces every convection
+term to be listed explicitly, so none can silently fall back to first order.
+- `div(phi,U) bounded Gauss linearUpwind limited`: momentum uses second-order upwind. Upwind means
+  the face value comes from the cell the flow comes from, which is stable; linear means it is
+  extrapolated with the gradient, which makes it second order; the gradient used is the limited one
+  defined above.
+- `div(phi,k)`, `div(phi,epsilon)`, `div(phi,omega)`, all `bounded Gauss limitedLinear 1`: the
+  turbulence quantities use a central scheme with a limiter (a TVD scheme). Central is second
+  order; the limiter switches toward upwind where the solution is steep so that k and epsilon can
+  never go negative, which would crash the model. The 1 is the limiter strength, the usual value.
+- The word `bounded` in front of every term subtracts the small continuity error of the current
+  iteration from the equation. In a steady run the velocity field is not exactly divergence-free
+  until the end, and this correction stops that error from acting like a false source. It helps
+  convergence and does not change the converged answer.
+- `div((nuEff*dev2(T(grad(U))))) Gauss linear`: the viscous stress term, central; it must be listed
+  because of default none.
+The AIJ guideline asks that the final result not be computed with first-order upwind, and these
+settings meet it.
+
+Diffusion, `laplacianSchemes Gauss linear limited corrected 0.33`: a laplacian needs the gradient
+normal to each face. On a perfectly orthogonal mesh that is just the difference between the two
+cell values divided by the distance. Our snappyHexMesh mesh has faces that are not perpendicular
+to the line between cell centres, up to 26 degrees at the level transitions, and the `corrected`
+part adds the missing component; `limited 0.33` caps that correction so it cannot destabilise the
+run. This pair is the usual choice for snappyHexMesh meshes. `snGradSchemes` is the same thing for
+the surface-normal gradient on its own, and `interpolationSchemes linear` is the plain face
+interpolation used wherever nothing more specific is asked.
+
+`wallDist meshWave`: the distance from each cell to the nearest wall, computed once at start.
+The SST model needs it in its blending functions, and the y+ monitor uses it.
+
+### C6d. How the systems are solved and the loop controlled: system/fvSolution
+
+What the solver actually does in one SIMPLE iteration: it assembles the momentum equation with the
+current pressure and solves it for U; from that U it builds a pressure equation and solves it for
+p; it corrects U so that mass is conserved; then it solves the k and epsilon (or omega) equations
+with the new velocity. Each of those is a linear system A x = b with one unknown per cell,
+292,000 unknowns on the coarse grid. The `solvers` block says how each system is solved; the
+`SIMPLE` block says how the outer loop around them is run; `relaxationFactors` says how much of each
+new answer is accepted.
+
+The linear solvers. Pressure uses `GAMG`, geometric agglomerated multigrid: the solver builds
+coarser and coarser copies of the mesh, solves cheaply on them, and passes the corrections back.
+The pressure equation couples the entire domain in one step, which a plain iterative solver handles
+only with hundreds of sweeps, and multigrid handles in near-linear time; it is the standard choice
+for p on any mesh above a few tens of thousands of cells. `smoother GaussSeidel` is the relaxation
+used on each level. U, k, epsilon and omega use `smoothSolver` with the same Gauss-Seidel smoother:
+these equations are dominated by convection, their matrices are strongly diagonal, and a few cheap
+sweeps per iteration are enough. The alternatives are PCG for pressure (robust, slower, useful on
+small meshes or if GAMG misbehaves) and PBiCGStab for the transport equations (more work per sweep,
+converges where Gauss-Seidel stalls). The split follows the matrix type: pressure is symmetric, the
+transport equations are not.
+
+`tolerance` and `relTol`. The linear solver stops when either is met. `tolerance` is absolute, the
+residual below which nothing more is gained: 1e-7 for p, 1e-8 for the others. `relTol` is the
+target for this one call: stop when the residual has dropped by this factor since the call began,
+0.01 for p and 0.1 for the rest. For a steady SIMPLE run that looseness is right, because the outer
+loop will call the solver again next iteration anyway; solving each system to the bone wastes
+time and buys nothing. A transient PISO run is different: there is no outer loop to clean up
+after the last corrector, so relTol must be near zero there.
+
+`SIMPLE` block. `nNonOrthogonalCorrectors 0`: extra pressure solves per iteration for
+non-orthogonal meshes; zero is right below about 50 degrees when the laplacian already carries a
+correction, 1 or 2 for 60 to 70 degrees, and above that the mesh should be fixed, not the solver.
+`consistent yes` turns SIMPLE into SIMPLEC. Plain SIMPLE drops the neighbour influence when it
+corrects the velocity for the new pressure and pays for that with heavy under-relaxation of p,
+typically 0.3, with U at 0.7. SIMPLEC keeps part of that influence, so p needs no relaxation and
+U can take 0.9; it converges faster to the same answer. `residualControl` lists thresholds; when
+every initial residual is below its threshold in the same iteration, the run stops. Ours are
+1e-5 for p and 1e-6 for the rest, set a decade tighter than one would stop by eye. It is a
+convenience and a safety net; the judgement of convergence is the monitors in controlDict and the
+1 percent rule (rule 5), as the 4 m V0 cases showed, which stalled on a p residual of 7e-5 while
+the probe was identical to eleven digits.
+
+`relaxationFactors`. The fraction of the new solution accepted each iteration: 0.9 for U, 0.7 for
+the turbulence equations. 1.0 means no relaxation and usually diverges in a steady run; 0.5 is slow
+but very safe. Relaxation changes the path to the solution, not the solution, so there is no
+accuracy penalty in going lower. Rule for choosing: start with these values; if the residuals
+oscillate or k blows up in the first hundred iterations, lower the turbulence factors to 0.5 first
+and then U to 0.7; if the run is stable but slow, raise them. If a case will not start at all,
+switch every convection scheme to upwind for about 200 iterations, then switch back with
+`startFrom latestTime`.
+
+### C6e. The alternatives in one table
+
+| Scheme | Order | Character | When to use |
+|---|---|---|---|
+| upwind | 1 | very stable, very diffusive: smears gradients, shortens wakes, thickens plumes | the first few hundred iterations of a hard case, never the final answer |
+| linearUpwind grad(U) | 2 | upwind-biased, stable, modest diffusion | momentum in steady RANS; our choice |
+| limitedLinear 1 | 2 | central with a limiter that keeps the variable bounded | k, epsilon, omega, scalars; our choice |
+| linear | 2 | pure central, no diffusion, can oscillate | LES, diffusion terms, and aligned flows like the V0 box |
+| QUICK | 3 | more accurate, less stable | fine meshes with smooth flow |
+
 | Solver | Use for | Why |
 |---|---|---|
-| GAMG (multigrid) | p | pressure couples the whole domain; multigrid is near-linear in cost |
-| smoothSolver GaussSeidel | U, k, epsilon, omega | convection-dominated, diagonally strong; a few sweeps suffice |
-| PCG | p on small meshes or if GAMG misbehaves | robust, slower |
-| PBiCGStab | transport equations if smoothSolver stalls | converges where Gauss-Seidel does not |
-Pressure is symmetric (GAMG/PCG); transport equations are not (smoothSolver/PBiCGStab).
-
-tolerance = absolute stop; relTol = stop when reduced by this factor in this call. Steady SIMPLE:
-relTol 0.01 (p) and 0.1 (others) because the outer loop repeats. Transient PISO: relTol near 0 in
-the final corrector.
-
-consistent yes = SIMPLEC: keeps neighbour influence in the velocity correction, so p needs no
-relaxation and U can use 0.9. Plain SIMPLE: p 0.3, U 0.7.
-
-relaxationFactors: fraction of the new value accepted. Changes the path, not the answer. If
-residuals oscillate or k blows up early: turbulence to 0.5, then U to 0.7. Stable but slow: raise.
-
-nNonOrthogonalCorrectors: 0 below ~50 deg non-orthogonality with a corrected laplacian; 1 to 2 for
-60 to 70 deg; above that fix the mesh.
-
-residualControl: stops the run when all initial residuals are below the thresholds; set a decade
-tighter than you would stop by eye. The convergence judgement is the monitors (rule 5).
-
-Convection schemes:
-| Scheme | Order | Character | When |
-|---|---|---|---|
-| upwind | 1 | stable, diffusive (smears wakes and plumes) | start-up only, never the final result |
-| linearUpwind grad(U) | 2 | upwind-biased, stable | momentum in steady RANS (ours) |
-| limitedLinear 1 | 2 | central + limiter, keeps positivity | k, epsilon, omega, scalars (ours) |
-| linear | 2 | pure central, may oscillate | LES; diffusion terms; aligned flows |
-| QUICK | 3 | more accurate, less stable | fine meshes, smooth flow |
-`bounded` prefix on every convection term in a steady run. Hard start: all div schemes upwind
-for ~200 iterations, then switch back with `startFrom latestTime`.
-Gradients: Gauss linear; cellLimited on U against overshoots at sharp edges. Laplacians: Gauss
-linear corrected on orthogonal meshes; limited corrected 0.33 on snappyHexMesh meshes.
+| GAMG | p | multigrid, near-linear cost for the equation that couples the whole domain |
+| smoothSolver GaussSeidel | U, k, epsilon, omega | cheap sweeps on diagonally strong matrices |
+| PCG | p on small meshes or when GAMG misbehaves | robust, slower |
+| PBiCGStab | transport equations when smoothSolver stalls | more robust per sweep |
 
 ## C7a. Run control and monitors: system/controlDict
 
