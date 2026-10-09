@@ -1,0 +1,41 @@
+/*  Step 4b: velocity.  One entry per patch; the names must match constant/polyMesh/boundary.  */
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+
+dimensions      [0 1 -1 0 0 0 0];        // m/s  (kg m s K mol A cd)
+
+internalField   uniform (0 0 0);         // starting guess inside the domain: air at rest (step 5 discusses this)
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;    // fixed value that varies along one direction
+        profile         csvFile;         // ... read from a CSV table
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/U.csv";
+            nHeaderLine         1;       // the "z,Ux,Uy,Uz" line
+            refColumn           0;       // column holding the coordinate (z)
+            componentColumns    (1 2 3); // columns holding Ux, Uy, Uz
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;   // above the last row, hold the last value
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);         // the coordinate in the table is z
+        origin          0;               // measured from z = 0
+    }
+
+    outlet
+    {
+        type            inletOutlet;     // zeroGradient where air leaves; if air tries to come back in,
+        inletValue      uniform (0 0 0); // it enters with this value instead (the backflow guard)
+        value           uniform (0 0 0);
+    }
+
+    ground      { type noSlip; }         // solid wall: U = 0 on the surface
+    building    { type noSlip; }
+
+    top         { type slip; }           // nothing crosses, no friction
+    sides       { type slip; }
+}

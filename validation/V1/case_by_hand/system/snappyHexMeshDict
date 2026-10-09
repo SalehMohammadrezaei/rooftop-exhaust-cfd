@@ -1,0 +1,117 @@
+/*  Step 2b: carve the building out of the background box and refine around it.
+    Three stages, switched on below: castellate (refine and remove cells inside the building),
+    snap (move the cut faces onto the surface), addLayers (prism layers; off for V1, see Project.md s.7).  */
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+// ---- piece 1: what geometry exists --------------------------------------------------------------
+geometry
+{
+    building                       // the STL; its name here becomes the patch name
+    {
+        type triSurfaceMesh;
+        file "building.stl";
+    }
+    nearBox                        // refinement region close to the building: 1H upstream, 1.5H downstream, 1.75H high
+    {
+        type searchableBox;
+        min (-0.3 -0.2 0);
+        max ( 0.3  0.2 0.35);
+    }
+    wakeBox                        // refinement region covering the measured wake: to 2H downstream... extended to 5H
+    {
+        type searchableBox;
+        min (-0.5 -0.3 0);
+        max ( 1.0  0.3 0.5);
+    }
+}
+
+// ---- piece 2: where to refine and how much --------------------------------------------------------
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      8000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 3;         // cells of one level between two levels; 3 gives a gentle transition
+
+    features                       // edge refinement: snap to the sharp edges extracted in step 2a
+    (
+        { file "building.extendedFeatureEdgeMesh"; level 2; }
+    );
+
+    refinementSurfaces             // surface refinement: level 2 = background/4 = 10 mm on the building
+    {
+        building
+        {
+            level (2 2);
+            patchInfo { type wall; }    // the faces on the building become a patch of type wall
+        }
+    }
+
+    resolveFeatureAngle 30;
+
+    refinementRegions              // volume refinement
+    {
+        nearBox { mode inside; levels ((1e15 2)); }    // 10 mm cells around the building
+        wakeBox { mode inside; levels ((1e15 1)); }    // 20 mm cells in the wake
+    }
+
+    locationInMesh (-0.5 0.31 0.31);   // any point in the air; the cells connected to it are kept, the building interior is removed
+    allowFreeStandingZoneFaces true;
+}
+
+// ---- piece 3: snapping the cut faces onto the surface ---------------------------------------------
+snapControls
+{
+    nSmoothPatch        3;
+    tolerance           2.0;
+    nSolveIter          50;
+    nRelaxIter          5;
+    nFeatureSnapIter    10;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;      // use the extracted edges
+    multiRegionFeatureSnap false;
+}
+
+addLayersControls                  // present but unused (addLayers false)
+{
+    relativeSizes       true;
+    layers {}
+    expansionRatio      1.2;
+    finalLayerThickness 0.5;
+    minThickness        0.1;
+    nGrow               0;
+    featureAngle        60;
+    nRelaxIter          3;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals      3;
+    nSmoothThickness    10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle  90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter          50;
+}
+
+meshQualityControls                // limits the snapper must respect; standard values
+{
+    maxNonOrtho         65;
+    maxBoundarySkewness 20;
+    maxInternalSkewness 4;
+    maxConcave          80;
+    minVol              1e-13;
+    minTetQuality       1e-15;
+    minArea             -1;
+    minTwist            0.02;
+    minDeterminant      0.001;
+    minFaceWeight       0.02;
+    minVolRatio         0.01;
+    minTriangleTwist    -1;
+    nSmoothScale        4;
+    errorReduction      0.75;
+}
+
+mergeTolerance 1e-6;

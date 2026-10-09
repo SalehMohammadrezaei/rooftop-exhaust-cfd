@@ -1,0 +1,16 @@
+/*  V1 AIJ Case H: run control.  Minimal for meshing (step 1); solver settings filled at step 7.  */
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+
+application     simpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   1;
+writeFormat     ascii;
+writePrecision  10;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable yes;

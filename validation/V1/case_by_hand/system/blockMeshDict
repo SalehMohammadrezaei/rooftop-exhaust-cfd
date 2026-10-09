@@ -1,0 +1,42 @@
+/*  V1 AIJ Case H, step 1: the background box.
+    Building: 0.1 x 0.1 x 0.2 m, x in [-0.1, 0], y in [-0.05, 0.05], z in [0, 0.2]  (H = 0.2 m).
+    Domain (AIJ guideline): inlet 5H upstream of the windward wall, outlet 15H downstream of the
+    leeward wall, sides 5H from the building faces, top 6H.  Blockage 0.76 %.
+    Background cell 40 mm (coarse grid); snappyHexMesh refines around the building in step 2.      */
+FoamFile { version 2.0; format ascii; class dictionary; object blockMeshDict; }
+
+scale   1;
+
+H       0.2;
+xMin    -1.1;      // -0.1 - 5H
+xMax     3.0;      //  0   + 15H
+yMin    -1.1;      // -0.05 - 5H (rounded outwards to a cell multiple)
+yMax     1.1;
+zMin     0;
+zMax     1.2;      //  6H
+dx      0.04;      // background cell size, coarse grid
+
+nx  #eval{ round(($xMax - $xMin) / $dx) };
+ny  #eval{ round(($yMax - $yMin) / $dx) };
+nz  #eval{ round(($zMax - $zMin) / $dx) };
+
+vertices
+(
+    ($xMin $yMin $zMin) ($xMax $yMin $zMin) ($xMax $yMax $zMin) ($xMin $yMax $zMin)
+    ($xMin $yMin $zMax) ($xMax $yMin $zMax) ($xMax $yMax $zMax) ($xMin $yMax $zMax)
+);
+
+blocks ( hex (0 1 2 3 4 5 6 7) ($nx $ny $nz) simpleGrading (1 1 1) );
+
+edges ();
+
+boundary
+(
+    inlet  { type patch; faces ((0 4 7 3)); }   // x = xMin, wind enters
+    outlet { type patch; faces ((2 6 5 1)); }   // x = xMax
+    ground { type wall;  faces ((0 3 2 1)); }   // z = 0, tunnel floor
+    top    { type patch; faces ((4 5 6 7)); }   // z = zMax
+    sides  { type patch; faces ((1 5 4 0) (3 7 6 2)); }   // y = yMin and yMax
+);
+
+mergePatchPairs ();

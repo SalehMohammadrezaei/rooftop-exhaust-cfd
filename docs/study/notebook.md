@@ -489,3 +489,119 @@ Pressure is fixed only at the outlet; everywhere else it floats (zeroGradient).
   between neighbours near z = H, epsilon jumping 5x). Use a fitted, smooth slope. Decision 0003 addendum.
 - omega = epsilon/(Cmu k). Values at z = H: U 3.23, k 0.453, epsilon 0.72, omega 17.7.
 - Command: `python3 validation/V1/make_inlet_profiles.py data/raw/aij_caseH/AF_caseH.csv validation/V1/case_by_hand`
+
+## C4b. The velocity file 0.orig/U
+
+- Every field file: header `class` (volVectorField for vectors, volScalarField for scalars),
+  `dimensions [kg m s K mol A cd]` ([0 1 -1 0 0 0 0] = m/s; OpenFOAM checks units),
+  `internalField` (starting guess in every cell), `boundaryField` with one block per patch whose
+  names must match constant/polyMesh/boundary exactly.
+- inlet `fixedProfile` + `profile csvFile`: value varies along `direction (0 0 1)` from the table
+  `<constant>/inletProfiles/U.csv` (`nHeaderLine 1`, `refColumn 0` = z, `componentColumns (1 2 3)`
+  = Ux Uy Uz, `outOfBounds clamp` holds the last row above the table). `<constant>` expands to the
+  case's constant folder.
+- outlet `inletOutlet`: zeroGradient where air leaves; where it would enter, `inletValue` (0 0 0)
+  is imposed. The backflow guard.
+- ground, building `noSlip`. top, sides `slip`.
+- 0.orig is the clean copy; the run copies it to 0. Git keeps 0.orig only.
+
+## C4c. The pressure file 0.orig/p
+
+- simpleFoam is incompressible: p is pressure/density, dimensions [0 2 -2 0 0 0 0] (m2/s2);
+  multiply by rho = 1.2 for Pa. Only differences matter, so one patch pins the level.
+- outlet `fixedValue 0` (the pin). inlet `zeroGradient`. Walls, top, sides `zeroGradient`
+  (no flow through them -> no normal gradient).
+- Rule: where U is fixed, p is free; where p is fixed, U is free. Never both on one patch.
+
+## C4d. The turbulence files 0.orig/k, epsilon, omega, nut
+
+- k, epsilon, omega: twins of U in scalar form. Inlet `fixedProfile csvFile` with
+  `componentColumns (1)`; outlet `inletOutlet` with `inletValue $internalField` (the `$` macro
+  pastes the internalField value); top, sides `slip`.
+- Walls: k `kqRWallFunction` (zero gradient; k in the first cell is what production and
+  dissipation leave). epsilon `epsilonWallFunction`, omega `omegaWallFunction`: smooth-wall log-law
+  equilibrium in the first cell, plain wall distance y (the atm versions with z0 are for rough
+  ground, not the tunnel). Both dissipation files exist; the model reads the one it needs.
+- Units: k m2/s2, epsilon m2/s3, omega 1/s. Never start k at zero (the model divides by it).
+- nut is not solved; the model computes it from k and epsilon/omega. Its file carries the velocity
+  wall function: `nutkWallFunction` on walls (smooth log law, u* = Cmu^1/4 sqrt(k), needs
+  30 < y+ < 300; our 10 mm building cells give y+ ~150). Elsewhere `calculated`.
+- Step 4 pattern for all 30 entries: table at the inlet, guard at the outlet, wall function on the
+  two walls, slip or calculated on the rest.
+
+## C5. Initial guess inside the domain
+
+- A steady solver iterates from the guess; closer guess = fewer iterations, smaller start-up
+  transient. Guess must not contradict the boundary conditions; uniform turbulence is fine.
+- Program: setExprFields. Reads system/setExprFieldsDict, overwrites the internalField of a field
+  in 0/ with an expression. Here U = log-law fit (ustar/kappa * ln((z+z0)/z0), 0, 0).
+  `pos()` is the cell centre; `#{ ... #}` delimits the expression.
+- Command (at run time, after `cp -r 0.orig 0`): `setExprFields`.
+
+## C6. Physics and numerics: four files
+
+- constant/transportProperties: `Newtonian`, `nu 1.5e-05` (air, m2/s). No density: simpleFoam is
+  incompressible.
+- constant/turbulenceProperties: `simulationType RAS`, `RASModel realizableKE` or `kOmegaSST`;
+  `printCoeffs on` writes the constants to the log. Switching closure = one word here.
+- system/fvSchemes (discretisation):
+  `ddtSchemes steadyState` (no time derivative; SIMPLE iterates).
+  `gradSchemes Gauss linear`; `grad(U) cellLimited Gauss linear 1` (bounded gradient for U).
+  `divSchemes default none` forces every convection term to be listed:
+  `div(phi,U) bounded Gauss linearUpwind limited` (second-order upwind for momentum);
+  `div(phi,k|epsilon|omega) bounded Gauss limitedLinear 1` (second-order TVD for turbulence);
+  the `bounded` prefix subtracts the continuity error, helping steady convergence.
+  `laplacianSchemes Gauss linear limited corrected 0.33` (diffusion with non-orthogonal correction;
+  our max non-orthogonality is 26 deg). `wallDist meshWave` (wall distance for SST and y+).
+  AIJ guideline: no first-order upwind for the final result.
+- system/fvSolution (linear solvers and loop control):
+  `p GAMG tolerance 1e-7 relTol 0.01` (multigrid for pressure); `U k epsilon omega smoothSolver
+  GaussSeidel tolerance 1e-8 relTol 0.1`. tolerance is absolute, relTol is the per-iteration
+  reduction (entry 4).
+  `SIMPLE consistent yes` (SIMPLEC) with `relaxationFactors U 0.9, turbulence 0.7`.
+  `residualControl p 1e-5, U 1e-6, k/epsilon/omega 1e-6`: stops the run when all initial residuals
+  are below; a convenience, the real convergence check is the monitors (rule 5).
+
+### C6 extended: how to choose the numerics (fvSolution and fvSchemes)
+
+One SIMPLE iteration: solve momentum for U with the current p; build and solve the pressure
+equation; correct U for continuity; solve k and epsilon/omega. Four or five linear systems
+A x = b with one unknown per cell.
+
+Linear solvers:
+| Solver | Use for | Why |
+|---|---|---|
+| GAMG (multigrid) | p | pressure couples the whole domain; multigrid is near-linear in cost |
+| smoothSolver GaussSeidel | U, k, epsilon, omega | convection-dominated, diagonally strong; a few sweeps suffice |
+| PCG | p on small meshes or if GAMG misbehaves | robust, slower |
+| PBiCGStab | transport equations if smoothSolver stalls | converges where Gauss-Seidel does not |
+Pressure is symmetric (GAMG/PCG); transport equations are not (smoothSolver/PBiCGStab).
+
+tolerance = absolute stop; relTol = stop when reduced by this factor in this call. Steady SIMPLE:
+relTol 0.01 (p) and 0.1 (others) because the outer loop repeats. Transient PISO: relTol near 0 in
+the final corrector.
+
+consistent yes = SIMPLEC: keeps neighbour influence in the velocity correction, so p needs no
+relaxation and U can use 0.9. Plain SIMPLE: p 0.3, U 0.7.
+
+relaxationFactors: fraction of the new value accepted. Changes the path, not the answer. If
+residuals oscillate or k blows up early: turbulence to 0.5, then U to 0.7. Stable but slow: raise.
+
+nNonOrthogonalCorrectors: 0 below ~50 deg non-orthogonality with a corrected laplacian; 1 to 2 for
+60 to 70 deg; above that fix the mesh.
+
+residualControl: stops the run when all initial residuals are below the thresholds; set a decade
+tighter than you would stop by eye. The convergence judgement is the monitors (rule 5).
+
+Convection schemes:
+| Scheme | Order | Character | When |
+|---|---|---|---|
+| upwind | 1 | stable, diffusive (smears wakes and plumes) | start-up only, never the final result |
+| linearUpwind grad(U) | 2 | upwind-biased, stable | momentum in steady RANS (ours) |
+| limitedLinear 1 | 2 | central + limiter, keeps positivity | k, epsilon, omega, scalars (ours) |
+| linear | 2 | pure central, may oscillate | LES; diffusion terms; aligned flows |
+| QUICK | 3 | more accurate, less stable | fine meshes, smooth flow |
+`bounded` prefix on every convection term in a steady run. Hard start: all div schemes upwind
+for ~200 iterations, then switch back with `startFrom latestTime`.
+Gradients: Gauss linear; cellLimited on U against overshoots at sharp edges. Laplacians: Gauss
+linear corrected on orthogonal meshes; limited corrected 0.33 on snappyHexMesh meshes.
