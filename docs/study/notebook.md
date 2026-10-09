@@ -63,8 +63,9 @@ Generated cases live outside the repository in ~/scratch/openfoam_cases/V0/<clos
 
 ## The universal recipe: running any OpenFOAM case, start to finish
 
-Every case, every time, in this order. Replace <case> with the case folder and N with the agreed
-core count. Lines starting with # are comments, not commands.
+Every case, every time, in this order. Angle brackets mark a placeholder: type your own word
+there and leave the brackets out (<case> = the case folder, <name> = a name for the result file,
+N = the agreed core count). Lines starting with # are comments, not commands.
 
 ```
 # 1. Go to the case folder and load OpenFOAM (once per terminal)
@@ -803,3 +804,36 @@ switch every convection scheme to upwind for about 200 iterations, then switch b
   solver would then start from "time 2". Always `snappyHexMesh -overwrite`, and redirect long
   programs to a log: `snappyHexMesh -overwrite > log.snappyHexMesh 2>&1`.
 - Two people (or a person and a script) must not touch the same case folder at the same time.
+
+## C10. Coarse against medium: the first row of the grid study (2026-10-09, medium run by Saleh)
+
+The medium grid has every cell 1.43 times smaller than the coarse one: 843,456 cells against
+292,563. It converged at iteration 595 in 6.5 minutes on 16 cores, and the wake-cavity probe was
+identical at the last two writes, so it is converged by the 1 percent rule. The building y+ fell
+from an average of 98 to 67, by the same factor the cells shrank, because y+ is proportional to
+the first cell height; it stays inside the 30 to 300 window.
+
+The score moved very little: hit rate on U 0.59 on the coarse grid, 0.60 on the medium, pass mark
+0.66, not met on either. Region by region the picture is the same on both grids:
+
+| Region | Points | Coarse | Medium | Mean CFD minus tunnel, medium |
+|---|---|---|---|---|
+| upstream | 181 | 0.81 | 0.78 | -0.02 m/s |
+| above roof | 25 | 0.64 | 0.72 | +0.05 m/s |
+| beside building | 120 | 0.72 | 0.76 | -0.42 m/s |
+| near wake, up to 1H | 350 | 0.49 | 0.51 | -0.51 m/s |
+| far wake, beyond 1H | 150 | 0.44 | 0.47 | -0.62 m/s |
+
+What that tells us. Refining the mesh by 1.43 changed the wake velocities by a few hundredths of a
+metre per second, while the wake is 0.5 to 0.6 m/s too slow on both grids. The error is therefore
+not a mesh error: the solution is already close to grid-independent, and the deficit belongs to
+the turbulence model. This is the expected behaviour of realizable k-epsilon behind a sharp-edged
+block: it under-produces turbulent mixing in the separated shear layers, so the recirculation is
+too long and the wake recovers too slowly. A finer grid resolves that wrong answer more precisely;
+it does not fix it. The levers that can change the wake are the closure (k-omega SST is the other
+candidate in Project.md section 6) and the inflow turbulence (decision 0003 asks for the log-law
+inlet as a sensitivity). The grid study is still completed with the fine grid, because the brief
+asks for three levels and the grid convergence index needs them, but the expectation is set: it
+will confirm grid independence, not pass the validation.
+
+Results: results/V1/coarse_realizableKE_run1.json, results/V1/medium_realizableKE_run1.json.
