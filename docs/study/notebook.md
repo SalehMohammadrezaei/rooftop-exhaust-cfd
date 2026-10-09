@@ -993,3 +993,27 @@ windward-wall position, all of it in the first cell. This is a real inconsistenc
 inlet and the floor, of the kind entry 7 warned about, and 312 of the 826 measured points sit at
 2.5 mm above the floor, inside it. Decision 0005 adds one sensitivity run with the rough-wall set
 on the floor at the fitted z0 of 11.7 mm, queued behind the tracer.
+
+### C14 addendum: the empty-domain check for both closures, and a tracer lesson
+
+With the first cells excluded (z above 0.075 m), both closures keep the measured velocity profile
+within 3 to 4 percent all the way to the building position. k is another matter: it decays by
+about 13 percent at roof height over the 5H fetch with both models, 0.453 at the inlet to 0.393
+at the building position, and by 20 to 23 percent at its worst height. The measured k profile is
+not an equilibrium solution of either model with Cmu = 0.09, which is the same mismatch entry 13
+predicted from the stress-to-k ratio: the model dissipates the tunnel's turbulence faster than
+the tunnel did. Both numbers, the 3 percent on U and the 13 percent on k at roof height, go into
+the V1 record as the inflow part of the uncertainty; they are not corrected for, because any
+correction would be tuning.
+
+The tracer run crashed on its first scalar solve with a floating point exception. The serial test
+without exception trapping showed the linear solver diverging to NaN within one call. Cause: the
+scalarTransport function object applies under-relaxation only if fvSolution lists a factor for
+its schemesField name, and none was listed, so the steady convection-diffusion matrix was solved
+unrelaxed; without relaxation that matrix is not diagonally dominant and Gauss-Seidel diverges.
+Fix, recorded in the case: a relaxation factor of 0.7 for s under relaxationFactors.equations,
+and PBiCGStab with DILU instead of the smoothSolver for the tracers. A two-iteration serial test
+then showed the residuals falling by two orders per call. Two general lessons: every transported
+quantity in a steady run needs a relaxation factor, including ones added by function objects; and
+when a run dies with a signal, rerun it serially with FOAM_SIGFPE=false to see the numbers instead
+of a stack trace.

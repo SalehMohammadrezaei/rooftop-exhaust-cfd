@@ -13,8 +13,8 @@ solvers
 
     "(s|s04|s05|s06|s07|s08|s09)"
     {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
+        solver          PBiCGStab;        // more robust than Gauss-Seidel on a steady convection-diffusion matrix
+        preconditioner  DILU;
         tolerance       1e-10;
         relTol          0.01;
     }
@@ -42,5 +42,8 @@ relaxationFactors                             // under-relaxation: fraction of t
     {
         U               0.9;
         "(k|epsilon|omega)" 0.7;
+        s               0.7;              // the tracers (scalarTransport looks up the schemesField name "s"); without
+                                          // relaxation the steady scalar matrix is not diagonally dominant and the
+                                          // linear solver diverged to NaN on the first call (2026-10-09)
     }
 }
