@@ -17,8 +17,8 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
 |---|---|---|
 | Smoke test | The ABL tools in OpenFOAM v2606 run and we understand them | done 2026-10-08 |
 | V0 empty domain | The wind profile survives the trip from inlet to the building position | done 2026-10-08, decision 0002 |
-| **V1 AIJ Case H** | **Separation, wake, scalar transport around a cube, against wind-tunnel data** | **next** |
-| V2 Concordia stack | Roof-level dilution versus stack height, the applied design variable | not started |
+| V1 AIJ Case H | Separation, wake, scalar transport around a cube, against wind-tunnel data | runs complete 2026-10-09; velocity mark not met (0.60 to 0.63 vs 0.66), FAC2 met for Sct <= 0.6, FB not met; awaiting Saleh's closing decisions |
+| **V2 Concordia stack** | **Roof-level dilution versus stack height, the applied design variable** | **next** |
 | V2b | V2 at full scale with our ABL setup | not started |
 | Applied blocks A to F | The actual design question on the data hall | not started |
 | V3, V4, LES, blocks D to G | Finished-version extras | not started |
@@ -43,9 +43,19 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
    the three meshes (entry 10).
 5. V0 closed (decision 0002): ground = atm wall set with first cell at or below 1 m; top = fixed
    shear stress; realizable k-epsilon and SST both go on to V1 and V2, where the baseline is chosen.
-6. Next: V1, the AIJ Case H cube in a wind tunnel, where a building appears for the first time and
-   the results are compared with measured data. New things to learn there: snappyHexMesh, smooth
-   walls (y+ rules return), a passive scalar, and validation metrics (hit rate, FAC2).
+6. V1, the AIJ Case H cube: Saleh built the case by hand (Part C), ran the coarse, medium and SST
+   cases himself, and the remaining runs were queued: fine grid, log-law inlet, empty domain for
+   both closures, rough floor, and the tracer with six Schmidt numbers. Outcome (C8 to C17): the
+   velocity hit rate is 0.59 to 0.63 against the 0.66 mark on every grid and both closures, with
+   a wake 0.5 m/s too slow that the mesh does not change (GCI confirms grid independence of drag
+   and cavity velocity); the concentration FAC2 is met for Sct 0.4 to 0.6 but the fractional bias
+   is not, because the same too-long recirculation holds the tracer near the building. The far
+   wake is right for both velocity and concentration. The inflow turbulence accounts for about a
+   quarter of the wake deficit; the rest is the eddy-viscosity model, which is what the V1-LES rung
+   of the ladder exists to measure.
+7. Next: Saleh's closing decisions on V1 (baseline run, Schmidt number carried provisionally to
+   V2, how the unmet marks are carried as uncertainty), then V2, the Concordia rooftop stack,
+   which needs the IRSST report R-848 downloaded and digitised first.
 
 ## How V0 is built (the files you would touch yourself)
 
