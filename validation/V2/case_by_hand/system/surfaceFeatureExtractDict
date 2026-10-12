@@ -1,0 +1,8 @@
+/*  V2 step 2b: sharp edges of the three surfaces.  The building has 12 box edges.  The stack side is
+    a 48-segment cylinder whose facets meet at 172.5 deg, so no edge of it counts as sharp; its top
+    rim does, as the open edge where the wall file and the exit file meet (openEdges yes).           */
+FoamFile { version 2.0; format ascii; class dictionary; object surfaceFeatureExtractDict; }
+
+building.stl   { extractionMethod extractFromSurface; includedAngle 150; subsetFeatures { nonManifoldEdges no; openEdges yes; } writeObj no; }
+stack_wall.stl { extractionMethod extractFromSurface; includedAngle 150; subsetFeatures { nonManifoldEdges no; openEdges yes; } writeObj no; }
+stack_exit.stl { extractionMethod extractFromSurface; includedAngle 150; subsetFeatures { nonManifoldEdges no; openEdges yes; } writeObj no; }

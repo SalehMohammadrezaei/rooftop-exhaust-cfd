@@ -1388,3 +1388,31 @@ Procedure: list the shapes; patch type per surface; level per surface from its s
 boxes from the outside in with their budget; the point in the air; run; the three checks (cells
 per level, "Finished meshing without any errors", patches and Mesh OK). If quality fails, grow the
 box around the failing region or raise nCellsBetweenLevels first; touch the quality limits last.
+
+## D2d. The V2 mesh (2026-10-12)
+
+The first attempt was run without the overwrite flag again, so the mesh went to folders 1 and 2
+and no logs were kept; it was redone cleanly, with logs, because the mesh statistics are part of
+every run's record (CLAUDE.md rule 11). Result: 488,200 cells, meshed in 68 s, "Finished meshing
+without any errors", eight patches, Mesh OK.
+
+| Level | Cell | Cells | Budget estimate | Where |
+|---|---|---|---|---|
+| 0 | 20 mm | 138,480 | 150,000 | far field |
+| 1 | 10 mm | 76,960 | 95,000 | wake box |
+| 2 | 5 mm | 106,228 | 150,000 | building box |
+| 3 | 2.5 mm | 55,960 | 83,000 | roof layer |
+| 4 | 1.25 mm | 55,346 | 70,000 | plume box |
+| 5 | 0.63 mm | 27,874 | 35,000 | stack box |
+| 6 | 0.31 mm | 27,352 | 30,000 | pipe box and surfaces |
+
+The budget overestimated every box by 20 to 30 percent, because a box's volume includes the
+part occupied by the building and by the next finer box, which the estimate did not subtract. A
+useful correction for next time: subtract the nested box and any solid before dividing.
+
+The stack exit patch has 72 faces. A 3 mm disc is 7.07 mm2, and a 0.31 mm cell face is 0.098 mm2,
+so 72 faces is exactly ten cells across the diameter, as the brief asks. Maximum non-orthogonality
+is 51 degrees, twice V1's 25, and sits on the cells wrapped around the round pipe; it is inside
+the 65 degree limit and the laplacian scheme carries a correction for it, but it is the first
+thing to look at if the solver struggles near the stack. In ParaView, with case.foam in the folder,
+a slice at y = 0 through the stack shows the six cell sizes closing in on the pipe.
