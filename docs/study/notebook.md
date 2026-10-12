@@ -18,7 +18,7 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
 | Smoke test | The ABL tools in OpenFOAM v2606 run and we understand them | done 2026-10-08 |
 | V0 empty domain | The wind profile survives the trip from inlet to the building position | done 2026-10-08, decision 0002 |
 | V1 AIJ Case H | Separation, wake, scalar transport around a cube, against wind-tunnel data | closed 2026-10-12, decision 0006: velocity mark not met (0.60 to 0.63 vs 0.66), FAC2 met for Sct <= 0.6, FB not met; carried as model-form uncertainty |
-| **V2 Concordia stack** | **Roof-level dilution versus stack height, the applied design variable** | **next** |
+| V2 Concordia stack | Roof-level dilution versus stack height, the applied design variable | runs complete 2026-10-12: stack-height ranking met, M = 1 FAC2 met, M = 3 not met (jet destroyed by the closure); awaiting closing decisions 0008 |
 | V2b | V2 at full scale with our ABL setup | not started |
 | Applied blocks A to F | The actual design question on the data hall | not started |
 | V3, V4, LES, blocks D to G | Finished-version extras | not started |
@@ -54,7 +54,13 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
    quarter of the wake deficit; the rest is the eddy-viscosity model, which is what the V1-LES rung
    of the ladder exists to measure.
 7. V1 closed by decision 0006: realizable k-epsilon with the medium-grid rule is the baseline,
-   Sct 0.4 and 0.7 both go to V2, the unmet marks are reported as they are. Next: V2, the Concordia rooftop stack,
+   Sct 0.4 and 0.7 both go to V2, the unmet marks are reported as they are.
+8. V2 (Part D): Saleh built the box, the shapes and the mesh by hand; the fields, monitors and
+   runs were done at his request. Four cases plus a jet-resolved grid check and an SST
+   sensitivity. The low-momentum cases pass and the stack-height ranking is right; the
+   high-momentum cases fail because the eddy-viscosity closure destroys the jet within three
+   diameters, a model-form limit at this scale that neither mesh nor closure changes (D8, D9).
+   Decision draft 0008 lists the options. Then V2b, the Concordia rooftop stack,
    which needs the IRSST report R-848 downloaded and digitised first.
 
 ## How V0 is built (the files you would touch yourself)
@@ -1550,3 +1556,32 @@ The CFD ranks correctly wherever the plume stays near the roof and fails whereve
 jet rises clear. The 3 m stack at M = 3 is the clearest failure: the tunnel dilution is 9 at the
 far receptors, the CFD gives 2.7, lower than its own 1 m stack, because in the model a taller
 exit only puts the same smeared plume slightly higher before the roof flow pulls it down.
+
+## D12. V2 closed as an experiment: the final table (2026-10-12)
+
+With the first case continued to 2,500 iterations on its base mesh, all four cases are on the
+same footing: same mesh rule, same length, tracer probes flat to under half a percent.
+
+| Case | FAC2 at Sct 0.4 | FAC2 at Sct 0.7 | CFD over tunnel, geometric mean | Verdict |
+|---|---|---|---|---|
+| stack 1 m, M 1 | 1.0 | 0.5 | 1.2 | met |
+| stack 3 m, M 1 | 0.8 | 0.6 | 1.4 | met |
+| stack 1 m, M 3 | 0.0 | 0.0 | 0.21 | not met |
+| stack 3 m, M 3 | 0.0 | 0.0 | 0.17 | not met |
+
+Ranking, the brief's first criterion for V2: the taller stack gives more dilution than the shorter
+one at every receptor in the CFD, at both momentum ratios, as in the tunnel. The stack-height
+ranking is therefore met. The momentum ranking is not: the tunnel dilutes five to eight times
+better at M = 3 than at M = 1, while the CFD gives almost the same dilution at both, because the
+jet's extra momentum is destroyed within three diameters (D9) and never buys any rise. So the
+model answers the stack-height question in the right order and the exhaust-speed question in the
+wrong one.
+
+What this means for the applied case. The design lever "raise the flue" is ranked correctly and
+its absolute effect is under-predicted; the lever "blow harder" is not represented at all by this
+closure at this scale. The flues in the data hall run at M of about 3 to 10 (25 to 35 m/s exhaust
+in 3 to 10 m/s wind), exactly the regime where the model fails. The record therefore says: RANS
+eddy-viscosity results for exhaust momentum are conservative to the point of being uninformative,
+and the question of exhaust speed must be carried by V4 and the buoyant runs, or by a model that
+keeps the jet (a scale-resolving run, or an eddy-viscosity limiter on the jet, either of which is a
+new decision). Results: results/V2/summary.md; decision draft 0008 lists the options.
