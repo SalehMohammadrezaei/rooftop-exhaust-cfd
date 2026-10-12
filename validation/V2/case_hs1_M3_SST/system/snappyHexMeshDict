@@ -1,0 +1,89 @@
+/*  V2 step 2b: cut the building and the stack out of the 20 mm background box and refine in nested
+    boxes down to 0.3 mm around the 3 mm stack (10 cells across its diameter, Project.md section 7).
+    Level n cell = 20 mm / 2^n:  1: 10 mm   2: 5 mm   3: 2.5 mm   4: 1.25 mm   5: 0.625 mm   6: 0.31 mm.
+    Cell budget (estimates): background 150k; wake box L1 ~95k; building box L2 ~150k; roof layer L3
+    ~85k; near-stack plume L4 ~70k; stack box L5 ~35k; pipe box L6 ~30k; transitions ~0.1M; ~0.7-0.8M. */
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    building   { type triSurfaceMesh; file "building.stl"; }      // the box; becomes patch "building", wall
+    stack_wall { type triSurfaceMesh; file "stack_wall.stl"; }    // pipe side; becomes patch "stack_wall", wall
+    stack_exit { type triSurfaceMesh; file "stack_exit.stl"; }    // pipe top disc; becomes patch "stack_exit", a patch (the exhaust inlet)
+
+    wakeBox    { type searchableBox; min (-0.35  -0.25  0);     max ( 0.60   0.25  0.20); }   // L1: wake and roof region
+    nearBox    { type searchableBox; min (-0.30  -0.17  0);     max ( 0.10   0.17  0.14); }   // L2: around the building
+    roofBox    { type searchableBox; min (-0.26  -0.05  0.060); max ( 0.00   0.05  0.11); }   // L3: the roof layer along the receptor line
+    plumeBox   { type searchableBox; min (-0.26  -0.02  0.070); max (-0.15   0.02  0.10); }   // L4: the plume just behind the stack
+    stackBox   { type searchableBox; min (-0.258 -0.01  0.072); max (-0.235  0.01  0.09); }   // L5: around the stack
+    pipeBox    { type searchableBox; min (-0.2525 -0.005 0.074); max (-0.2425 0.005 0.083); } // L6: the pipe itself and its exit
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       4000000;
+    maxGlobalCells      12000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 3;
+
+    features
+    (
+        { file "building.extendedFeatureEdgeMesh";   level 2; }
+        { file "stack_wall.extendedFeatureEdgeMesh"; level 6; }
+        { file "stack_exit.extendedFeatureEdgeMesh"; level 6; }
+    );
+
+    refinementSurfaces
+    {
+        building   { level (2 2); patchInfo { type wall;  } }
+        stack_wall { level (6 6); patchInfo { type wall;  } }
+        stack_exit { level (6 6); patchInfo { type patch; } }   // an inlet, not a wall: no wall functions here
+    }
+
+    resolveFeatureAngle 30;
+
+    refinementRegions
+    {
+        wakeBox  { mode inside; levels ((1e15 1)); }
+        nearBox  { mode inside; levels ((1e15 2)); }
+        roofBox  { mode inside; levels ((1e15 3)); }
+        plumeBox { mode inside; levels ((1e15 4)); }
+        stackBox { mode inside; levels ((1e15 5)); }
+        pipeBox  { mode inside; levels ((1e15 6)); }
+    }
+
+    locationInMesh (-0.5 0.3 0.3);
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch        3;
+    tolerance           2.0;
+    nSolveIter          50;
+    nRelaxIter          5;
+    nFeatureSnapIter    10;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+addLayersControls
+{
+    relativeSizes true; layers {} expansionRatio 1.2; finalLayerThickness 0.5; minThickness 0.1; nGrow 0;
+    featureAngle 60; nRelaxIter 3; nSmoothSurfaceNormals 1; nSmoothNormals 3; nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5; maxThicknessToMedialRatio 0.3; minMedialAxisAngle 90; nBufferCellsNoExtrude 0; nLayerIter 50;
+}
+
+meshQualityControls
+{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4; maxConcave 80; minVol 1e-16; minTetQuality 1e-15;
+    minArea -1; minTwist 0.02; minDeterminant 0.001; minFaceWeight 0.02; minVolRatio 0.01; minTriangleTwist -1;
+    nSmoothScale 4; errorReduction 0.75;
+}
+
+mergeTolerance 1e-6;

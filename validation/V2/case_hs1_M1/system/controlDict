@@ -4,7 +4,7 @@ application     simpleFoam;
 startFrom       latestTime;
 startTime       0;
 stopAt          endTime;
-endTime         3000;
+endTime         2500;
 deltaT          1;
 writeControl    timeStep;
 writeInterval   500;
@@ -19,6 +19,7 @@ functions
 {
     #include "samplePoints"
     #include "scalarTransport"
+    #include "plumeLines"
     probesRoof          // primary quantities: U and the tracers at three receptors (5, 20, 50 m full scale) and in the jet
     {
         type probes; libs (sampling); fields (U k s04 s07); writeControl timeStep;

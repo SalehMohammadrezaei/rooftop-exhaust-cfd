@@ -1,0 +1,15 @@
+/*  V2 step 4: tracer volume fraction, Sct 0.7 (decision 0006).  Exhaust is pure tracer: s = 1 at the exit.  */
+FoamFile { version 2.0; format ascii; class volScalarField; object s07; }
+dimensions      [0 0 0 0 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    inlet       { type fixedValue; value uniform 0; }
+    outlet      { type inletOutlet; inletValue uniform 0; value uniform 0; }
+    ground      { type zeroGradient; }
+    building    { type zeroGradient; }
+    stack_wall  { type zeroGradient; }
+    stack_exit  { type fixedValue; value uniform 1; }
+    top         { type zeroGradient; }
+    sides       { type zeroGradient; }
+}

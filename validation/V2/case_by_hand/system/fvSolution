@@ -33,12 +33,7 @@ SIMPLE
     nNonOrthogonalCorrectors 0;
     consistent      yes;                      // SIMPLEC: allows the higher relaxation factors below
 
-    residualControl                           // stop when ALL initial residuals are below these
-    {
-        p               1e-5;
-        U               1e-6;
-        "(k|epsilon|omega)" 1e-6;
-    }
+    // residualControl removed for the continuation to 2500 (tracer convergence, rule 5)
 }
 
 relaxationFactors                             // under-relaxation: fraction of the new value accepted each iteration

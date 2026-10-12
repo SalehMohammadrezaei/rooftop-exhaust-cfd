@@ -1,0 +1,14 @@
+plumeLines
+{
+    type sets; libs (sampling); setFormat raw; interpolationScheme cellPoint; writeControl writeTime;
+    fields (U s04 s07);
+    sets
+    {
+        x_tip  { type uniform; axis z; start (-0.2475 0 0.0801); end (-0.2475 0 0.15); nPoints 140; }
+        x_p5mm { type uniform; axis z; start (-0.2425 0 0.0751); end (-0.2425 0 0.15); nPoints 150; }
+        x_p1cm { type uniform; axis z; start (-0.2375 0 0.0751); end (-0.2375 0 0.15); nPoints 150; }
+        x_p25mm { type uniform; axis z; start (-0.2225 0 0.0751); end (-0.2225 0 0.15); nPoints 150; }
+        x_p5cm { type uniform; axis z; start (-0.1975 0 0.0751); end (-0.1975 0 0.15); nPoints 150; }
+        x_p10cm { type uniform; axis z; start (-0.1475 0 0.0751); end (-0.1475 0 0.15); nPoints 150; }
+    }
+}

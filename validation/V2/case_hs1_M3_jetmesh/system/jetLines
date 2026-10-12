@@ -1,0 +1,11 @@
+jetLines
+{
+    type sets; libs (sampling); setFormat raw; interpolationScheme cellPoint; writeControl writeTime;
+    fields (nut k epsilon U s04);
+    sets
+    {
+        jetAxis   { type uniform; axis z; start (-0.2475 0 0.0801); end (-0.2475 0 0.12); nPoints 80; }
+        roofAbove { type uniform; axis z; start (-0.22 0 0.0751); end (-0.22 0 0.12); nPoints 90; }
+        upstream  { type uniform; axis z; start (-0.40 0 0.0751); end (-0.40 0 0.12); nPoints 90; }
+    }
+}

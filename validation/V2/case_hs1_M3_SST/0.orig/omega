@@ -1,0 +1,33 @@
+/*  V2 step 4: specific dissipation (for SST; unused by realizableKE).  */
+FoamFile { version 2.0; format ascii; class volScalarField; object omega; }
+dimensions      [0 0 -1 0 0 0 0];
+internalField   uniform 20;
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/omega.csv";
+            nHeaderLine         1;
+            refColumn           0;
+            componentColumns    (1);
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);
+        origin          0;
+    }
+
+    outlet      { type inletOutlet; inletValue $internalField; value $internalField; }
+    ground      { type omegaWallFunction; value $internalField; }
+    building    { type omegaWallFunction; value $internalField; }
+    stack_wall  { type omegaWallFunction; value $internalField; }
+    stack_exit  { type fixedValue; value uniform 9903; }
+    top         { type slip; }
+    sides       { type slip; }
+}

@@ -1,0 +1,33 @@
+/*  V2 step 4: velocity.  Eight patches.  stack_exit is the exhaust inlet: M = 3, Ve = 3 U_H = 18.6 m/s straight up.  */
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/U.csv";
+            nHeaderLine         1;
+            refColumn           0;
+            componentColumns    (1 2 3);
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);
+        origin          0;
+    }
+
+    outlet      { type inletOutlet; inletValue uniform (0 0 0); value uniform (0 0 0); }
+    ground      { type noSlip; }
+    building    { type noSlip; }
+    stack_wall  { type noSlip; }
+    stack_exit  { type fixedValue; value uniform (0 0 18.6); }     // exhaust: Ve = M U_H, vertical
+    top         { type slip; }
+    sides       { type slip; }
+}
