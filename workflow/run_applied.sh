@@ -1,8 +1,8 @@
 #!/bin/bash
 # Run one generated applied case end to end: mesh (parallel), flow, tagged scalars, matrix, record.
 #   run_applied.sh <case_dir>
+source ~/opt/openfoam2606.sh >/dev/null 2>&1   # before set -e: OpenFOAM's bashrc is not clean under it
 set -eo pipefail
-source ~/opt/openfoam2606.sh >/dev/null 2>&1
 REPO=$(cd "$(dirname "$0")/.." && pwd); C="$(cd "$1" && pwd)"; cd "$C"; N=$(grep numberOfSubdomains system/decomposeParDict | tr -dc 0-9)
 t0=$(date +%s)
 blockMesh > log.blockMesh 2>&1; surfaceFeatureExtract > log.surfaceFeatureExtract 2>&1
