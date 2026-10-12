@@ -1468,3 +1468,41 @@ Convergence of the tracer in this run: the probe at the first receptor was still
 4 percent per 250 iterations at 2,500, so the receptor concentrations are, if anything, slightly
 low and the dilution slightly high; a longer run would make the score marginally worse, not
 better. The flow itself was converged by 600.
+
+## D9. Where the plume goes, and why: the eddy viscosity against a 3 mm jet (2026-10-12)
+
+Lines sampled through the converged jet-resolved field (system/jetLines, standalone postProcess):
+
+| Height above the tip | vertical velocity | tracer | k | nut, as a multiple of nu |
+|---|---|---|---|---|
+| 0 | 18.6 m/s | 1.00 | 1.3 | 14 |
+| 4 mm | 12.0 | 0.48 | 23.0 | 94 |
+| 8 mm | 3.9 | 0.07 | 15.7 | 400 |
+| 12 mm | 2.6 | 0.02 | 9.2 | 930 |
+| 24 mm | 1.7 | 0.003 | 6.3 | 2,400 |
+
+Read the k column: within 4 mm of the exit, 1.3 diameters, the model has generated 23 m2/s2 of
+turbulent kinetic energy in the jet's shear layer, and by 8 mm the jet has lost 80 percent of its
+vertical velocity. A round jet in a crossflow of a third of its speed keeps its core for four to
+five diameters and reaches, by the ASHRAE momentum-rise formula, 3 d M = 27 mm above the tip; ours
+has 7 mm. The ambient also matters: the approach flow's modelled eddy viscosity at roof height is
+0.033 m2/s, two thousand times the molecular value, because the tunnel's 22 percent turbulence
+intensity at roof height becomes k = 3 m2/s2 and the model turns all of it into local mixing. In
+the tunnel that turbulence lives in eddies of about 40 cm, a hundred times the jet diameter; they
+move the plume about, which on average spreads it, but they do not shred a 3 mm jet in two
+diameters. An eddy-viscosity model has no notion of scale: the same nut acts on the jet as on the
+roof flow. This is a known weakness of k-epsilon for jets in crossflow (the round-jet spreading
+anomaly plus the scale mismatch at model scale), and it compounds V1's lesson about the
+recirculation: the smeared jet is pulled into the leading-edge roof bubble, where the reverse
+flow at the roof is -1 m/s, and the receptors sit in it.
+
+What this is not: a mesh effect (D8), a balance error (the stack flow equals Ve times the exit
+area), or a convergence effect (longer runs make it marginally worse). What it is: a model-form
+limitation, and one that will not change at full scale in V2b, because nut scales with velocity
+times length and the jet-to-ambient ratio stays the same.
+
+What is tested next, inside the plan: the ranking of stack heights and momentum ratios, which is
+the brief's first acceptance criterion and may survive even when the absolute dilution does not,
+since all four cases carry the same bias; and the closure sensitivity with k-omega SST, whose
+shear-stress limiter is known to generate less turbulence in jet shear layers. Any further change
+to how the jet is modelled is a decision for Saleh.
