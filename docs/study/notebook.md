@@ -1191,7 +1191,7 @@ ways that were obvious in the overlay (a legend symbol taken as a point, a dotte
 for five points, a crossing at the last point) and would not have been obvious in the numbers.
 
 The checks. The same case appears in two figures, hs = 1 m and M = 3 in Figures 5.1 and 4.4b;
-the two readings agree within 2.5 percent at every receptor from 5 to 45 m, which is taken as the
+the two readings agree within 2.6 percent at every receptor from 5 to 50 m, which is taken as the
 digitising uncertainty and sits well inside the tunnel repeatability of 15 percent quoted in the
 report. The measured velocity profile, read from Figure 3.1, follows the power law quoted on the
 chart, exponent 0.31 and gradient height 95 cm, within 3 percent above 10 cm and within 7 percent

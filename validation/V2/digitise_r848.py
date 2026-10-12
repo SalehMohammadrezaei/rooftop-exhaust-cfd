@@ -78,7 +78,9 @@ def main():
                     c2 = [r for r in c2 if continuity(x, (r[0] + r[1]) / 2) >= 0.9]
                     if c2: prev = (c2[0][0] + c2[0][1]) / 2; started = True; ext.append(c2[0]); continue
                 ext.append(None); continue
-            near = [r for r in cand if abs((r[0] + r[1]) / 2 - prev) <= 3 * hi]
+            # accept a line-thickness run near the previous centre, or a thicker run (the line's own marker) centred on it
+            near = [r for r in cand if (lo <= (r[1] - r[0] + 1) <= hi and abs((r[0] + r[1]) / 2 - prev) <= 2 * hi)
+                    or ((r[1] - r[0] + 1) > hi and abs((r[0] + r[1]) / 2 - prev) <= 3)]
             if near:
                 if len(near) > 1:
                     # ambiguity: prefer the run that continues as a solid line

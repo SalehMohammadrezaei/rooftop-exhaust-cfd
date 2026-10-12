@@ -11,7 +11,7 @@ extracted points as red crosses on the figure for visual checking (checked 2026-
 | File | Figure | Case | Points | Notes |
 |---|---|---|---|---|
 | fig5_1_isolated_hs1_M3_Xs0.csv | 5.1 (pdf p41) | isolated building, hs = 1 m, M = 3, stack at upwind edge | 10, x = 5..50 m | PRIMARY for this case; markers located individually |
-| fig4_4b_isolated_hs1_M3_Xs0.csv | 4.4b (pdf p39) | same case | 10 | cross-check only; 50 m point unusable (series cross) |
+| fig4_4b_isolated_hs1_M3_Xs0.csv | 4.4b (pdf p39) | same case | 10 | cross-check only (line tracked) |
 | fig4_4a_isolated_hs1_M1_Xs0.csv | 4.4a (pdf p39) | isolated, hs = 1 m, M = 1, Xs = 0 | 10 | line tracked, read at 5 m spacing |
 | figD2a_isolated_hs3_M1_Xs0.csv | D2a (pdf p71) | isolated, hs = 3 m, M = 1, Xs = 0 | 10 | line tracked |
 | figD2b_isolated_hs3_M3_Xs0.csv | D2b (pdf p71) | isolated, hs = 3 m, M = 3, Xs = 0 | 10 | line tracked |
@@ -28,8 +28,10 @@ Dilution charts: the plot frame gives the axis ranges (x 0 to 50 m; y 0.001 to 1
 decades); the chart's own horizontal axis line at y = 1 was used as a calibration check and lands
 at 1.00 in every crop. Figure 5.1 has one navy series, so each diamond was located individually.
 Figures 4.4 and D2 contain other series in the same navy colour (dotted lines, smaller markers),
-so the solid Configuration 1 line was tracked across the frame, preferring the continuous run at
-each ambiguity, and read at the receptor spacing of 5 m.
+so the solid Configuration 1 line was tracked across the frame: only runs of the solid line's thickness
+(5 to 8 px) are followed, a thicker run is accepted only when centred on the line (its own marker),
+and at each ambiguity the run that continues as a solid line is preferred. Values are read at the
+receptor spacing of 5 m. Zoomed crops were inspected where series cross (D2b at 30 m).
 Profiles: x calibrated from the tick marks (zero tick at the vertical axis), y from the x-axis line
 and the top of the vertical axis; the connecting line removed by a morphological opening; each
 marker a blob centroid.
