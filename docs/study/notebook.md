@@ -17,7 +17,7 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
 |---|---|---|
 | Smoke test | The ABL tools in OpenFOAM v2606 run and we understand them | done 2026-10-08 |
 | V0 empty domain | The wind profile survives the trip from inlet to the building position | done 2026-10-08, decision 0002 |
-| V1 AIJ Case H | Separation, wake, scalar transport around a cube, against wind-tunnel data | runs complete 2026-10-09; velocity mark not met (0.60 to 0.63 vs 0.66), FAC2 met for Sct <= 0.6, FB not met; awaiting Saleh's closing decisions |
+| V1 AIJ Case H | Separation, wake, scalar transport around a cube, against wind-tunnel data | closed 2026-10-12, decision 0006: velocity mark not met (0.60 to 0.63 vs 0.66), FAC2 met for Sct <= 0.6, FB not met; carried as model-form uncertainty |
 | **V2 Concordia stack** | **Roof-level dilution versus stack height, the applied design variable** | **next** |
 | V2b | V2 at full scale with our ABL setup | not started |
 | Applied blocks A to F | The actual design question on the data hall | not started |
@@ -53,8 +53,8 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
    wake is right for both velocity and concentration. The inflow turbulence accounts for about a
    quarter of the wake deficit; the rest is the eddy-viscosity model, which is what the V1-LES rung
    of the ladder exists to measure.
-7. Next: Saleh's closing decisions on V1 (baseline run, Schmidt number carried provisionally to
-   V2, how the unmet marks are carried as uncertainty), then V2, the Concordia rooftop stack,
+7. V1 closed by decision 0006: realizable k-epsilon with the medium-grid rule is the baseline,
+   Sct 0.4 and 0.7 both go to V2, the unmet marks are reported as they are. Next: V2, the Concordia rooftop stack,
    which needs the IRSST report R-848 downloaded and digitised first.
 
 ## How V0 is built (the files you would touch yourself)
