@@ -32,3 +32,8 @@ Date: 2026-10-12. Approved by Saleh ("ok", with the request to run V2b in the ba
 ## Scope note
 V3, V4 and V1-LES remain listed as finished-version items, not done. The MVP validation story is
 V0, V1, V2 and V2b. Saleh builds the applied case himself with guidance (Part E of the notebook).
+
+## V2b outcome (2026-10-12)
+Met: scale alone changes the dilution by 3 % (10/10 receptors inside the 18 % band) for both M = 1
+cases. Inflow sensitivity: the applied ABL gives 40 % less roof dilution than the tunnel inflow;
+carried in the uncertainty band. results/V2b/summary.md, notebook entry 17.

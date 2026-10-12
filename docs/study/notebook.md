@@ -19,7 +19,7 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
 | V0 empty domain | The wind profile survives the trip from inlet to the building position | done 2026-10-08, decision 0002 |
 | V1 AIJ Case H | Separation, wake, scalar transport around a cube, against wind-tunnel data | closed 2026-10-12, decision 0006: velocity mark not met (0.60 to 0.63 vs 0.66), FAC2 met for Sct <= 0.6, FB not met; carried as model-form uncertainty |
 | V2 Concordia stack | Roof-level dilution versus stack height, the applied design variable | runs complete 2026-10-12: stack-height ranking met, M = 1 FAC2 met, M = 3 not met (jet destroyed by the closure); awaiting closing decisions 0008 |
-| V2b | V2 at full scale with our ABL setup | not started |
+| V2b | V2 at full scale with our ABL setup | met 2026-10-12, entry 17 |
 | Applied blocks A to F | The actual design question on the data hall | not started |
 | V3, V4, LES, blocks D to G | Finished-version extras | not started |
 
@@ -60,7 +60,9 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
    sensitivity. The low-momentum cases pass and the stack-height ranking is right; the
    high-momentum cases fail because the eddy-viscosity closure destroys the jet within three
    diameters, a model-form limit at this scale that neither mesh nor closure changes (D8, D9).
-   Decision draft 0008 lists the options. Then V2b, the Concordia rooftop stack,
+   Decision 0008 closed it. V2b (entry 17): scale changes the dilution by 3 %, met; the applied
+   inflow lowers roof dilution by 40 % against the tunnel's, carried as inflow uncertainty.
+9. Now: the applied data hall, Part E, built by Saleh step by step. After V2b, the Concordia rooftop stack,
    which needs the IRSST report R-848 downloaded and digitised first.
 
 ## How V0 is built (the files you would touch yourself)
@@ -1684,3 +1686,26 @@ height is an argument of the script (--flue-tip 3, 6 or 9) because it is the des
 --rotate turns the whole assembly for the wind direction, which is how the design matrix will be
 generated. A preview_all.stl concatenates every piece for one ParaView open; the mesher reads the
 separate files.
+
+## 17. V2b: the scale check, and the inflow effect separated from it (2026-10-12) (story step 9)
+
+The brief asks whether the result survives the jump from tunnel scale to full scale. The two
+low-momentum V2 cases were rebuilt 200 times larger, a 15 m building with a 0.6 m stack, by a
+generator that scales every box and keeps the refinement levels, so the stack exit still has ten
+cells across. Two versions were run. One used the applied ABL of the project, as the brief says,
+with its log-law family at z0 0.3 m, rough ground and fixed-shear top. The other used the tunnel's
+own inflow scaled up, z times 200, U and k the same, epsilon and omega divided by 200, so that the
+only change from V2 was the size.
+
+The second version answers the scale question cleanly: the full-scale dilution is within 1 to 4
+percent of the model-scale dilution at every receptor, far inside the 18 percent band. Scale does
+not matter for this sharp-edged flow between Reynolds numbers of 31,000 and 6 million, which is
+what the textbooks say and what the brief wanted shown rather than assumed. V2b is met.
+
+The first version then isolates the inflow: with the applied ABL the roof dilution is about 40
+percent lower than with the tunnel inflow at the same scale. The reason is turbulence intensity,
+15 percent at roof height in the applied profile against 22 in the tunnel, so the plume spreads
+less along the roof. That number is not a failure of anything; it is the inflow sensitivity the
+brief asks to carry in the uncertainty band, and its sign says the applied results err toward
+higher roof concentrations. Lesson in method: when a check changes two things at once, add the
+run that changes only one, or the check proves nothing. Results: results/V2b/summary.md.
