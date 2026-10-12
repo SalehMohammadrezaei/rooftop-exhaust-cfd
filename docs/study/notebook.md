@@ -1274,3 +1274,26 @@ must be two different patches, so the script geometry/make_cylinder_stl.py write
 <name>_wall.stl for the side and <name>_exit.stl for the top. The cylinder is open at the bottom,
 because it stands on the roof inside the building, where there is no fluid. 48 segments around the
 circumference make a 3 mm circle smooth enough for 0.3 mm cells.
+
+## 16. Reference: mesh sizing rules for external flow around buildings (2026-10-12)
+
+For any bluff body of height H. Sources: AIJ guidelines (Tominaga et al. 2008), COST 732 best
+practice (Franke et al. 2007), Project.md section 7, and our own V0/V1 runs.
+
+| Region | Feature | Extent to cover | Cells across it |
+|---|---|---|---|
+| Domain upstream | undisturbed approach | 5H from the windward face | |
+| Domain downstream | wake recovery, outlet | 10H minimum, 15H better | |
+| Domain sides and top | blockage below 3 % | 5H each, more for wide bodies | |
+| Building surfaces | edge separation | the surfaces | at least 10 per side (AIJ), 15 to 20 better |
+| Near-building box | roof bubble, side vortices, near wake | 0.5 to 1H beyond each face, 1H above the roof | 15 to 20 per H (bubble 0.2 to 0.3H thick needs 5+) |
+| Wake box | recirculation and recovery | 3 to 5H behind the leeward face (low wide box), 2 to 3H high | 8 to 10 per H |
+| Jet or plume near source | jet bending over | source to 1.5 to 2H downstream, a few diameters wide | 10 across the exit diameter (brief); 5 is the floor |
+| Scalar path to receptors | plume along the receptor line | whole receptor line, as narrow as the plume | 20 to 30 per H in height |
+| Ground far field | approach-flow layer | everywhere | first cell by y+ or y/z0 (entries 7, 8) |
+| Level transitions | mesh quality | between every two levels | 2 to 3 cells per level; growth ratio under 1.3 |
+
+Principles: the smallest feature in each region sets its cell size; budget = volume / cell^3, and
+each level costs 8x per volume, so boxes must shrink by more than 2 in every direction per level;
+write the budget into the dictionary. The rules are verified for a given case by the three-level
+grid study (ratio about 1.4) and the y+ report, never assumed.
