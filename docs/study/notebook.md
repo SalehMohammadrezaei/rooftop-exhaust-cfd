@@ -1523,3 +1523,30 @@ exit above the leading-edge bubble, and in the tunnel the jet then rises clear, 
 dilution is higher still; the CFD jet is smeared just the same. Ranking between the four cases
 waits for the first case to be continued to 2,500 iterations like the others, because its tracer
 was stopped at 621 by residualControl and is not converged at the far receptors.
+
+## D11. The remaining cases and the closure sensitivity (2026-10-12)
+
+The 3 m stack at M = 1 passes like the 1 m one: FAC2 0.8 at Sct 0.4 and 0.6 at Sct 0.7, CFD
+dilution 1.4 times the tunnel on geometric average, slightly high near the stack and slightly low
+at the far receptors. Both low-momentum cases are therefore within the mark, and the tracer
+probes were flat to 0.4 percent over the last 500 iterations, so they are converged.
+
+The closure sensitivity: the first case rerun with k-omega SST. No improvement, FAC2 0 at both
+Schmidt numbers, geometric mean ratio 0.135 against 0.28 for realizable k-epsilon, so SST keeps
+even more of the jet on the roof. Its shear-stress limiter does not help here, because the
+over-mixing is driven as much by the ambient eddy viscosity of the approach flow as by the jet's
+own shear layer. Both linear eddy-viscosity closures fail the momentum cases the same way; this
+mirrors V1, where both failed the wake the same way.
+
+Ranking test, the brief's first acceptance criterion for V2, with the four cases on their own
+meshes (the 1 m, M = 3 case from the jet-resolved mesh, pending its base-mesh continuation):
+| Comparison | tunnel | CFD |
+|---|---|---|
+| taller stack better, at M = 1 | 10 of 10 receptors | 10 of 10 |
+| faster exhaust better, at hs = 1 m | 10 of 10 | 10 of 10 |
+| taller stack better, at M = 3 | 10 of 10 | 3 of 10 |
+| faster exhaust better, at hs = 3 m | 10 of 10 | 2 of 10 |
+The CFD ranks correctly wherever the plume stays near the roof and fails wherever the tunnel's
+jet rises clear. The 3 m stack at M = 3 is the clearest failure: the tunnel dilution is 9 at the
+far receptors, the CFD gives 2.7, lower than its own 1 m stack, because in the model a taller
+exit only puts the same smeared plume slightly higher before the roof flow pulls it down.
