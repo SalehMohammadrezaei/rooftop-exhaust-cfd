@@ -1623,3 +1623,38 @@ one wind direction, then scripted. Step 1 is the box of air: the brief fixes it 
 H = 15 m, about 8H upstream, 20H downstream, 10H each side, 9H high, with the origin at the
 building centre on the ground and x along the long axis toward the flue end. Blockage below 3
 percent at the worst angle. Saleh writes it.
+
+## E1. The box of air for the hall, and three questions Saleh asked (2026-10-12)
+
+The numbers. The hall is 60 by 40 by 15 m with the origin at its centre on the ground, as the
+brief fixes it; the brief's distances are 8H upstream, 20H downstream, 10H each side, 9H high.
+Because other wind directions are produced by rotating the building inside a fixed box with the
+wind always along +x, the distances must hold at the worst angle, where a corner of the hall
+sticks out to 35.4 m from the centre (30 cos 45 + 20 sin 45) in both x and y. So: x from -160 to
+340, y from -188 to 188, z from 0 to 136, all rounded to whole 4 m cells. Blockage at the worst
+angle, the long side facing the wind, is 60 x 15 over 376 x 136, 1.8 percent. Saleh's first
+draft had more room upstream than needed and less downstream and to one side, and the box must be
+symmetric in y because the building is centred and turns.
+
+Does a bigger lateral margin help with rotation? The right move is not a larger multiple of H but
+measuring the guideline distance from the worst-angle corner. 15H instead of 10H would double the
+far-field cells for nothing the guideline asks.
+
+Where does the origin go? OpenFOAM has no rule; a case follows its data. V1 and V2 used the
+leeward wall because their datasets did. The hall follows the brief: centre of the building, so
+rotation is a rotation matrix about the origin, every item in the brief is given relative to the
+centre, and y = 0 is the symmetry plane that lets 7 directions cover 12 sectors.
+
+What about wind from the opposite side? There is one inlet, at xMin; a wind from the other
+direction is the building turned 180 degrees, with the flues upwind of the chillers. The box is
+therefore always 8H in front and 20H behind, whatever the direction.
+
+How is dx chosen? Three things that agree here: the far-field cell the inflow check allows (V0
+proved 4 m holds the ABL with the atm wall set and a 1 m first cell at the ground, which the
+ground will get as a refinement region in step 2); the halving ladder, on which the brief's sizes
+must fall (0.5 m building is level 3, 0.25 m plant zone level 4, 0.06 m across a 0.6 m flue level
+6, which 5 m would not give); and whole cells along the box edges. The empty-domain homogeneity
+check is standard practice (AIJ, COST 732) and is run per project because the inputs change; it
+confirms the combination holds the inflow rather than setting dx. Interview-length version: far
+field from the guideline, levels from the features, empty-domain check with the project inflow,
+three-level grid study on one governing condition.

@@ -1,0 +1,47 @@
+/*  Applied case (Project.md), step 1: the background box for the data hall.
+    Hall 60 x 40 x 15 m (H = 15), origin at the building centre on the ground, x along the long axis
+    toward the flue end, wind always along +x; other wind directions rotate the building inside this
+    fixed box, so the distances are measured from the worst-angle corner (45 deg: 35.4 m from the
+    centre in x and y).  Brief: 8H upstream, 20H downstream, 10H each side, 9H high.
+    Blockage at the worst angle (90 deg, long side to the wind): 60 x 15 / (376 x 136) = 1.8 %.
+    Background cell 4 m = the far-field size that V0 proved holds the ABL (decision 0002) and that
+    puts the brief's sizes on the halving ladder: 0.5 m building = level 3, 0.25 m plant zone =
+    level 4, 0.06 m across the 0.6 m flues = level 6.  Box edges are whole cells.                 */
+
+FoamFile { version 2.0; format ascii; class dictionary; object blockMeshDict; }
+
+scale   1;
+
+H       15;
+xMin    -160;      // -35.4 - 8H = -155.4, rounded to a 4 m multiple
+xMax     340;      //  35.4 + 20H = 335.4, rounded
+yMin    -188;      // -(35.4 + 10H) = -185.4, rounded; symmetric about y = 0
+yMax     188;
+zMin     0;
+zMax     136;      //  9H = 135, rounded up to a 4 m multiple
+dx      4;         // far-field cell (V0-proven); 125 x 94 x 34 cells
+
+nx  #eval{ round(($xMax - $xMin) / $dx) };
+ny  #eval{ round(($yMax - $yMin) / $dx) };
+nz  #eval{ round(($zMax - $zMin) / $dx) };
+
+vertices
+(
+    ($xMin $yMin $zMin) ($xMax $yMin $zMin) ($xMax $yMax $zMin) ($xMin $yMax $zMin)
+    ($xMin $yMin $zMax) ($xMax $yMin $zMax) ($xMax $yMax $zMax) ($xMin $yMax $zMax)
+);
+
+blocks ( hex (0 1 2 3 4 5 6 7) ($nx $ny $nz) simpleGrading (1 1 1) );
+
+edges ();
+
+boundary
+(
+    inlet  { type patch; faces ((0 4 7 3)); }   // x = xMin, wind enters
+    outlet { type patch; faces ((2 6 5 1)); }   // x = xMax
+    ground { type wall;  faces ((0 3 2 1)); }   // z = 0, tunnel floor
+    top    { type patch; faces ((4 5 6 7)); }   // z = zMax
+    sides  { type patch; faces ((1 5 4 0) (3 7 6 2)); }   // y = yMin and yMax
+);
+
+mergePatchPairs ();
