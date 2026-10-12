@@ -1,4 +1,6 @@
-# 0008 V2 closing decisions (DRAFT, awaiting Saleh, 2026-10-12)
+# 0008 V2 closing decisions
+
+Date: 2026-10-12. Approved by Saleh ("ok", with the request to run V2b in the background and start the applied case).
 
 ## Outcome, as it stands (results/V2/summary.md, notebook D3 to D12)
 - Low-momentum cases, M = 1: FAC2 1.0 and 0.8 at Sct 0.4 (0.5 and 0.6 at Sct 0.7); mark met.
@@ -10,7 +12,7 @@
   out by a jet-resolved grid check (1.41 M cells, identical result); SST closure no better.
 - Schmidt number: 0.4 scores better than 0.7 in every case, as in V1.
 
-## Decisions required
+## Decisions (all four as recommended)
 1. Treatment of the momentum cases in the report: state the numbers, the cause, and that RANS
    eddy-viscosity closures under-predict jet rise at this scale, so the applied flues' exhaust
    momentum (M 3 to 10) is not credited; stack height is ranked correctly and under-credited.
@@ -26,3 +28,7 @@
 4. V2b (full scale with the applied ABL): proceed on the two M = 1 cases, which the model
    represents, to test the scale jump as the brief intends; the M = 3 cases at full scale would
    test nothing new. (Recommended.)
+
+## Scope note
+V3, V4 and V1-LES remain listed as finished-version items, not done. The MVP validation story is
+V0, V1, V2 and V2b. Saleh builds the applied case himself with guidance (Part E of the notebook).
