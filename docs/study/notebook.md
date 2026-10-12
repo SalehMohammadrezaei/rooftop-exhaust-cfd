@@ -1344,3 +1344,25 @@ Commands (case folder, OpenFOAM loaded): `surfaceFeatureExtract > log.surfaceFea
 cells per level against the budget, "Finished meshing without any errors", eight patches in
 constant/polyMesh/boundary, Mesh OK. Then a slice at y = 0 in ParaView through the stack to see the
 six cell sizes closing in on the pipe.
+
+## D2c. snappyHexMeshDict: what is decided per case and what is left alone
+
+Decided for every case (the top third of the file): the shapes in `geometry` and the refinement
+boxes (sizes from entry 16); the level and patch type of each surface in `refinementSurfaces`
+(cells across the smallest feature of that surface; wall for solids, patch for inlets and
+outlets); one `features` line per edge file at the same level as its surface; the level of each
+box in `refinementRegions` from the cell budget; `locationInMesh`, a point in the air, moved when
+the geometry moves; `nCellsBetweenLevels` 3 unless cost forces 2; the three switches at the top,
+with `addLayers` on only when the wall treatment needs a controlled first-cell height.
+
+Left at standard values unless the log says otherwise: `maxLocalCells` and `maxGlobalCells`
+(raise if refinement stops at the limit); `resolveFeatureAngle` 30 (lower to 20 for curved
+surfaces that come out faceted); the `snapControls` iteration counts (raise if faces remain
+unsnapped or edges look rounded); `meshQualityControls` (only `minVol` must be set below the
+smallest cell volume, 1e-16 for 0.3 mm cells; the rest only when snapping fails and the log names
+the limit); `addLayersControls` only if layers are on.
+
+Procedure: list the shapes; patch type per surface; level per surface from its smallest feature;
+boxes from the outside in with their budget; the point in the air; run; the three checks (cells
+per level, "Finished meshing without any errors", patches and Mesh OK). If quality fails, grow the
+box around the failing region or raise nCellsBetweenLevels first; touch the quality limits last.
