@@ -1208,3 +1208,45 @@ Two things the report itself gets inconsistent, recorded in the data folder's RE
 says the ESDU velocity estimate is 1.2 times the tunnel data between 10 and 60 cm while its figure
 shows the opposite ordering, and the hs = 5 m isolated case appears in the test matrix but in no
 isolated-building figure. Files: data/digitised/irsst_r848/, scripts validation/V2/.
+
+---
+
+# Part D. Building V2 by hand: the rooftop stack (started 2026-10-12)
+
+Same format as Part C. The case is validation/V2/case_by_hand; decision record 0007 lists every
+setup choice and its reason.
+
+## D0. What this simulation is, and the plan
+
+The experiment, in one picture: wind over a wide flat-roofed box in a wind tunnel, a thin pipe at
+the upwind edge of the roof blowing tracer straight up, and sample points along the roof behind
+it. The question is how much cleaner the roof air gets with distance, and how that changes when
+the pipe is taller or blows harder. In the tunnel the box was 7.5 cm high and 25 cm square, the
+pipe 3 mm across, the wind 6.2 m/s at roof height; we simulate exactly that size, because a
+tunnel model obeys the same equations as the full-scale hall only if the Reynolds number is high
+enough, and V2b later repeats the case at full scale to show that it is.
+
+What happens in the flow. The approach wind separates at the upwind roof edge and forms a
+recirculation bubble on the roof. The stack exit sits inside or just above that bubble. At M = 1
+the exhaust leaves at wind speed, is bent over at once and partly trapped in the bubble, so roof
+concentrations are high and dilution low. At M = 3 the jet rises clear of the bubble before
+bending, so the roof sees far less. A taller stack does the same thing by geometry. The CFD has to
+get three things right for the ranking to come out: the bubble height, the jet rise, and the
+mixing of the plume into the roof flow. V1 told us the first and third are where RANS is weak.
+
+The plan, the same eight steps as Part C, with what is new in each:
+1. Box of air (blockMesh): same as V1 but at the tunnel scale and wider, because the building is
+   3.3 times wider than it is tall and blockage must stay below 3 percent.
+2. Building and stack (STL, surfaceFeatureExtract, snappyHexMesh): two shapes now, and the stack
+   needs cells of 0.3 mm, so the refinement is nested: 5 mm on the building, finer boxes stepping
+   down to 0.3 mm around the pipe. The stack top is a patch of its own: it is an inlet, not a wall.
+3. Patches: inlet, outlet, floor, building, stack walls, stack exit, top, sides. Eight.
+4. Boundary conditions: the stack exit is a second inlet with a fixed velocity straight up and a
+   tracer concentration of one. Everything else as V1.
+5. Initial guess, 6. physics and numerics, 7. monitors and run: as V1, with the tracer solved in
+   the same run as the flow this time, because the source is a boundary, not a volume term, and
+   the plume is part of the flow near the stack.
+8. Compare: D_N at the roof receptors against the digitised curves; ranking and FAC2.
+
+Four runs: stack height 1 and 3 m by momentum ratio 1 and 3; Saleh builds the first (hs = 1 m,
+M = 3, the Figure 5.1 case), the other three are copies with two numbers changed.
