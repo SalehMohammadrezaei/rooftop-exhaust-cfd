@@ -1,0 +1,150 @@
+{
+ "case": "case_by_hand",
+ "time": "621",
+ "M": 3.0,
+ "Ve": 18.6,
+ "Q_m3ps": 0.00013147565255273286,
+ "ref": "fig5_1_isolated_hs1_M3_Xs0.csv",
+ "receptors": {
+  "s04": [
+   {
+    "x_m": 5,
+    "DN_exp": 1.817,
+    "DN_cfd": 0.173,
+    "ratio": 0.095
+   },
+   {
+    "x_m": 10,
+    "DN_exp": 2.028,
+    "DN_cfd": 0.313,
+    "ratio": 0.154
+   },
+   {
+    "x_m": 15,
+    "DN_exp": 2.977,
+    "DN_cfd": 0.515,
+    "ratio": 0.173
+   },
+   {
+    "x_m": 20,
+    "DN_exp": 3.914,
+    "DN_cfd": 0.822,
+    "ratio": 0.21
+   },
+   {
+    "x_m": 25,
+    "DN_exp": 4.37,
+    "DN_cfd": 1.144,
+    "ratio": 0.262
+   },
+   {
+    "x_m": 30,
+    "DN_exp": 4.861,
+    "DN_cfd": 1.537,
+    "ratio": 0.316
+   },
+   {
+    "x_m": 35,
+    "DN_exp": 5.127,
+    "DN_cfd": 2.041,
+    "ratio": 0.398
+   },
+   {
+    "x_m": 40,
+    "DN_exp": 5.427,
+    "DN_cfd": 2.705,
+    "ratio": 0.498
+   },
+   {
+    "x_m": 45,
+    "DN_exp": 5.745,
+    "DN_cfd": 3.606,
+    "ratio": 0.628
+   },
+   {
+    "x_m": 50,
+    "DN_exp": 6.059,
+    "DN_cfd": 5.663,
+    "ratio": 0.935
+   }
+  ],
+  "s07": [
+   {
+    "x_m": 5,
+    "DN_exp": 1.817,
+    "DN_cfd": 0.128,
+    "ratio": 0.07
+   },
+   {
+    "x_m": 10,
+    "DN_exp": 2.028,
+    "DN_cfd": 0.167,
+    "ratio": 0.083
+   },
+   {
+    "x_m": 15,
+    "DN_exp": 2.977,
+    "DN_cfd": 0.228,
+    "ratio": 0.077
+   },
+   {
+    "x_m": 20,
+    "DN_exp": 3.914,
+    "DN_cfd": 0.304,
+    "ratio": 0.078
+   },
+   {
+    "x_m": 25,
+    "DN_exp": 4.37,
+    "DN_cfd": 0.388,
+    "ratio": 0.089
+   },
+   {
+    "x_m": 30,
+    "DN_exp": 4.861,
+    "DN_cfd": 0.481,
+    "ratio": 0.099
+   },
+   {
+    "x_m": 35,
+    "DN_exp": 5.127,
+    "DN_cfd": 0.583,
+    "ratio": 0.114
+   },
+   {
+    "x_m": 40,
+    "DN_exp": 5.427,
+    "DN_cfd": 0.694,
+    "ratio": 0.128
+   },
+   {
+    "x_m": 45,
+    "DN_exp": 5.745,
+    "DN_cfd": 0.814,
+    "ratio": 0.142
+   },
+   {
+    "x_m": 50,
+    "DN_exp": 6.059,
+    "DN_cfd": 1.115,
+    "ratio": 0.184
+   }
+  ]
+ },
+ "scores": {
+  "s04": {
+   "Sct": 0.4,
+   "FAC2": 0.2,
+   "geometric_mean_ratio": 0.296,
+   "n": 10,
+   "pass_FAC2": false
+  },
+  "s07": {
+   "Sct": 0.7,
+   "FAC2": 0.0,
+   "geometric_mean_ratio": 0.101,
+   "n": 10,
+   "pass_FAC2": false
+  }
+ }
+}

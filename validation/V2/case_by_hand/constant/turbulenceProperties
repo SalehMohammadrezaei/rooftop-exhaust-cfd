@@ -1,0 +1,12 @@
+/*  Step 6b: the turbulence model.  Project.md section 6: realizable k-epsilon and k-omega SST both run V1;
+    switch by changing RASModel.  Constants are the model defaults (printCoeffs on writes them to the log).  */
+FoamFile { version 2.0; format ascii; class dictionary; object turbulenceProperties; }
+
+simulationType  RAS;
+
+RAS
+{
+    RASModel        realizableKE;    // or kOmegaSST
+    turbulence      on;
+    printCoeffs     on;
+}

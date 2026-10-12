@@ -1416,3 +1416,40 @@ is 51 degrees, twice V1's 25, and sits on the cells wrapped around the round pip
 the 65 degree limit and the laplacian scheme carries a correction for it, but it is the first
 thing to look at if the solver struggles near the stack. In ParaView, with case.foam in the folder,
 a slice at y = 0 through the stack shows the six cell sizes closing in on the pipe.
+
+## D3 to D7. Fields, numerics, monitors and the first run (2026-10-12, built by Claude at Saleh's request)
+
+The eight field entries follow the V1 pattern with two additions. stack_wall is a smooth wall like
+the building. stack_exit is a second inlet: velocity fixed at (0 0 Ve) with Ve = M U_H, 18.6 m/s
+for M = 3; pressure zeroGradient, as at every inlet; tracer fixed at 1, so the exhaust is pure
+tracer and the receptor value is the concentration ratio directly, D_r = 1/s_r. Exit turbulence is
+not measured and was set by the usual pipe-flow estimate, intensity 5 percent and length scale 7
+percent of the diameter: k = 1.5 (0.05 Ve)^2 = 1.3 m2/s2, epsilon = Cmu^0.75 k^1.5 / 0.21 mm =
+1,160 m2/s3; a model assumption recorded in decision 0007. Tracers s04 and s07 (Sct 0.4 and 0.7)
+are solved by the scalarTransport function objects alongside the flow, because here the source is
+a boundary condition and the plume is part of the flow near the stack; they got the relaxation
+factor and the PBiCGStab solver that lesson C16 taught. Monitors: tracer and velocity probes at
+three roof receptors and in the jet, drag, the inlet, outlet and stack flow sums, and the roof
+receptors as a cloud of ten points 1 mm above the roof centreline at 5 to 50 m full scale behind
+the stack, where D_N = Q / (s_r U_H H^2) is computed by validation/V2/metrics.py and compared with
+the digitised curve by FAC2 and the geometric mean ratio.
+
+First run (hs = 1 m, M = 3, base mesh, 488k cells): residualControl stopped it at iteration 621,
+which was too early for the tracer, whose probe at the first receptor was still moving by 4
+percent per 100 iterations. The flow balances closed: the stack flow is 1.303e-4 m3/s, exactly
+Ve times the exit area. y+: building average 50, floor up to 389 in the far field, stack wall 1.5
+to 25, below the wall-function window, which is accepted for a pipe whose drag is negligible.
+
+The score is far off: D_N at the roof is 3 to 10 times lower than the tunnel at Sct 0.4 (FAC2
+0.2) and 5 to 14 times lower at Sct 0.7 (FAC2 0). The CFD puts far too much tracer on the roof.
+Vertical profiles through the plume (system/plumeLines, sampled with the standalone postProcess
+utility, which loads every field on disk; simpleFoam -postProcess only sees the solver's own
+fields) show why: the jet concentration falls from 1.0 at the tip to 0.21 only 5 mm downstream,
+less than two diameters, and the plume's lower edge already touches the roof there, inside the
+reverse flow of the leading-edge bubble (Ux of -1.1 m/s at the roof). Two causes are possible and
+one of them is ours: the level-6 cells cover only the pipe, so the jet leaves the 0.3 mm cells
+3 mm above the tip and enters 0.6 and 1.25 mm cells while it is still 3 mm wide, where numerical
+diffusion smears it at once; and the roof-edge recirculation in k-epsilon drags the smeared plume
+down. The first is a resolution error and is tested before anything else is concluded: a
+jet-resolved mesh, 0.31 mm cells along the first 5 cm of the jet path, 1.41 million cells, is
+running as case_hs1_M3_jetmesh with residualControl removed and 2,500 iterations.

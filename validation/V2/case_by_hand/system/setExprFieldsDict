@@ -1,0 +1,12 @@
+/*  V2 step 5: initial guess for U: the tunnel power law U = Vg (z/zg)^alpha, Vg 14.2, zg 0.95, alpha 0.31.  */
+FoamFile { version 2.0; format ascii; class dictionary; object setExprFieldsDict; }
+expressions
+(
+    Uprofile
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+        variables   ( "Vg = 14.2" "zg = 0.95" "alpha = 0.31" );
+        expression  #{ vector( Vg * pow(max(pos().z(), 0.001)/zg, alpha), 0, 0 ) #};
+    }
+);

@@ -11,6 +11,14 @@ solvers
         relTol          0.01;                 // relative: or when it has dropped by this factor this iteration
     }
 
+    "(s|s04|s07)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0.01;
+    }
+
     "(U|k|epsilon|omega)"
     {
         solver          smoothSolver;         // cheap iterative solver, fine for the transport equations
@@ -39,5 +47,6 @@ relaxationFactors                             // under-relaxation: fraction of t
     {
         U               0.9;
         "(k|epsilon|omega)" 0.7;
+        s               0.7;              // tracers solved by the scalarTransport function objects (lesson C16)
     }
 }

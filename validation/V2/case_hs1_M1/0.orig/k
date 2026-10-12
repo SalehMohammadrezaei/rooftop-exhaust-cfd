@@ -1,0 +1,33 @@
+/*  V2 step 4: turbulent kinetic energy.  Exit turbulence: pipe-flow estimate I = 5 %, k = 1.5 (I Ve)^2 (model assumption, decision 0007).  */
+FoamFile { version 2.0; format ascii; class volScalarField; object k; }
+dimensions      [0 2 -2 0 0 0 0];
+internalField   uniform 2.7;
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/k.csv";
+            nHeaderLine         1;
+            refColumn           0;
+            componentColumns    (1);
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);
+        origin          0;
+    }
+
+    outlet      { type inletOutlet; inletValue $internalField; value $internalField; }
+    ground      { type kqRWallFunction; value $internalField; }
+    building    { type kqRWallFunction; value $internalField; }
+    stack_wall  { type kqRWallFunction; value $internalField; }
+    stack_exit  { type fixedValue; value uniform 0.1442; }
+    top         { type slip; }
+    sides       { type slip; }
+}

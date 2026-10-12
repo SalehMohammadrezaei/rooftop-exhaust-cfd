@@ -1,0 +1,33 @@
+/*  V2 step 4: dissipation.  Exit: epsilon = Cmu^0.75 k^1.5 / l, l = 0.07 d (model assumption).  */
+FoamFile { version 2.0; format ascii; class volScalarField; object epsilon; }
+dimensions      [0 2 -3 0 0 0 0];
+internalField   uniform 5;
+boundaryField
+{
+    inlet
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            file                "<constant>/inletProfiles/epsilon.csv";
+            nHeaderLine         1;
+            refColumn           0;
+            componentColumns    (1);
+            separator           ",";
+            mergeSeparators     no;
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+        direction       (0 0 1);
+        origin          0;
+    }
+
+    outlet      { type inletOutlet; inletValue $internalField; value $internalField; }
+    ground      { type epsilonWallFunction; value $internalField; }
+    building    { type epsilonWallFunction; value $internalField; }
+    stack_wall  { type epsilonWallFunction; value $internalField; }
+    stack_exit  { type fixedValue; value uniform 1156; }
+    top         { type slip; }
+    sides       { type slip; }
+}

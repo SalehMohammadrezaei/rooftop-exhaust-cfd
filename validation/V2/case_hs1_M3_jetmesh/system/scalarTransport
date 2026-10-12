@@ -1,0 +1,13 @@
+/*  Tracers solved with the flow (the source is the stack_exit boundary, s = 1).  */
+s04Transport
+{
+    type scalarTransport; libs (solverFunctionObjects); field s04; schemesField s;
+    alphaD 1; alphaDt 2.500000;      // D = nu + nut/Sct, Sct = 0.4
+    bounded01 false; resetOnStartUp false; writeControl writeTime;
+}
+s07Transport
+{
+    type scalarTransport; libs (solverFunctionObjects); field s07; schemesField s;
+    alphaD 1; alphaDt 1.428571;      // D = nu + nut/Sct, Sct = 0.7
+    bounded01 false; resetOnStartUp false; writeControl writeTime;
+}

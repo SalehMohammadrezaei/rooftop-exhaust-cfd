@@ -1,0 +1,18 @@
+/*  Step 8: roof receptors on the centreline, 5 to 50 m full scale behind the stack, 1 mm above the roof.  */
+samplePoints
+{
+    type sets; libs (sampling); setFormat raw; interpolationScheme cellPoint; writeControl writeTime;
+    fields (U k s04 s07);
+    sets { receptors { type cloud; axis xyz; points (
+        (-0.2225 0.0 0.076)
+        (-0.1975 0.0 0.076)
+        (-0.1725 0.0 0.076)
+        (-0.1475 0.0 0.076)
+        (-0.1225 0.0 0.076)
+        (-0.0975 0.0 0.076)
+        (-0.0725 0.0 0.076)
+        (-0.0475 0.0 0.076)
+        (-0.0225 0.0 0.076)
+        (0.0025 0.0 0.076)
+    ); } }
+}

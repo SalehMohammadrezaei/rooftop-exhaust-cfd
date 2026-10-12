@@ -1,0 +1,46 @@
+/*  Step 6c: how each term of the equations is discretised.  Numerical choices; second order where
+    possible (AIJ guideline: no first-order upwind for the final result).                        */
+FoamFile { version 2.0; format ascii; class dictionary; object fvSchemes; }
+
+ddtSchemes
+{
+    default         steadyState;              // no time derivative: SIMPLE iterates to a steady state
+}
+
+gradSchemes
+{
+    default         Gauss linear;             // gradients from face values interpolated linearly
+    limited         cellLimited Gauss linear 1;   // a bounded version, used for U below
+    grad(U)         $limited;
+}
+
+divSchemes
+{
+    default         none;                     // every convection term must be listed explicitly
+    div(phi,U)      bounded Gauss linearUpwind limited;   // momentum: second-order upwind, limited gradient
+    div(phi,k)      bounded Gauss limitedLinear 1;        // turbulence: second-order, TVD-limited
+    div(phi,epsilon) bounded Gauss limitedLinear 1;
+    div(phi,omega)  bounded Gauss limitedLinear 1;
+    div(phi,s)      bounded Gauss limitedLinear 1;        // tracers (schemesField s)
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;           // viscous stress term: central
+}
+
+laplacianSchemes
+{
+    default         Gauss linear limited corrected 0.33;  // diffusion; the correction handles non-orthogonal faces (max 26 deg here)
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    default         limited corrected 0.33;
+}
+
+wallDist
+{
+    method          meshWave;                 // distance to the nearest wall, needed by SST and by y+
+}

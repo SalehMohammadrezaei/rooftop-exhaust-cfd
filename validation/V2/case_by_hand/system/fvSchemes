@@ -21,6 +21,7 @@ divSchemes
     div(phi,k)      bounded Gauss limitedLinear 1;        // turbulence: second-order, TVD-limited
     div(phi,epsilon) bounded Gauss limitedLinear 1;
     div(phi,omega)  bounded Gauss limitedLinear 1;
+    div(phi,s)      bounded Gauss limitedLinear 1;        // tracers (schemesField s)
     div((nuEff*dev2(T(grad(U))))) Gauss linear;           // viscous stress term: central
 }
 

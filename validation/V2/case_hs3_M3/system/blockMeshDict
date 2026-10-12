@@ -1,0 +1,44 @@
+/*  V2 Concordia rooftop stack (IRSST R-848, Configuration 1), step 1: the background box at tunnel
+    scale 1:200.  Building 0.25 x 0.25 m in plan, 0.075 m high (H), x in [-0.25, 0], y in [-0.125, 0.125].
+    Domain (AIJ guideline, widened because the building is 3.3H wide): inlet 5H upwind of the windward
+    wall, outlet 15H downwind of the leeward wall, sides 6H from the building faces, top 8H.
+    Blockage 2.7 %.  Background cell 20 mm; snappyHexMesh refines to 5 mm on the building and to
+    0.3 mm around the 3 mm stack in step 2.  Result 2026-10-12: 150,480 cells, Mesh OK.           */
+
+FoamFile { version 2.0; format ascii; class dictionary; object blockMeshDict; }
+
+scale   1;
+
+H       0.075;
+xMin    -0.625;      // -0.25 - 5H: windward wall at -0.25
+xMax     1.125;      //  0 + 15H: leeward wall at 0
+yMin    -0.575;      // -0.125 - 6H
+yMax     0.575;      //  0.125 + 6H
+zMin     0;
+zMax     0.6;        //  8H
+dx      0.02;        // background cell size (medium rule: two snappy levels give 5 mm on the building)
+
+nx  #eval{ round(($xMax - $xMin) / $dx) };
+ny  #eval{ round(($yMax - $yMin) / $dx) };
+nz  #eval{ round(($zMax - $zMin) / $dx) };
+
+vertices
+(
+    ($xMin $yMin $zMin) ($xMax $yMin $zMin) ($xMax $yMax $zMin) ($xMin $yMax $zMin)
+    ($xMin $yMin $zMax) ($xMax $yMin $zMax) ($xMax $yMax $zMax) ($xMin $yMax $zMax)
+);
+
+blocks ( hex (0 1 2 3 4 5 6 7) ($nx $ny $nz) simpleGrading (1 1 1) );
+
+edges ();
+
+boundary
+(
+    inlet  { type patch; faces ((0 4 7 3)); }   // x = xMin, wind enters
+    outlet { type patch; faces ((2 6 5 1)); }   // x = xMax
+    ground { type wall;  faces ((0 3 2 1)); }   // z = 0, tunnel floor
+    top    { type patch; faces ((4 5 6 7)); }   // z = zMax
+    sides  { type patch; faces ((1 5 4 0) (3 7 6 2)); }   // y = yMin and yMax
+);
+
+mergePatchPairs ();
