@@ -1735,3 +1735,36 @@ volume is a large part of it. This is the coarse end of the brief's medium range
 the grid study will refine from here. Lesson repeated for the third time: redirect every program's
 output to a log, the record depends on it; the per-level counts were only recoverable because the
 processor directories still held the level files.
+
+## E3 to E7. The hall's boundary conditions, in ten blocks (2026-10-12, written by Claude at Saleh's request)
+
+Thirty-four patches sound like thirty-four blocks per field, but OpenFOAM lets a quoted name be
+a pattern: "chiller_in_.*" matches all ten intakes, "(hall|parapet|parapet_slave|chiller_body|
+flue_wall|intake_body)" all the smooth walls, and ".*" whatever is left. An explicit name beats a
+pattern and the first matching pattern wins, so the explicit and the specific come first and
+".*" last. The U file is ten blocks; p is two, fixed at the outlet and zeroGradient everywhere
+else, because pressure is free at every inlet, wall and opening alike.
+
+The openings use flowRateInletVelocity with a volumetricFlowRate: the condition sets a uniform
+normal velocity that delivers exactly that volume flow over whatever area the mesher gave the
+patch, positive into the domain for a source, negative for a sink. That is why the brief insists
+on fixed flows rather than fixed velocities: a patch that the mesh cut a few percent larger would
+otherwise leak the wrong mass. The numbers and their kinds are decision 0010: 90 m3/s in and out
+of each chiller, 19.4 m3/s on the flue patch (Kohler KD2000 exhaust, momentum-matched to 17.2
+m/s), 5 m3/s per louvre (an assumption, one air change per hour, to be replaced).
+
+Turbulence at the openings: where air leaves the domain (chiller intakes, louvres) nothing is
+imposed, zeroGradient; where it enters (chiller strips, flue exits) the pipe-flow estimate of V2,
+5 percent intensity and 7 percent of the hydraulic size, gives k and epsilon. The far boundaries
+and the ground are the applied ABL of decision 0002 exactly as in V2b: log-law family at z0 0.3 m
+and 10 m/s at 15 m, fixed-shear top, atm wall set on the ground; the hall, the parapet's two sides,
+the chiller boxes, the flue walls and the intake enclosure are smooth walls. The initial guess is
+the log-law profile. Output is written in binary, because 2.6 million cells in ASCII would cost a
+third more disk and time for nothing.
+
+The monitors for the flow run are stand-ins for the primary quantities, which are concentrations
+and come from the tagged scalars run afterwards on the frozen flow: U at the two louvres and above
+the chiller rows and at the flue tips, the drag on the hall, and the flow sums at the inlet, the
+outlet and one opening of each kind, which must equal the decision 0010 values to the last digit.
+Cost estimate before launch (rule 12): 2.6 million cells at about 1.4 s per iteration on 16 cores,
+2,000 iterations, roughly 50 minutes, one cost unit of the brief being near 100 core-hours.

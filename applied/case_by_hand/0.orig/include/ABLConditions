@@ -1,0 +1,2 @@
+// Applied ABL (decision 0002): log-law family, z0 0.3 m, U_H 10 m/s at 15 m.  u* = 1.0173 m/s, k = 3.450 m2/s2.
+kappa 0.4; Cmu 0.09; flowDir (1 0 0); zDir (0 0 1); Uref 10.0; Zref 15.0; z0 uniform 0.3; d uniform 0.0;

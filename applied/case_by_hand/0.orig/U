@@ -1,0 +1,18 @@
+/*  Applied case, step 4: velocity.  34 patches in ten blocks (quoted names are patterns; explicit names win).
+    Openings carry fixed VOLUME flows (decision 0010): positive into the domain, negative out.        */
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    inlet           { type atmBoundaryLayerInletVelocity; #include "include/ABLConditions" value uniform (0 0 0); }
+    outlet          { type inletOutlet; inletValue uniform (0 0 0); value uniform (0 0 0); }
+    top             { type fixedShearStress; tau (1.03498 0 0); value uniform (0 0 0); }   // u*^2, decision 0002
+    sides           { type slip; }
+    ground          { type noSlip; }
+    "(hall|parapet|parapet_slave|chiller_body|flue_wall|intake_body)" { type noSlip; }
+    "chiller_in_.*" { type flowRateInletVelocity; volumetricFlowRate -90;  value uniform (0 0 0); }   // sink: 90 m3/s per unit through its two side faces
+    "chiller_out_.*" { type flowRateInletVelocity; volumetricFlowRate  90;  value uniform (0 0 0); }   // source: 90 m3/s at 8 m/s through the strip
+    flue_exit       { type flowRateInletVelocity; volumetricFlowRate 19.4; value uniform (0 0 0); }   // four flues, 17.2 m/s momentum-matched (Kohler KD2000)
+    "intake_louvre_.*" { type flowRateInletVelocity; volumetricFlowRate -5; value uniform (0 0 0); }  // sink: 5 m3/s per louvre (assumption, 1 ACH)
+}

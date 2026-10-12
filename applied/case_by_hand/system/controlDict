@@ -1,17 +1,35 @@
-/*  Applied case, step 1: placeholder for meshing.  Monitors are added at step 7.  */
+/*  Applied case, step 7: run control and monitors for the FLOW run (tagged scalars come afterwards on the frozen flow).  */
 FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+libs            (atmosphericModels);
 application     simpleFoam;
 startFrom       latestTime;
 startTime       0;
 stopAt          endTime;
-endTime         1;
+endTime         2000;
 deltaT          1;
 writeControl    timeStep;
 writeInterval   500;
 purgeWrite      0;
-writeFormat     ascii;
+writeFormat     binary;        // 2.6 M cells: binary files are a third of the size
 writePrecision  10;
 writeCompression off;
 timeFormat      general;
 timePrecision   6;
 runTimeModifiable yes;
+functions
+{
+    probes          // primary-quantity stand-ins for the flow run: U at the two louvres, above chiller row centres, at the flue tips
+    {
+        type probes; libs (sampling); fields (U k p); writeControl timeStep;
+        probeLocations ( (12 2.5 16.5) (12 -2.5 16.5) (-12 -7.5 19) (-12 7.5 19) (25 0 19) (0 0 20) (60 0 7.5) );
+    }
+    forcesHall { type forces; libs (forces); patches (hall); rho rhoInf; rhoInf 1.2; CofR (0 0 7.5); writeControl timeStep; log false; }
+    flow_inlet { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name inlet; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flow_outlet { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name outlet; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flow_flue_exit { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name flue_exit; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flow_chiller_in_01 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name chiller_in_01; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flow_chiller_out_01 { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name chiller_out_01; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flow_intake_louvre_pos { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name intake_louvre_pos; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    flow_intake_louvre_neg { type surfaceFieldValue; libs (fieldFunctionObjects); regionType patch; name intake_louvre_neg; operation sum; fields (phi); writeControl writeTime; writeFields false; log false; }
+    minMax { type fieldMinMax; libs (fieldFunctionObjects); fields (U k); writeControl timeStep; writeInterval 10; log false; }
+}

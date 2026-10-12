@@ -1,0 +1,3 @@
+/*  Applied case, step 5: initial guess = the applied log-law profile (u* 1.017 m/s, z0 0.3 m).  */
+FoamFile { version 2.0; format ascii; class dictionary; object setExprFieldsDict; }
+expressions ( Uprofile { field U; dimensions [0 1 -1 0 0 0 0]; variables ( "ustar = 1.0173" "z0 = 0.3" "kappa = 0.4" ); expression #{ vector( ustar/kappa * log((pos().z() + z0)/z0), 0, 0 ) #}; } );

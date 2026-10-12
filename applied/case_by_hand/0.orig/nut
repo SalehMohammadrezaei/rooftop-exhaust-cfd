@@ -1,0 +1,11 @@
+/*  Applied case: turbulent viscosity; rough ground wall function with z0 (decision 0002), smooth elsewhere.  */
+FoamFile { version 2.0; format ascii; class volScalarField; object nut; }
+dimensions      [0 2 -1 0 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    #include "include/ABLConditions"
+    ground          { type atmNutkWallFunction; z0 $z0; kappa $kappa; Cmu $Cmu; value uniform 0; }
+    "(hall|parapet|parapet_slave|chiller_body|flue_wall|intake_body)" { type nutkWallFunction; value uniform 0; }
+    ".*"            { type calculated; value uniform 0; }     // inlet, outlet, top, sides and all openings
+}

@@ -1,0 +1,18 @@
+/*  Applied case, step 4: epsilon.  Inlet from the ABL family; rough ground (atm wall set); smooth walls; openings with pipe-flow turbulence estimates.  */
+FoamFile { version 2.0; format ascii; class volScalarField; object epsilon; }
+dimensions      [0 2 -3 0 0 0 0];
+internalField   uniform 0.05;
+boundaryField
+{
+    #include "include/ABLConditions"
+    inlet           { type atmBoundaryLayerInletEpsilon; #include "include/ABLConditions" value uniform 0; }
+    outlet          { type inletOutlet; inletValue $internalField; value $internalField; }
+    top             { type zeroGradient; }
+    sides           { type slip; }
+    ground          { type atmEpsilonWallFunction; z0 $z0; kappa $kappa; Cmu $Cmu; value $internalField; }
+    "(hall|parapet|parapet_slave|chiller_body|flue_wall|intake_body)" { type epsilonWallFunction; value $internalField; }
+    "chiller_in_.*" { type zeroGradient; }             // air leaves: no condition needed
+    "intake_louvre_.*" { type zeroGradient; }
+    "chiller_out_.*" { type fixedValue; value uniform 0.2706; }
+    flue_exit       { type fixedValue; value uniform 4.572; }
+}

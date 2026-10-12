@@ -1,0 +1,18 @@
+/*  Applied case, step 4: k.  Inlet from the ABL family; rough ground (atm wall set); smooth walls; openings with pipe-flow turbulence estimates.  */
+FoamFile { version 2.0; format ascii; class volScalarField; object k; }
+dimensions      [0 2 -2 0 0 0 0];
+internalField   uniform 3.45;
+boundaryField
+{
+    #include "include/ABLConditions"
+    inlet           { type atmBoundaryLayerInletK; #include "include/ABLConditions" value uniform 0; }
+    outlet          { type inletOutlet; inletValue $internalField; value $internalField; }
+    top             { type zeroGradient; }
+    sides           { type slip; }
+    ground          { type kqRWallFunction; value $internalField; }
+    "(hall|parapet|parapet_slave|chiller_body|flue_wall|intake_body)" { type kqRWallFunction; value $internalField; }
+    "chiller_in_.*" { type zeroGradient; }             // air leaves: no condition needed
+    "intake_louvre_.*" { type zeroGradient; }
+    "chiller_out_.*" { type fixedValue; value uniform 0.24; }
+    flue_exit       { type fixedValue; value uniform 1.109; }
+}
