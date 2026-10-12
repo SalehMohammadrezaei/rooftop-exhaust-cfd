@@ -1813,3 +1813,26 @@ Once the hand-built case ran, everything that repeats was scripted, the rule sin
 Lesson of the night so far: a queue that waits for "no solver running" must test the process
 name exactly (pgrep -x), not the command line, or it waits for its own monitoring shells; and a
 run script must source the OpenFOAM environment before set -e, which the bashrc does not survive.
+
+## E10. The first applied flow: 0 degrees, 10 m/s (2026-10-12, autopilot)
+
+Two thousand iterations on 32 cores, 2.6 million cells, two hours because the case lives on the
+D: bridge mount and the machine was full. Converged by the rules: the probes at the louvres, over
+the chiller rows and at the flue tips are identical to six digits between iterations 1,500 and
+2,000, the drag on the hall likewise, and every flow sum reproduces its decision 0010 value to the
+digit: 19.4 m3/s out of the flues, 90 in and out of each chiller, 5 through each louvre, inlet and
+outlet equal to 0.0014 percent. The fixed-flow boundaries do what they were chosen for.
+
+y+ on the smooth walls is in the thousands, hall average 6,700, chiller boxes 5,000, far above
+the 30 to 300 window of the smooth-wall log law. This is the normal situation for a full-scale
+building with 0.5 m cells and a 10 m/s wind: the first cell centre is 0.25 m from a wall whose
+viscous layer is a millimetre thick, and the wall function is applied outside its derivation. In
+practice this is accepted for bluff bodies because separation is fixed by the sharp edges, not by
+the wall shear (Project.md section 7 says exactly this), and V2b showed the result does not change
+between Reynolds numbers of 31,000 and 6 million. It is reported, not hidden.
+
+The pictures (results/applied/figures, made by postproc/slices.py from raw cutting planes, since
+ParaView cannot render without a display here): the flow separates at the hall's upwind edge, the
+chiller rows and the intake hut sit in the slow roof layer, the flues stand at the downwind end
+in air already slowed by the plant, and the wake extends beyond 80 m. The tagged scalars are
+running on this frozen flow next.
