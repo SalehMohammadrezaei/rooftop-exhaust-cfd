@@ -1293,6 +1293,28 @@ practice (Franke et al. 2007), Project.md section 7, and our own V0/V1 runs.
 | Ground far field | approach-flow layer | everywhere | first cell by y+ or y/z0 (entries 7, 8) |
 | Level transitions | mesh quality | between every two levels | 2 to 3 cells per level; growth ratio under 1.3 |
 
+Choosing the snappyHexMesh level for each region. A level is not a size; it is how many times the
+background cell is halved: size = background / 2^level. So first fix the background from the far
+field (the largest cell the approach flow tolerates, 4 m at full scale in the brief, 20 mm here),
+then for each region compute the cell size the table asks for and take the level that reaches it:
+level = log2(background / wanted size), rounded up. Worked for V2 (background 20 mm, H = 75 mm):
+
+| Region | Wanted cell | From | Level | Actual cell |
+|---|---|---|---|---|
+| far field | 20 mm | background | 0 | 20 mm |
+| wake box | 8 to 10 per H -> 8 mm | table | 1 | 10 mm |
+| building surfaces and near box | 15 per H -> 5 mm | table (AIJ minimum 10 per side would allow 7.5 mm) | 2 | 5 mm |
+| roof layer along the receptors | 30 per H -> 2.5 mm | table | 3 | 2.5 mm |
+| jet near the stack | a few cells across a 3 mm jet as it bends: 1.2 mm | judgement | 4 | 1.25 mm |
+| stepping stone to the pipe | transition only | nCellsBetweenLevels | 5 | 0.63 mm |
+| pipe surface and exit | 10 across 3 mm -> 0.3 mm | brief, section 7 | 6 | 0.31 mm |
+
+Rules for the levels: no level jumps of more than one between touching boxes, which the mesher
+enforces through nCellsBetweenLevels anyway; the finest level only on the smallest box; if a
+region's wanted size falls between two levels, take the finer one and shrink the box, not the
+coarser one. If the finest level exceeds the background by more than 2^6, the background is too
+coarse for the case; raise it and accept more far-field cells.
+
 Principles: the smallest feature in each region sets its cell size; budget = volume / cell^3, and
 each level costs 8x per volume, so boxes must shrink by more than 2 in every direction per level;
 write the budget into the dictionary. The rules are verified for a given case by the three-level
