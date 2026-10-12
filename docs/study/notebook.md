@@ -1168,3 +1168,43 @@ The step that comes first. The report gives curves, not tables, so the roof dilu
 approach-flow profile must be digitised from the figures. Digitising adds its own uncertainty on
 top of the tunnel's 15 percent, and the record must say how it was done: which figure, which
 curve, how many points, and a check of a few points read independently.
+
+## 15. Digitising a published figure, and checking that you did it right (2026-10-12) (story step 7)
+
+The R-848 report gives its results as charts, not tables, so the tunnel data for V2 had to be read
+off the figures. This is common in validation work and it is where quiet errors enter, so the
+method is written down here with its checks.
+
+The method. The PDF pages were rendered at 300 dots per inch with Ghostscript. For each chart the
+plot frame was found as the rectangle of dark pixels; in these Excel charts the frame edges are the
+axis limits, x from 0 to 50 m and y from 0.001 to 1000 on a logarithmic scale, which is six decades,
+not seven, an arithmetic slip that was caught by the next check. The chart's own horizontal axis
+line, drawn at a dilution of 1, was then located and converted with the calibration: it must come
+out as 1.00, and it did in every crop. The series of interest, Configuration 1, is drawn in navy
+with diamond markers. Where it is the only navy series (Figure 5.1) each diamond was located as the
+widest group of navy columns and its centre taken as the point. Where other navy series share the
+chart (Figures 4.4 and D2, dotted lines with smaller markers), the solid line was tracked from left
+to right, choosing at every ambiguity the run that continues as a solid line over the next columns,
+and read at the receptor spacing of 5 m. Every extraction wrote an overlay image with red crosses at
+the extracted points, and each overlay was looked at; three of the first attempts were wrong in
+ways that were obvious in the overlay (a legend symbol taken as a point, a dotted series followed
+for five points, a crossing at the last point) and would not have been obvious in the numbers.
+
+The checks. The same case appears in two figures, hs = 1 m and M = 3 in Figures 5.1 and 4.4b;
+the two readings agree within 2.5 percent at every receptor from 5 to 45 m, which is taken as the
+digitising uncertainty and sits well inside the tunnel repeatability of 15 percent quoted in the
+report. The measured velocity profile, read from Figure 3.1, follows the power law quoted on the
+chart, exponent 0.31 and gradient height 95 cm, within 3 percent above 10 cm and within 7 percent
+in the crowded band near the floor where markers overlap and only their centroid can be read.
+
+What the data say before any CFD. At every receptor the 3 m stack dilutes more than the 1 m stack
+at the same momentum ratio, and M = 3 dilutes more than M = 1 at the same height; the ranking
+that V2 must reproduce is in the data. Dilution grows with distance from the stack because the
+plume rises and spreads. The velocity at building height from the profile is 6.5 m/s against the
+6.2 m/s in the report's table, a 4 percent difference, which is within the reading uncertainty of
+the merged markers.
+
+Two things the report itself gets inconsistent, recorded in the data folder's README: its text
+says the ESDU velocity estimate is 1.2 times the tunnel data between 10 and 60 cm while its figure
+shows the opposite ordering, and the hs = 5 m isolated case appears in the test matrix but in no
+isolated-building figure. Files: data/digitised/irsst_r848/, scripts validation/V2/.
