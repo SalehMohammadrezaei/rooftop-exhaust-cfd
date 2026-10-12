@@ -1768,3 +1768,15 @@ the chiller rows and at the flue tips, the drag on the hall, and the flow sums a
 outlet and one opening of each kind, which must equal the decision 0010 values to the last digit.
 Cost estimate before launch (rule 12): 2.6 million cells at about 1.4 s per iteration on 16 cores,
 2,000 iterations, roughly 50 minutes, one cost unit of the brief being near 100 core-hours.
+
+## E8. Autopilot night, 2026-10-12 to 13: the plan
+
+Saleh handed over for the night with unlimited cores. The plan, in order of value: (1) the hall
+flow at 0 degrees and 10 m/s, then the twelve tagged scalars on its frozen flow and the
+source-to-receptor matrix, which is the project's first real result; (2) the generator that turns
+the hand-built case into any direction, speed and flue height, with refinement regions that rotate
+with the building; (3) block A, seven directions at 3 and 10 m/s, run three or four at a time on
+32 cores each; (4) blocks B and C if time allows; (5) the Reynolds-stress closure test on V2 in the
+background; (6) the acceptance limits, set and cited before block A as the brief requires
+(decision 0011); (7) a morning report. Every modelling choice made overnight is written as "under
+autopilot, for review".
