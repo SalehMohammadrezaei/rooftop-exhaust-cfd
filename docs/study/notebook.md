@@ -1709,3 +1709,29 @@ less along the roof. That number is not a failure of anything; it is the inflow 
 brief asks to carry in the uncertainty band, and its sign says the applied results err toward
 higher roof concentrations. Lesson in method: when a check changes two things at once, add the
 run that changes only one, or the check proves nothing. Results: results/V2b/summary.md.
+
+## E2b. The hall mesh (2026-10-12, run by Saleh in parallel)
+
+Meshed on 16 cores: decomposePar, snappyHexMesh in parallel with the overwrite flag, then
+reconstructParMesh to stitch the pieces back into constant/polyMesh. Result 2,596,598 cells, Mesh
+OK, maximum non-orthogonality 31 degrees, 34 patches: the 5 box faces, 27 solid pieces, and the
+parapet as two back-to-back wall patches of 4,000 faces each, parapet and parapet_slave, which is
+what a baffle becomes. The snappy log was not kept (no redirection), so the cells per level were
+recovered from the processor meshes' cellLevel files:
+
+| Level | Cell | Cells | Budget |
+|---|---|---|---|
+| 0 | 4 m | 360,620 | 400,000 |
+| 1 | 2 m | 237,328 | 152,000 |
+| 2 | 1 m | 520,322 | 596,000 |
+| 3 | 0.5 m | 183,631 | 510,000 |
+| 4 | 0.25 m | 533,733 | 600,000 |
+| 5 | 0.125 m | 625,636 | 602,000 |
+| 6 | 0.0625 m | 135,328 | 142,000 |
+
+Total 2.6 million against a budget of 3 million: the transitions between the many levels cost
+more level-1 and level-2 cells than estimated, and the building box less, because the hall's own
+volume is a large part of it. This is the coarse end of the brief's medium range (5 to 7 million);
+the grid study will refine from here. Lesson repeated for the third time: redirect every program's
+output to a log, the record depends on it; the per-level counts were only recoverable because the
+processor directories still held the level files.

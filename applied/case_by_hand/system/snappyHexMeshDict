@@ -1,0 +1,168 @@
+/*  Applied case, step 2b: cut the hall and its rooftop plant out of the 4 m box and refine.
+    Level n cell = 4 m / 2^n:  1: 2 m   2: 1 m   3: 0.5 m   4: 0.25 m   5: 0.125 m   6: 0.0625 m.
+    Sizes from Project.md section 7: 0.5 m on the building (L3), 0.25 m in the rooftop plant zone (L4),
+    8 cells across a chiller discharge strip of 1.02 m (0.125 m, L5), 10 cells across a 0.6 m flue (L6).
+    Ground: first cell 1 m (decision 0002) -> a 2 m thick L2 layer over the whole floor.
+    Cell budget (volume / cell^3, nested boxes not subtracted, so ~25 % high):
+      background 400k | groundLayer L2 376k | wakeBox L1 152k | nearBox L2 220k | buildingBox L3 510k |
+      plantBox L4 600k | chillerDischarge L5 436k | flueJets L5 166k | fluePipes L6 142k  -> about 3 M,
+      with transitions 3.5 to 4 M: inside the brief's medium target of 5 to 7 M.                     */
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    // ---- the 28 pieces, names = patch names ----
+    hall                 { type triSurfaceMesh; file "hall.stl"; }
+    parapet              { type triSurfaceMesh; file "parapet.stl"; }
+    chiller_body         { type triSurfaceMesh; file "chiller_body.stl"; }
+    chiller_in_01        { type triSurfaceMesh; file "chiller_in_01.stl"; }
+    chiller_in_02        { type triSurfaceMesh; file "chiller_in_02.stl"; }
+    chiller_in_03        { type triSurfaceMesh; file "chiller_in_03.stl"; }
+    chiller_in_04        { type triSurfaceMesh; file "chiller_in_04.stl"; }
+    chiller_in_05        { type triSurfaceMesh; file "chiller_in_05.stl"; }
+    chiller_in_06        { type triSurfaceMesh; file "chiller_in_06.stl"; }
+    chiller_in_07        { type triSurfaceMesh; file "chiller_in_07.stl"; }
+    chiller_in_08        { type triSurfaceMesh; file "chiller_in_08.stl"; }
+    chiller_in_09        { type triSurfaceMesh; file "chiller_in_09.stl"; }
+    chiller_in_10        { type triSurfaceMesh; file "chiller_in_10.stl"; }
+    chiller_out_01       { type triSurfaceMesh; file "chiller_out_01.stl"; }
+    chiller_out_02       { type triSurfaceMesh; file "chiller_out_02.stl"; }
+    chiller_out_03       { type triSurfaceMesh; file "chiller_out_03.stl"; }
+    chiller_out_04       { type triSurfaceMesh; file "chiller_out_04.stl"; }
+    chiller_out_05       { type triSurfaceMesh; file "chiller_out_05.stl"; }
+    chiller_out_06       { type triSurfaceMesh; file "chiller_out_06.stl"; }
+    chiller_out_07       { type triSurfaceMesh; file "chiller_out_07.stl"; }
+    chiller_out_08       { type triSurfaceMesh; file "chiller_out_08.stl"; }
+    chiller_out_09       { type triSurfaceMesh; file "chiller_out_09.stl"; }
+    chiller_out_10       { type triSurfaceMesh; file "chiller_out_10.stl"; }
+    flue_wall            { type triSurfaceMesh; file "flue_wall.stl"; }
+    flue_exit            { type triSurfaceMesh; file "flue_exit.stl"; }
+    intake_body          { type triSurfaceMesh; file "intake_body.stl"; }
+    intake_louvre_pos    { type triSurfaceMesh; file "intake_louvre_pos.stl"; }
+    intake_louvre_neg    { type triSurfaceMesh; file "intake_louvre_neg.stl"; }
+
+    // ---- refinement regions (min corner) (max corner), metres ----
+    groundLayer     { type searchableBox; min (-160 -188 0);    max (340 188 2);    }   // L2: 1 m cells, first cell centre 0.5 m above the ground, whole floor
+    wakeBox         { type searchableBox; min (-45  -60  0);    max (180  60  45);  }   // L1: 10H of wake, 3H high, 1H beyond the sides
+    nearBox         { type searchableBox; min (-45  -35  0);    max ( 60  35  30);  }   // L2: 1H around the hall, 2H high
+    buildingBox     { type searchableBox; min (-33  -23  0);    max ( 40  23  19);  }   // L3: the hall plus 3 m, 4 m above the roof (plant wakes)
+    plantBox        { type searchableBox; min (-24  -15  15);   max ( 28  15  21);  }   // L4: the roof plant zone, chillers to flues, 6 m above the roof
+    chillerDischarge { type searchableBox; min (-22.5 -13.5 17.5); max (-1.5 13.5 19); } // L5: 1.5 m above the ten discharge strips
+    flueJets        { type searchableBox; min ( 23.5 -4.5 15);   max ( 27.5 4.5 24);  }   // L5: the four jets, 6 m above the 3 m tips
+    fluePipes       { type searchableBox; min ( 24.4 -3.6 15);   max ( 25.6 3.6 19);  }   // L6: the pipes and the first metre of jet
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       4000000;
+    maxGlobalCells      20000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 3;
+
+    features
+    (
+        { file "hall.extendedFeatureEdgeMesh"; level 3; }
+        { file "parapet.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_body.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_01.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_02.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_03.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_04.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_05.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_06.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_07.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_08.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_09.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_in_10.extendedFeatureEdgeMesh"; level 4; }
+        { file "chiller_out_01.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_02.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_03.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_04.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_05.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_06.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_07.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_08.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_09.extendedFeatureEdgeMesh"; level 5; }
+        { file "chiller_out_10.extendedFeatureEdgeMesh"; level 5; }
+        { file "flue_wall.extendedFeatureEdgeMesh"; level 6; }
+        { file "flue_exit.extendedFeatureEdgeMesh"; level 6; }
+        { file "intake_body.extendedFeatureEdgeMesh"; level 4; }
+        { file "intake_louvre_pos.extendedFeatureEdgeMesh"; level 4; }
+        { file "intake_louvre_neg.extendedFeatureEdgeMesh"; level 4; }
+    );
+
+    refinementSurfaces
+    {
+        hall                 { level (3 3); patchInfo { type wall; } }
+        parapet              { level (4 4); faceZone parapet; faceType baffle; patchInfo { type wall; } }   // zero-thickness sheet: both sides become walls
+        chiller_body         { level (4 4); patchInfo { type wall; } }
+        chiller_in_01        { level (4 4); patchInfo { type patch; } }
+        chiller_in_02        { level (4 4); patchInfo { type patch; } }
+        chiller_in_03        { level (4 4); patchInfo { type patch; } }
+        chiller_in_04        { level (4 4); patchInfo { type patch; } }
+        chiller_in_05        { level (4 4); patchInfo { type patch; } }
+        chiller_in_06        { level (4 4); patchInfo { type patch; } }
+        chiller_in_07        { level (4 4); patchInfo { type patch; } }
+        chiller_in_08        { level (4 4); patchInfo { type patch; } }
+        chiller_in_09        { level (4 4); patchInfo { type patch; } }
+        chiller_in_10        { level (4 4); patchInfo { type patch; } }
+        chiller_out_01       { level (5 5); patchInfo { type patch; } }
+        chiller_out_02       { level (5 5); patchInfo { type patch; } }
+        chiller_out_03       { level (5 5); patchInfo { type patch; } }
+        chiller_out_04       { level (5 5); patchInfo { type patch; } }
+        chiller_out_05       { level (5 5); patchInfo { type patch; } }
+        chiller_out_06       { level (5 5); patchInfo { type patch; } }
+        chiller_out_07       { level (5 5); patchInfo { type patch; } }
+        chiller_out_08       { level (5 5); patchInfo { type patch; } }
+        chiller_out_09       { level (5 5); patchInfo { type patch; } }
+        chiller_out_10       { level (5 5); patchInfo { type patch; } }
+        flue_wall            { level (6 6); patchInfo { type wall; } }
+        flue_exit            { level (6 6); patchInfo { type patch; } }
+        intake_body          { level (4 4); patchInfo { type wall; } }
+        intake_louvre_pos    { level (4 4); patchInfo { type patch; } }
+        intake_louvre_neg    { level (4 4); patchInfo { type patch; } }
+    }
+
+    resolveFeatureAngle 30;
+
+    refinementRegions
+    {
+        groundLayer      { mode inside; levels ((1e15 2)); }
+        wakeBox          { mode inside; levels ((1e15 1)); }
+        nearBox          { mode inside; levels ((1e15 2)); }
+        buildingBox      { mode inside; levels ((1e15 3)); }
+        plantBox         { mode inside; levels ((1e15 4)); }
+        chillerDischarge { mode inside; levels ((1e15 5)); }
+        flueJets         { mode inside; levels ((1e15 5)); }
+        fluePipes        { mode inside; levels ((1e15 6)); }
+    }
+
+    locationInMesh (-100 100 60);     // in the air, upstream and to the side
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch 3; tolerance 2.0; nSolveIter 50; nRelaxIter 5; nFeatureSnapIter 10;
+    implicitFeatureSnap false; explicitFeatureSnap true; multiRegionFeatureSnap false;
+}
+
+addLayersControls
+{
+    relativeSizes true; layers {} expansionRatio 1.2; finalLayerThickness 0.5; minThickness 0.1; nGrow 0;
+    featureAngle 60; nRelaxIter 3; nSmoothSurfaceNormals 1; nSmoothNormals 3; nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5; maxThicknessToMedialRatio 0.3; minMedialAxisAngle 90; nBufferCellsNoExtrude 0; nLayerIter 50;
+}
+
+meshQualityControls
+{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4; maxConcave 80; minVol 1e-13; minTetQuality 1e-15;
+    minArea -1; minTwist 0.02; minDeterminant 0.001; minFaceWeight 0.02; minVolRatio 0.01; minTriangleTwist -1;
+    nSmoothScale 4; errorReduction 0.75;
+}
+
+mergeTolerance 1e-6;
