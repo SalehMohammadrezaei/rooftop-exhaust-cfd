@@ -1,0 +1,24 @@
+{
+  "description": "Generic data hall, Project.md section 3. Origin at the building centre on the ground; x along the long axis toward the flue end; z up. All lengths in metres. Kinds: indicative values from the brief are labelled; they are replaced by datasheet values when cited.",
+  "hall":    {"length_x": 60.0, "width_y": 40.0, "height": 15.0, "kind": "brief"},
+  "parapet": {"height": 1.2, "kind": "brief", "model": "zero-thickness baffle on the roof perimeter"},
+  "chillers": {
+    "count_per_row": 5, "rows": 2, "centre_x": -12.0, "pitch_x": 4.5, "row_gap_y": 3.0,
+    "unit_x": 2.4, "unit_y": 12.0, "unit_height": 2.5,
+    "flow_m3ps": 90.0, "discharge_speed_mps": 8.0, "temperature_rise_K": 12.0,
+    "discharge_strip_y": 11.0, "kind": "brief (indicative equipment values)",
+    "model": "solid boxes; intake on the two long side faces (normal to x) as fixed-flow sinks; discharge through a top strip whose area = flow / discharge speed so mass flow and momentum flux are both right"
+  },
+  "flues": {
+    "count": 4, "diameter": 0.6, "spacing_y": 2.0, "inset_from_parapet_x": 5.0,
+    "tip_above_roof": 3.0, "exit_speed_mps": 30.0, "exit_temperature_C": 475.0, "kind": "brief (indicative)",
+    "model": "vertical cylinders; fixed-flow exit; isothermal in the MVP with the momentum ratio matched; tip height is the design variable D0 3 m, D1 6 m, D2 9 m"
+  },
+  "intake": {
+    "centre_x": 12.0, "size_x": 6.0, "size_y": 4.0, "height": 3.0,
+    "louvre_width": 3.0, "louvre_height": 1.5, "louvre_faces": "the two side faces normal to y",
+    "flow_m3ps_total": null, "kind": "brief; intake flow to be set and cited",
+    "model": "solid box; each louvre a fixed-flow sink"
+  },
+  "screen": {"height": 4.0, "clearance": 2.0, "variants": ["none", "solid", "50 percent free area"], "kind": "brief", "model": "baffle, variant only (D3, D4)"}
+}
