@@ -1,0 +1,23 @@
+/*  Step 7: run control and monitors.  Iterations, output, and what to record every iteration.  */
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+
+application     simpleFoam;
+
+startFrom       latestTime;      // continue from the last written iteration if restarted
+startTime       0;
+stopAt          endTime;
+endTime         1;            // upper limit; residualControl may stop it earlier
+deltaT          1;               // one "time step" = one SIMPLE iteration
+
+writeControl    timeStep;
+writeInterval   250;             // write all fields every 250 iterations (restart points and the flatness check)
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  10;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable yes;           // the solver re-reads this file each iteration: endTime can be changed while running
+
+
+

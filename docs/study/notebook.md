@@ -1250,3 +1250,27 @@ The plan, the same eight steps as Part C, with what is new in each:
 
 Four runs: stack height 1 and 3 m by momentum ratio 1 and 3; Saleh builds the first (hs = 1 m,
 M = 3, the Figure 5.1 case), the other three are copies with two numbers changed.
+
+## D1. The box of air at tunnel scale (Saleh, 2026-10-12)
+
+Same file as C1 with eight numbers changed: H = 0.075 m; x from -0.625 (inlet 5H upwind of the
+windward wall at -0.25) to 1.125 (15H downwind of the leeward wall at 0); y from -0.575 to 0.575
+(6H beyond the building faces at +-0.125); z to 0.6 (8H); background cell 20 mm. The sides and top
+are further away than in V1 because the building is 3.3 times wider than it is tall, and the
+blockage, building frontal area over domain cross-section, must stay below 3 percent: 0.25 x
+0.075 over 1.15 x 0.6 is 2.7 percent. Result: 150,480 cells, Mesh OK.
+
+One trap met on the way: the controlDict copied from V1 was the finished one, with the monitors
+block that includes a file that does not exist yet in V2, and blockMesh refused to start because
+every OpenFOAM program reads controlDict first. The monitors block was removed; V2 gets its own at
+step 7. Lesson: when copying a case, copy the placeholder versions of system files, or strip the
+functions block before meshing.
+
+## D2a. Two shapes: the building and the stack
+
+The building is the same box script as V1 with new numbers. The stack is new: a vertical cylinder
+3 mm across, whose side is a wall and whose top disc is where the exhaust enters the domain. Those
+must be two different patches, so the script geometry/make_cylinder_stl.py writes two STL files,
+<name>_wall.stl for the side and <name>_exit.stl for the top. The cylinder is open at the bottom,
+because it stands on the roof inside the building, where there is no fluid. 48 segments around the
+circumference make a 3 mm circle smooth enough for 0.3 mm cells.
