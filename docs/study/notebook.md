@@ -1453,3 +1453,18 @@ diffusion smears it at once; and the roof-edge recirculation in k-epsilon drags 
 down. The first is a resolution error and is tested before anything else is concluded: a
 jet-resolved mesh, 0.31 mm cells along the first 5 cm of the jet path, 1.41 million cells, is
 running as case_hs1_M3_jetmesh with residualControl removed and 2,500 iterations.
+
+## D8. The grid check on the jet, and what it rules out (2026-10-12)
+
+The jet-resolved mesh, 0.31 mm cells along the first 5 cm of the jet path, 1.41 million cells
+against 488 thousand, run for 2,500 iterations with the tracer probes watched, gave the same
+answer as the base mesh to within a few percent: FAC2 0.1 at Sct 0.4, tracer at the first
+receptor 0.0210 against 0.0218, plume profiles identical, the jet concentration still down to
+0.21 within 5 mm of the tip. So resolution is not the cause; the base mesh was adequate for the
+jet, and the grid check has done its job in the negative: it rules the mesh out. The excess of
+tracer on the roof is in the model.
+
+Convergence of the tracer in this run: the probe at the first receptor was still rising by about
+4 percent per 250 iterations at 2,500, so the receptor concentrations are, if anything, slightly
+low and the dilution slightly high; a longer run would make the score marginally worse, not
+better. The flow itself was converged by 600.
