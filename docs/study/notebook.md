@@ -1109,3 +1109,62 @@ wrong. Project.md section 6 fixes one value from V1 and V2 together; V2 has a ro
 momentum, a different flow, and will say whether 0.4 is a property of the scalar closure or a
 patch on this wake. The whole sweep is kept as the Schmidt sensitivity band.
 Results: results/V1/tracer_report_medium_realizableKE.json, results/V1/summary.md.
+
+## 14. V2: what the Concordia rooftop-stack experiment measured (2026-10-12) (story step 7, V2 starts)
+
+Source: IRSST report R-848, Stathopoulos, Hajra, Chavez and Bahloul (2014), "A wind tunnel study of
+the effect of adjacent buildings on near-field pollutant dispersion from rooftop emissions".
+Licence CC BY-NC-ND 4.0; the PDF stays out of the repository, digitised values are published as
+derived data with citation (data/raw/SOURCES.md).
+
+The report is mostly about neighbouring buildings. Our V2 case is its reference, Configuration 1,
+the isolated emitting building B1, which appears as a curve in several figures. That is enough,
+and it is exactly the brief's question: how does roof-level dilution depend on stack height and
+exhaust momentum.
+
+The tunnel and the approach flow. Concordia's boundary-layer wind tunnel, 1.8 m square section,
+12.2 m long, spires and 5 cm cube roughness elements upstream. The flow is an urban boundary
+layer: power-law exponent 0.31, roughness length 3.5 mm at model scale, gradient height 95 cm,
+gradient speed 14.2 m/s, speed at building height U_H = 6.2 m/s, friction velocity about 1 m/s,
+turbulence length scale 40 cm. The measured velocity and turbulence-intensity profiles are in
+Figure 3.1 (pdf page 26), compared with ESDU 1974; they must be digitised for the V2 inlet, as the
+Case H table was used for V1. Repeatability of the concentration measurements is quoted as
+plus or minus 15 percent; the gas chromatograph precision is 5 percent.
+
+The building and the stack. Scale 1:200. B1 is 15 m high, 50 m wide and 50 m long at full scale,
+so 7.5 cm by 25 cm by 25 cm in the tunnel, a flat-roofed box like our data hall in proportion
+(ours is 15 by 40 by 60 m). The stack is 3 mm in diameter (0.6 m full scale, the same as our
+flues), placed on the roof centreline either at the upwind edge, Xs = 0, or 20 m downwind of it.
+Stack height hs is 1, 3 or 5 m full scale (0.5, 1.5, 2.5 cm model). The exhaust momentum ratio
+M = Ve/U_H is 1, 2 or 3; the exhaust is non-buoyant, so this is the only exhaust parameter. The
+building Reynolds number is about 31,000 on H and U_H; the stack Reynolds number is 1,900, a
+little below the usual criterion of 2,000, which the authors argue does not affect the
+concentration results. Wind azimuth 0 degrees for all data shown.
+
+What was measured. Tracer gas (SF6 in nitrogen) released from the stack; one-minute samples
+drawn through tubes at receptors on the roof centreline, downwind of the stack, at roughly 5 m
+intervals to 50 m, plus walls in the adjacent-building cases. Results are reported as normalised
+dilution, equation A.13 of the report:
+```
+D_N = D_r Q / (U_H H^2),   D_r = C_e / C_r
+```
+where C_e is the exhaust concentration, C_r the receptor concentration, Q the exhaust volume flow
+and H the building height. D_N is dimensionless, so tunnel and CFD compare directly, and a higher
+value means cleaner air at the receptor. Typical values on the roof of the isolated building are
+0.3 to 3 at hs = 1 m and M = 1, and 1 to 10 at M = 3; dilution increases with distance from the
+stack because the plume rises and spreads.
+
+Where the isolated-building data are. Configuration 1 curves exist for: hs = 1 m, Xs = 0, M = 1
+and 3 (Figures 4.3, 4.4, E2, and 5.1 for M = 3); hs = 3 m, Xs = 0, M = 1 and 3 (Figure D2);
+hs = 1 m, Xs = 20 m, M = 1 and 3 (Figure 4.1); hs = 3 m, Xs = 20 m (Figure E1). The hs = 5 m
+case is mentioned in the text but no isolated-building curve for it was found in the figures.
+
+What V2 must reproduce, from Project.md section 5: the correct ranking of stack heights (hs = 1
+against 3 m, at Xs = 0 and M = 1 and 3), and FAC2 of at least 0.5 on the roof receptors. The
+ASHRAE 2011 model is the second reference: the report shows it under-predicting the tunnel
+dilution by a factor of about 5 near the leeward edge.
+
+The step that comes first. The report gives curves, not tables, so the roof dilutions and the
+approach-flow profile must be digitised from the figures. Digitising adds its own uncertainty on
+top of the tunnel's 15 percent, and the record must say how it was done: which figure, which
+curve, how many points, and a check of a few points read independently.
