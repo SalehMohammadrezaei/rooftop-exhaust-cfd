@@ -1297,3 +1297,50 @@ Principles: the smallest feature in each region sets its cell size; budget = vol
 each level costs 8x per volume, so boxes must shrink by more than 2 in every direction per level;
 write the budget into the dictionary. The rules are verified for a given case by the three-level
 grid study (ratio about 1.4) and the y+ report, never assumed.
+
+## D2b. How an OpenFOAM program knows what to do, and the V2 mesher files
+
+How the programs find their input. OpenFOAM is a few hundred small programs in one folder of
+the installation; `source ~/opt/openfoam2606.sh` puts that folder on the shell's search path, so
+typing a program's name runs it like any command (`which snappyHexMesh` shows the file). No program
+takes the mesh or its settings as arguments. Each assumes it is started inside a case folder and
+reads fixed names from fixed places: system/controlDict first, always; then its own dictionary,
+named after itself, system/<program>Dict; then the inputs that dictionary names, STL files in
+constant/triSurface, the mesh in constant/polyMesh. Outputs go to fixed places too. That is why
+the folder names 0, constant and system and the dictionary names are not free. To find out what a
+program wants: `<program> -help` for its options, `<program> -doc` for its source documentation,
+and the tutorials under $FOAM_TUTORIALS for a working dictionary to copy from.
+
+The two mesher dictionaries for V2. surfaceFeatureExtractDict has three entries, one per STL. The
+building gives its 12 edges. The pipe side is a 48-facet cylinder whose facets meet at 172 degrees,
+so nothing on it counts as sharp; its top rim does, because the side file and the exit file end
+there and `openEdges yes` collects that open rim; the rim is where the jet leaves, so it must stay
+a clean circle. snappyHexMeshDict names three surfaces that become three patches: building and
+stack_wall of type wall, stack_exit of type patch, because it is an inlet and must not get wall
+functions. This is the first time a patch type is set inside the mesher file rather than in
+blockMeshDict.
+
+The refinement boxes, with the reasoning behind each number (H = 0.075 m, background 20 mm,
+level n = 20 mm / 2^n):
+- wakeBox, level 1, 10 mm. The wake behind a low wide box reattaches 3 to 5H behind the leeward
+  wall and V1's was still recovering at 2H; 5H is 0.375 m, rounded up to 0.6 m because 10 mm cells
+  are cheap. It starts 1H ahead of the windward wall (-0.35), reaches 2.7H high (0.2 m) to hold the
+  roof bubble and the rising jet, and 1H beyond each side (+-0.25). 0.095 m3 at 10 mm: 95,000 cells.
+- nearBox, level 2, 5 mm. The building itself: 15 cells per H; half an H of margin beyond the
+  walls (x -0.30 to 0.10, y +-0.17) and almost one H above the roof (z to 0.14). About 150,000.
+- roofBox, level 3, 2.5 mm. The plume along the roof at receptor height: the whole roof length,
+  +-0.05 m wide because the receptor line is at y = 0 and the plume is a few centimetres wide, from
+  just below the roof to half an H above it. About 83,000.
+- plumeBox, level 4, 1.25 mm. The jet bending over, from the stack to 1.5H downstream. About 70,000.
+- stackBox, level 5, 0.625 mm, and pipeBox, level 6, 0.31 mm: the jet. Ten cells across the 3 mm
+  exit is the brief's rule, level 6; the box is a centimetre across because 0.3 mm cells cost
+  30,000 per cubic centimetre. Level 5 is the stepping stone around it.
+Principle: each level costs eight times more per volume, so the boxes must shrink by more than a
+factor of two in every direction per level; the budget is written in the file's header comment.
+`nCellsBetweenLevels 3` makes the staircase from 0.3 mm to 20 mm about twenty cells long.
+
+Commands (case folder, OpenFOAM loaded): `surfaceFeatureExtract > log.surfaceFeatureExtract 2>&1`,
+`snappyHexMesh -overwrite > log.snappyHexMesh 2>&1`, `checkMesh > log.checkMesh 2>&1`. Check:
+cells per level against the budget, "Finished meshing without any errors", eight patches in
+constant/polyMesh/boundary, Mesh OK. Then a slice at y = 0 in ParaView through the stack to see the
+six cell sizes closing in on the pipe.
