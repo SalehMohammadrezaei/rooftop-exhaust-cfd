@@ -1506,3 +1506,20 @@ the brief's first acceptance criterion and may survive even when the absolute di
 since all four cases carry the same bias; and the closure sensitivity with k-omega SST, whose
 shear-stress limiter is known to generate less turbulence in jet shear layers. Any further change
 to how the jet is modelled is a decision for Saleh.
+
+## D10. The low-momentum case passes (2026-10-12)
+
+The stack at 1 m with M = 1, the exhaust leaving at wind speed, scored FAC2 1.0 at Sct 0.4 with a
+geometric mean ratio of 1.2, and FAC2 0.5 at Sct 0.7: every receptor within a factor of two of
+the tunnel, most within 30 percent. The same geometry at M = 3 scored FAC2 0.1 to 0.2. The two
+results together say precisely where the model fails: not in the roof flow, the bubble, or the
+scalar transport along the roof, which the M = 1 case exercises and gets right, but in the rise
+of a jet that has three times the wind speed, which the eddy-viscosity model destroys within three
+diameters (D9). A plume that is trapped on the roof anyway is modelled well; a plume that should
+escape the roof is not allowed to.
+
+The 3 m stack at M = 3 scored FAC2 0 with the CFD 5 to 8 times too low: the taller stack puts the
+exit above the leading-edge bubble, and in the tunnel the jet then rises clear, so the tunnel
+dilution is higher still; the CFD jet is smeared just the same. Ranking between the four cases
+waits for the first case to be continued to 2,500 iterations like the others, because its tracer
+was stopped at 621 by residualControl and is not converged at the far receptors.
