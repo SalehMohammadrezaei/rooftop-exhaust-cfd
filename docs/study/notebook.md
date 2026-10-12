@@ -1780,3 +1780,36 @@ with the building; (3) block A, seven directions at 3 and 10 m/s, run three or f
 background; (6) the acceptance limits, set and cited before block A as the brief requires
 (decision 0011); (7) a morning report. Every modelling choice made overnight is written as "under
 autopilot, for review".
+
+## E9. The applied pipeline, scripted (2026-10-12, autopilot)
+
+Once the hand-built case ran, everything that repeats was scripted, the rule since V0:
+- params/applied_design.json holds the design matrix: speeds, directions, variants D0 to D2 with
+  their flue tips, the opening flows of decision 0010, the core count and iteration counts.
+- workflow/make_applied_case.py makes one run from the hand-built case: it regenerates the STL
+  set rotated to the wind direction with the variant's flue tip, turns the building-fixed
+  refinement boxes into searchableRotatedBox entries so that they turn with the building while
+  the ground layer and the wake box stay aligned with the wind, sets the wind speed in the ABL
+  include file, the top shear stress, the initial guess and the rotated probe positions, and
+  writes a case record. A dry run of the mesher (snappyHexMesh -dry-run) validated the rotated
+  boxes before anything heavy was launched.
+- workflow/run_applied.sh runs one case end to end: mesh in parallel, flow, then the tagged
+  scalars on the frozen flow, then the matrix, then the run record with cells, iterations and
+  wall time.
+- workflow/make_scalars.py adds the twelve tagged scalars (ten chiller discharges, the flue group,
+  and an all-sources scalar as the balance check) with 1 on their own source and 0 on every
+  other inflow, the scalarTransport objects at Sct 0.4, and area-averaged monitors on every sink
+  patch; because the fixed-flow condition makes the normal velocity uniform on a sink, the area
+  average is the flow-weighted mean, which is what the source-to-receptor matrix needs.
+- postproc/matrix.py builds F_ij, the fraction of air at receptor i that came from source j,
+  from the last 200 iterations of the monitors with the amplitude as the convergence record,
+  checks the row sums against the all-sources scalar, and computes the two primary quantities:
+  intake dilution of the flues, D = 1/F, and the chiller inlet temperature rise with feedback,
+  solving (I - F_cc) theta = F_cc dT so that a chiller that breathes another's warm air discharges
+  warmer still.
+- workflow/queue_applied.sh runs several cases at once within a job limit;
+  postproc/collect_applied.py turns the run results into the design table and finds the
+  governing condition.
+Lesson of the night so far: a queue that waits for "no solver running" must test the process
+name exactly (pgrep -x), not the command line, or it waits for its own monitoring shells; and a
+run script must source the OpenFOAM environment before set -e, which the bashrc does not survive.
