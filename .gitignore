@@ -26,3 +26,4 @@ __pycache__/
 *.pyc
 .venv/
 .iotest*
+data/raw/irsst_r848/*.pdf
