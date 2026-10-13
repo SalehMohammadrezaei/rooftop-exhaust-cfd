@@ -27,3 +27,6 @@ __pycache__/
 .venv/
 .iotest*
 data/raw/irsst_r848/*.pdf
+
+# generated figure sources that are too large or regenerable
+results/**/figures_test/

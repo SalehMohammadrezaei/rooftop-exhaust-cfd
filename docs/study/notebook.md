@@ -1973,3 +1973,40 @@ parapet were stopped because every number in the final table must come from one 
 On the GPU: the workstation has an RTX 6000 Ada, idle. Standard OpenFOAM does not use it; GPU
 offload of the pressure solve exists through PETSc or AmgX plugins and a separate build, for
 perhaps a factor of two on a mesh of this size. Not worth a detour in this project.
+
+## F1. The presentation night, 2026-10-13 to 14: repository, figures, renders (autopilot)
+
+Saleh went home with one instruction: make the repository look like an engineer's portfolio, to
+the point, with professional figures and 3D renders, and nothing that reads as machine-written.
+Three things were done.
+
+The repository had 3.5 GB of mesh, time-step and log files tracked in Git, 398 files that rule 9
+forbids, including a 233 MB faces file that GitHub would refuse outright. They were committed in
+the early V1 and V2 sessions before the ignore rules existed. Untracking them is not enough for a
+public repository because the history still carries them, so the history was rewritten with
+git-filter-repo after a backup of the .git directory to ~/scratch/git_backup. The .git directory
+went from 927 MB to 11 MB; the working files stayed on disk; 73 commits survive with their
+messages. No remote existed, so nothing anyone else holds was invalidated.
+
+Headless rendering was solved properly. ParaView's batch tools segfault on this WSL machine
+even under a virtual X server, so a separate conda environment (viz, Python 3.12) holds PyVista
+with the OSMesa software-OpenGL build of VTK 9.6, which reads an OpenFOAM case directly and
+renders without a display. Three scripts under postproc/render draw the geometry, a mesh cut
+through a chiller row with cell edges, and the tracer isosurfaces over the geometry from a fixed
+camera, so every condition gets the same picture. The 2D figures share one style file
+(postproc/style.py: Helvetica-like font, one palette, Crameri colour maps, PNG and PDF of each)
+and are drawn by one script per figure from the raw output: V0 profiles, V1 profiles and
+hit-rate scatter, V2 dilution curves with the factor-of-two band, the applied field slices, and
+the matrix figure (F as a heat map, chiller rise per unit against the limits, receptor
+convergence history). The V1 script recomputes the hit rate from the same files as metrics.py
+and gets the same 0.604, which is the kind of cross-check a figure should carry.
+
+The README was rewritten to the brief's intended reader, an experienced CFD engineer reviewing a
+portfolio: the question, the answer so far with its status honestly marked, the method in one
+table, the validation ladder as a diagram, the known model-form limit, a repository map, the
+commands to reproduce one condition, and what is not done. A LICENSE (MIT for the code, the
+datasets under their own terms) was added. The old magma-coloured slice pictures were removed.
+
+Rule for the future, learned the hard way tonight: never run `pkill -f` with a pattern that
+appears in the calling command line, and never kill a queue by pattern at all; use the process
+id from `jobs -p` or from the run log.

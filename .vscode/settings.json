@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "**/system/*": "OpenFOAM",
+    "**/system/**/*": "OpenFOAM",
+    "**/constant/*": "OpenFOAM",
+    "**/constant/boundaryData/**": "OpenFOAM",
+    "**/0/*": "OpenFOAM",
+    "**/0/include/*": "OpenFOAM",
+    "**/0.orig/*": "OpenFOAM",
+    "**/0.orig/include/*": "OpenFOAM",
+    "**/templates/**": "OpenFOAM",
+    "**/*.orig": "OpenFOAM"
+  }
+}
