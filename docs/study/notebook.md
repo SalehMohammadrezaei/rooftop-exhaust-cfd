@@ -1873,3 +1873,32 @@ direction), chiller air 27.6 percent. Chiller inlet rise per unit along each row
 mean, 4 K worst): not met at this condition. The applied runs on the busy machine took about
 seven hours for the flow and seven for the scalars at 32 cores each, three at a time, far slower
 than the single-run estimate; the brief's cost unit will be rescaled from these timings.
+
+## D13. The Reynolds-stress closure on the V2 jet: no help (2026-10-13, autopilot)
+
+The SSG Reynolds-stress model, run on the V2 1 m, M 3 case with the stresses at the inlet built
+from the measured k and a log-law shear stress, converged in 2,500 iterations (receptor probes
+flat to 0.01 percent) and scored FAC2 0 with a geometric mean ratio of 0.14, between SST (0.135)
+and realizable k-epsilon (0.21). Solving the six stresses separately does not rescue the jet; the
+over-mixing comes through the dissipation equation and the ambient turbulence as much as through
+the stress-strain relation. LRR is running as the second RSM; the expectation is the same. The
+first cheap option of the four listed for Saleh is therefore closed, and the choice for the
+applied flues stays between the effective-height shortcut and a scale-resolving calibration.
+
+## E12. The rotated meshes at 30 and 150 degrees fail (2026-10-13, autopilot)
+
+Of the block A cases launched overnight, those at 0, 60, 90, 120 and 180 degrees meshed and ran;
+the two at 30 and 150 degrees produced two faces of skewness 4.5 against the limit of 4, both at
+the same value, which means the same geometric feature in mirror image, almost certainly a corner
+of the zero-thickness parapet where the rotated sheet crosses the grid at a shallow angle. The
+solver hit a floating-point exception at iteration 14 on both. Lesson: a baffle is the fragile
+piece of a rotated mesh, and a mesh-quality failure must stop the pipeline before the solver, which
+the run script will do from now on. The two cases are re-queued with more snapping iterations and
+the parapet at level 3; if that fails they wait for a session with Saleh, since the fix might be
+geometric (a parapet with thickness).
+
+Cost measured on the busy machine: a 2.6 million cell flow run of 2,000 iterations took 7 hours
+on 32 cores with three runs sharing the box, and the 3,000-iteration scalar stage another 7, so
+about 450 core-hours per applied condition, four to five times the brief's provisional cost unit
+of 100. A single run on an idle machine would be faster; the table in Project.md section 10 must be
+rescaled with a clean timing before block E is planned.

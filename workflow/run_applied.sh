@@ -8,6 +8,7 @@ t0=$(date +%s)
 blockMesh > log.blockMesh 2>&1; surfaceFeatureExtract > log.surfaceFeatureExtract 2>&1
 decomposePar > log.decomposePar 2>&1; mpirun -np $N snappyHexMesh -parallel -overwrite > log.snappyHexMesh 2>&1
 reconstructParMesh -constant > log.reconstructParMesh 2>&1; checkMesh > log.checkMesh 2>&1
+grep -q 'Mesh OK' log.checkMesh || { echo 'MESH CHECK FAILED, stopping before the solver'; exit 2; }
 rm -rf 0 processor*; cp -r 0.orig 0; setExprFields > log.setExprFields 2>&1; decomposePar > log.decomposePar2 2>&1
 mpirun -np $N simpleFoam -parallel > log.simpleFoam 2>&1
 T=$(ls -d processor0/[0-9]* | sed 's|.*/||' | sort -n | tail -1); reconstructPar -latestTime > log.reconstructPar 2>&1
