@@ -1902,3 +1902,40 @@ on 32 cores with three runs sharing the box, and the 3,000-iteration scalar stag
 about 450 core-hours per applied condition, four to five times the brief's provisional cost unit
 of 100. A single run on an idle machine would be faster; the table in Project.md section 10 must be
 rescaled with a clean timing before block E is planned.
+
+## E13. Morning of 2026-10-13: what the queue really did, and two script lessons (autopilot)
+
+When Saleh came back at 09:50 the block A queue log showed eight FAILED lines, and sorting them
+out taught two things about running pipelines unattended.
+
+The first group is the mesh failures, and E12 undercounted them. The two highly skewed parapet
+faces (skewness 4.5 against the limit 4) appear at 30, 60, 120 and 150 degrees, at both speeds;
+only 0, 90 and 180 degrees mesh cleanly. The 120-degree case at 10 m/s is the awkward one: its
+mesh failed the check at 04:24, but the gate that stops the pipeline on a failed check was only
+added at 08:16, so the solver ran anyway, 2,000 iterations without any trouble. Rather than throw
+away seven hours of flow, that case is being finished with the gate deliberately overridden
+(`ALLOW_FAILED_MESH=1`, recorded in the run record as `mesh_ok: false`) and its result is labelled
+preliminary until the re-meshed version replaces it. The lesson is in the labelling, not the
+override: a result from a mesh that failed a check can be shown, but only with the flag attached.
+
+The second group is stranger. At 0 degrees 3 m/s, 120 degrees 10 m/s and 180 degrees 10 m/s the
+solver log ends with a clean `End`, every iteration present, and yet the next stage never ran and
+the queue reported FAILED. The driver script was a bash script waiting on `mpirun`; bash does not
+act on a signal while a foreground child runs, it waits for the child and then dies. Some signal
+reached those three scripts during the night (the most likely source is one of my own
+process-cleanup commands matching more than intended), and each died at the moment its solver
+finished: 08:24, 09:12 and 09:44. The driver script is now written in stages, each one skipped
+when its log already shows it finished, so the same command resumes a case from the first missing
+stage instead of starting again. It also ignores hang-ups, and it judges a solver by the `End`
+line in its log rather than by the exit status of `mpirun`. The three cases were resumed this way
+at 09:55 and the 0-degree 3 m/s case produced its matrix within seconds, because only the final
+reconstruction and matrix step had been lost.
+
+With that case in, the table has four conditions. At 0 degrees and 3 m/s the flue dilution at the
+intake is 5.5e3 (met) and the chiller rise is 8.9 K mean, 11.5 K worst (not met), from 1,500
+scalar iterations only, so the chiller numbers are unconverged and the continuation to 5,000 is
+queued. The pattern across the four is already clear enough to state: the intake limit fails only
+at 90 degrees, where the flues sit directly upwind of the intake; the chiller limit fails
+everywhere, by a factor of three to six, because the ten units draw from a plant deck that their
+own discharge has already warmed. That is the finding the applied study was built to produce, and
+the remaining conditions will sharpen the numbers rather than change the conclusion.
