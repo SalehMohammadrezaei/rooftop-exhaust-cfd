@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Add the tagged passive scalars to a converged applied-case flow (Project.md section 4).
 
-    make_scalars.py <case_dir> --time <converged_time> [--sct 0.4] [--iters 1500]
+    make_scalars.py <case_dir> --time <converged_time> [--sct S] [--iters N]   (defaults from params/applied_design.json)
 
 Writes into <case_dir>/<time>/ one scalar field per source: sC01..sC10 (one per chiller discharge
 strip), sF (the flue group), sAll (every source at once, the balance check), each 1 on its own
@@ -10,9 +10,14 @@ function object per scalar (D = nu + nut/Sct), area averages of every scalar on 
 (chiller intakes, louvres) written every iteration as the source-to-receptor monitors, and the
 outlet area average for the balance. Extends endTime by --iters with residualControl removed.
 """
-import argparse, os, re
+import argparse, json, os, re
 ap = argparse.ArgumentParser(); ap.add_argument("case"); ap.add_argument("--time", required=True)
-ap.add_argument("--sct", type=float, default=0.4); ap.add_argument("--iters", type=int, default=3000); a = ap.parse_args()
+ap.add_argument("--sct", type=float, default=None); ap.add_argument("--iters", type=int, default=None); a = ap.parse_args()
+# defaults come from params/applied_design.json (numerics.sct, numerics.scalar_iters) so a case never silently
+# runs with a count other than the agreed one; the options exist for tests only
+_P = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "params", "applied_design.json")))["numerics"]
+if a.sct is None: a.sct = _P["sct"]
+if a.iters is None: a.iters = _P["scalar_iters"]
 C = a.case; t = a.time
 sources = {f"sC{i:02d}": f"chiller_out_{i:02d}" for i in range(1, 11)}; sources["sF"] = "flue_exit"
 scalars = dict(sources); scalars["sAll"] = None
