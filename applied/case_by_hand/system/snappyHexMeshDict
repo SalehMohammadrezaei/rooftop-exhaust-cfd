@@ -98,7 +98,7 @@ castellatedMeshControls
     refinementSurfaces
     {
         hall                 { level (3 3); patchInfo { type wall; } }
-        parapet              { level (4 4); faceZone parapet; faceType baffle; patchInfo { type wall; } }   // zero-thickness sheet: both sides become walls
+        parapet              { level (4 4); patchInfo { type wall; } }   // solid ring 0.5 m thick (decision 0012)
         chiller_body         { level (4 4); patchInfo { type wall; } }
         chiller_in_01        { level (4 4); patchInfo { type patch; } }
         chiller_in_02        { level (4 4); patchInfo { type patch; } }

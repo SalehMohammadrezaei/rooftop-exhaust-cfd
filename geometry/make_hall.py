@@ -5,7 +5,7 @@
 
 Writes, with outward normals, one file per patch the case needs (names are the patch names):
   hall.stl            the building walls and roof (minus nothing: plant stands on the roof)
-  parapet.stl         zero-thickness vertical strip on the roof perimeter (becomes a baffle)
+  parapet.stl         solid ring on the roof perimeter, 0.5 m thick (decision 0012)
   chiller_body.stl    the ten chiller boxes, all faces except the intake faces and discharge strips
   chiller_in_NN.stl   two long side faces of chiller NN (sinks, fixed flow)
   chiller_out_NN.stl  discharge strip on top of chiller NN (source, fixed flow)
@@ -63,9 +63,13 @@ def cylinder(wall, disc, xc, yc, z0, z1, r, n=48):
 H = P["hall"]; L, W, Hh = H["length_x"], H["width_y"], H["height"]; roof = Hh
 files = {}
 hall = STL("hall"); box(hall, -L/2, -W/2, 0, L/2, W/2, Hh, skip=("zmin",)); files["hall"] = hall.write()
-par = STL("parapet"); hp = P["parapet"]["height"]
-for (a, b) in (((-L/2,-W/2),(L/2,-W/2)), ((L/2,-W/2),(L/2,W/2)), ((L/2,W/2),(-L/2,W/2)), ((-L/2,W/2),(-L/2,-W/2))):
-    par.quad((a[0],a[1],roof),(b[0],b[1],roof),(b[0],b[1],roof+hp),(a[0],a[1],roof+hp))
+par = STL("parapet"); hp = P["parapet"]["height"]; tp = P["parapet"]["thickness"]
+# a closed ring (decision 0012): outer walls on the roof edge, inner walls tp inward, flat top; normals
+# outward. Four boxes that touch without overlapping; bottom open because it sits on the roof.
+box(par, -L/2,    -W/2,    roof, L/2,    -W/2+tp, roof+hp, skip=("zmin",))   # south strip, full length
+box(par, -L/2,     W/2-tp, roof, L/2,     W/2,    roof+hp, skip=("zmin",))   # north strip, full length
+box(par, -L/2,    -W/2+tp, roof, -L/2+tp, W/2-tp, roof+hp, skip=("zmin",))   # west strip, between them
+box(par,  L/2-tp, -W/2+tp, roof,  L/2,    W/2-tp, roof+hp, skip=("zmin",))   # east strip, between them
 files["parapet"] = par.write()
 C = P["chillers"]; body = STL("chiller_body"); k = 0
 strip_x = C["flow_m3ps"] / C["discharge_speed_mps"] / C["discharge_strip_y"]

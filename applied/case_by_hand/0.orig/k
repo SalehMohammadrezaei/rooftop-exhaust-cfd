@@ -10,7 +10,7 @@ boundaryField
     top             { type zeroGradient; }
     sides           { type slip; }
     ground          { type kqRWallFunction; value $internalField; }
-    "(hall|parapet|parapet_slave|chiller_body|flue_wall|intake_body)" { type kqRWallFunction; value $internalField; }
+    "(hall|parapet|chiller_body|flue_wall|intake_body)" { type kqRWallFunction; value $internalField; }
     "chiller_in_.*" { type zeroGradient; }             // air leaves: no condition needed
     "intake_louvre_.*" { type zeroGradient; }
     "chiller_out_.*" { type fixedValue; value uniform 0.24; }

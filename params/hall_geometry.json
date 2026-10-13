@@ -1,7 +1,7 @@
 {
   "description": "Generic data hall, Project.md section 3. Origin at the building centre on the ground; x along the long axis toward the flue end; z up. All lengths in metres. Kinds: indicative values from the brief are labelled; they are replaced by datasheet values when cited.",
   "hall":    {"length_x": 60.0, "width_y": 40.0, "height": 15.0, "kind": "brief"},
-  "parapet": {"height": 1.2, "kind": "brief", "model": "zero-thickness baffle on the roof perimeter"},
+  "parapet": {"height": 1.2, "thickness": 0.5, "kind": "brief height; thickness is a model assumption (decision 0012)", "model": "closed solid ring on the roof perimeter, 0.5 m inward from the roof edge"},
   "chillers": {
     "count_per_row": 5, "rows": 2, "centre_x": -12.0, "pitch_x": 4.5, "row_gap_y": 3.0,
     "unit_x": 2.4, "unit_y": 12.0, "unit_height": 2.5,
