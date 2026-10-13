@@ -3,7 +3,7 @@
 # Each: fields, initial guess, decompose, solve, reconstruct, y+, sample, score.
 cd "$(dirname "$0")"; source ~/opt/openfoam2606.sh >/dev/null 2>&1
 DATA=../../../data/raw/aij_caseH/RS_caseH.csv
-while pgrep -f "simpleFoam -parallel" >/dev/null; do sleep 30; done
+while pgrep -x simpleFoam >/dev/null; do sleep 30; done
 run_one() {   # $1 case dir, $2 result name, $3 mesh (yes = blockMesh only for empty cases), $4 sample FO name
     c=$1; name=$2
     ( cd "$c" || exit 1
