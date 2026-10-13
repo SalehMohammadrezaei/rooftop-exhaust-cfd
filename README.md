@@ -30,7 +30,7 @@ source-to-receptor matrix below shows which unit feeds which. The intake limit f
 flues sit upwind of it. These four rows come from the first pass on a zero-thickness parapet; the
 agreed eight-case matrix on the final geometry is running (see Status).
 
-![Source-to-receptor matrix, chiller inlet rise and convergence at 0 deg, 10 m/s](results/applied/figures/matrix_D0_dir000_U10.png)
+![Source-to-receptor matrix, chiller inlet rise and convergence at 0 deg, 10 m/s](results/applied/first_pass_sheet_parapet/matrix_D0_dir000_U10.png)
 
 ## Method
 
