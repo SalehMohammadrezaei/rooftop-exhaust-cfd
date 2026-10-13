@@ -1,4 +1,4 @@
-# 0011 Acceptance limits for the two primary quantities (taken under autopilot 2026-10-12, for Saleh's review)
+# 0011 Acceptance limits for the two primary quantities (taken under autopilot 2026-10-12; approved by Saleh 2026-10-13 without change)
 
 Project.md section 9 requires both limits to be set and cited before block A. They are fixed here
 and are not adjusted afterwards (CLAUDE.md rule 4).
