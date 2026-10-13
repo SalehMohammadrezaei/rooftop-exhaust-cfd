@@ -1864,3 +1864,12 @@ roof flow carries down the row, and the intake hut, downstream of the rows, brea
 chiller air. That is the chiller self-recirculation problem the brief suspected, now with numbers,
 and it is what the screen variants D3 and D4 exist to address. Numbers are revised when the 5,000
 iteration result lands.
+
+### E11 addendum: converged numbers at 0 degrees, 10 m/s (5,000 scalar iterations)
+Receptor fractions flat to 0.02 percent over the last 200 iterations, row sums within 0.4 percent
+of the all-sources scalar. Intake: flue fraction 1e-8 (dilution effectively infinite at this
+direction), chiller air 27.6 percent. Chiller inlet rise per unit along each row 2.3, 5.4, 6.8,
+8.0, 7.2 K; mean 5.95 K, worst 8.03 K (the fourth unit of each row). Against decision 0011 (2 K
+mean, 4 K worst): not met at this condition. The applied runs on the busy machine took about
+seven hours for the flow and seven for the scalars at 32 cores each, three at a time, far slower
+than the single-run estimate; the brief's cost unit will be rescaled from these timings.
