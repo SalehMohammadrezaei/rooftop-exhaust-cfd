@@ -12,7 +12,7 @@ outlet area average for the balance. Extends endTime by --iters with residualCon
 """
 import argparse, os, re
 ap = argparse.ArgumentParser(); ap.add_argument("case"); ap.add_argument("--time", required=True)
-ap.add_argument("--sct", type=float, default=0.4); ap.add_argument("--iters", type=int, default=1500); a = ap.parse_args()
+ap.add_argument("--sct", type=float, default=0.4); ap.add_argument("--iters", type=int, default=3000); a = ap.parse_args()
 C = a.case; t = a.time
 sources = {f"sC{i:02d}": f"chiller_out_{i:02d}" for i in range(1, 11)}; sources["sF"] = "flue_exit"
 scalars = dict(sources); scalars["sAll"] = None

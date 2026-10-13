@@ -3,7 +3,7 @@
   "wind": {"Zref_m": 15.0, "z0_m": 0.3, "kappa": 0.40, "Cmu": 0.09, "speeds_mps": [3.0, 10.0], "extra_speeds_mps": [6.0, 14.0], "directions_deg": [0, 30, 60, 90, 120, 150, 180], "kind": "Project.md section 4"},
   "variants": {"D0": {"flue_tip_m": 3.0, "screen": "none"}, "D1": {"flue_tip_m": 6.0, "screen": "none"}, "D2": {"flue_tip_m": 9.0, "screen": "none"}},
   "flows": {"chiller_in_m3ps": -90.0, "chiller_out_m3ps": 90.0, "flue_exit_m3ps": 19.4, "louvre_m3ps": -5.0, "kind": "decision 0010"},
-  "numerics": {"cores": 32, "flow_iters": 2000, "scalar_iters": 1500, "sct": 0.4, "write_interval": 500, "kind": "numerical"},
+  "numerics": {"cores": 32, "flow_iters": 2000, "scalar_iters": 3000, "sct": 0.4, "write_interval": 500, "kind": "numerical"},
   "mesh": {"background_m": 4.0, "note": "levels and boxes as in applied/case_by_hand/system/snappyHexMeshDict; building-fixed boxes rotate with the building (searchableRotatedBox), the wake box stays wind-aligned"},
   "blocks": {"A": {"variant": "D0", "directions": "all", "speeds": [3.0, 10.0]}, "B": {"variant": "D0", "directions": "governing", "speeds": [6.0, 14.0]}, "C": {"variants": ["D1", "D2"], "directions": "governing", "speeds": "governing"}}
 }
