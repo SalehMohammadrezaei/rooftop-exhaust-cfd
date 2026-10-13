@@ -1939,3 +1939,37 @@ at 90 degrees, where the flues sit directly upwind of the intake; the chiller li
 everywhere, by a factor of three to six, because the ten units draw from a plant deck that their
 own discharge has already warmed. That is the finding the applied study was built to produce, and
 the remaining conditions will sharpen the numbers rather than change the conclusion.
+
+## E14. Decisions with Saleh, the parapet that was not the problem, and a smaller matrix (2026-10-13)
+
+Saleh approved the acceptance limits of 0011 unchanged, chose a parapet with thickness (0012,
+0.5 m so that it is two cells thick at level 4) and accepted the RANS jet with a fixed trigger
+for a scale-resolving check (0013). The parapet became four touching boxes in make_hall.py, the
+baffle machinery left the mesh dictionary, and the 0-degree mesh came out clean at 2.60 million
+cells with a maximum skewness of 0.37.
+
+The 30-degree mesh failed again with the same two faces at skewness 4.5089, the same value to
+four digits as with the sheet, which is how one learns that a guess was wrong: the parapet never
+caused it. Writing the faces out with `checkMesh -writeSets vtk`, decoding the point block and
+rotating the coordinates back by minus 30 degrees put them at x = -19.8 m, y = -13.5 m and
+y = +1.5 m, 1.8 m above the roof. That is the vertical corner edge of chiller unit 1 in each row,
+where the end wall meets the side intake face. A sharp box corner crossing a 0.25 m grid at 30
+degrees leaves one badly stretched cell at that edge; the same relative angle recurs at 60, 120
+and 150 degrees, which is why the number was identical everywhere. Doubling the snapping effort
+(nSolveIter 100, nRelaxIter 8, nFeatureSnapIter 20), the fix queued overnight that never actually
+ran, made it slightly worse at 4.76. The lesson for the notebook: locate a bad face before
+guessing which surface made it; the set file takes a minute to write and read. E12 stands
+corrected by this entry.
+
+Saleh also asked whether a GitHub project needs 192 cores. It does not. The brief's full matrix
+of 42 cases was the ambition of the autopilot night, not a portfolio's need, and the question
+had already been answered by four conditions. The agreed scope is now eight cases, recorded in
+params/applied_design.json under blocks R1 to R4: 0, 90 and 180 degrees at 10 m/s, 90 degrees
+at 3 m/s, the 6 m and 9 m flue tips at 90 degrees, and a coarse and a fine mesh at 90 degrees
+for the grid band. The oblique directions are left as a recorded gap with the chiller-corner
+diagnosis above. Four cases run at a time on 128 cores; the four overnight jobs on the sheet
+parapet were stopped because every number in the final table must come from one geometry.
+
+On the GPU: the workstation has an RTX 6000 Ada, idle. Standard OpenFOAM does not use it; GPU
+offload of the pressure solve exists through PETSc or AmgX plugins and a separate build, for
+perhaps a factor of two on a mesh of this size. Not worth a detour in this project.
