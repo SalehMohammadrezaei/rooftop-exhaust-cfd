@@ -1836,3 +1836,31 @@ ParaView cannot render without a display here): the flow separates at the hall's
 chiller rows and the intake hut sit in the slow roof layer, the flues stand at the downwind end
 in air already slowed by the plant, and the wake extends beyond 80 m. The tagged scalars are
 running on this frozen flow next.
+
+## E11. The first source-to-receptor matrix: 0 degrees, 10 m/s (2026-10-13, autopilot, preliminary)
+
+Twelve tagged scalars on the frozen flow, each 1 on its own source and 0 elsewhere: ten chiller
+discharges, the flue group, and an all-sources scalar as the check. After 1,500 iterations the
+matrix came out as follows, and then showed it was not finished: the chiller fractions had
+settled to within 1 percent over the last 500 iterations, but the fraction of chiller air at the
+intake louvres was still rising, 0.08, 0.23, 0.27 at 500-iteration intervals, because the louvres
+are the farthest receptor downstream and a passive scalar on a relaxed steady solver takes
+thousands of iterations to fill the far field, the same lesson as the V1 tracer. The run was
+continued to 5,000 and the default scalar length raised to 3,000 for every queued case. The
+all-sources check held throughout: the row sums agreed with the all-sources scalar within 0.4
+percent, so nothing was lost or double-counted.
+
+What the matrix said even before convergence, and will not change in kind: at 0 degrees, wind
+along the long axis with the chillers upwind of the flues and the intake, the flue exhaust does
+not reach the intake at all, the fraction is 1e-8 and the dilution is tens of millions, because
+the intake is upwind of the flues. The chillers are another matter. Each unit ingests 12 to 16
+percent of its own discharge and the downstream units ingest their upwind neighbours' as well,
+so with 12 K added at every pass the inlet temperature rise came out at 2.3 K for the first unit
+of each row, climbing to 8 K at the fourth, mean 5.9 K, against the limits of 2 K mean and 4 K
+worst from decision 0011. The two rows are mirror images to three digits, which is the symmetry
+check passing. The picture at louvre height (results/applied/figures, sAll on plane zint) shows
+why: at this direction the whole plant zone sits under a blanket of chiller discharge that the
+roof flow carries down the row, and the intake hut, downstream of the rows, breathes 27 percent
+chiller air. That is the chiller self-recirculation problem the brief suspected, now with numbers,
+and it is what the screen variants D3 and D4 exist to address. Numbers are revised when the 5,000
+iteration result lands.
