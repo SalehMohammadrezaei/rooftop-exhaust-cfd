@@ -17,18 +17,19 @@ temperature rise of at most 2 K mean and 4 K on the worst unit (about 3 and 5 % 
 
 ## Answer so far
 
-| wind | U at roof height | flue dilution at intake | chiller inlet rise, mean / worst unit | status |
+| wind | U at roof height | flue dilution at intake | chiller inlet rise, mean / worst unit | verdict |
 |---|---|---|---|---|
-| 0 deg (along the hall, chillers upwind) | 10 m/s | 7.6e7 | 5.9 K / 8.0 K | converged |
-| 60 deg | 10 m/s | 3.3e5 | 7.1 K / 11.7 K | tracers not yet settled |
-| 90 deg (flues upwind of the intake) | 10 m/s | 1.2e3 | 5.7 K / 8.8 K | tracers not yet settled |
-| 0 deg | 3 m/s | 5.5e3 | 8.9 K / 11.5 K | tracers not yet settled |
+| 0 deg (along the hall, chillers upwind of the flues) | 10 m/s | 9.6e7 | 6.0 K / 8.1 K | chillers fail |
+| 90 deg (across the hall) | 10 m/s | 1.2e3 | 5.9 K / 9.3 K | both fail |
+| 180 deg (flues directly upwind of the intake) | 10 m/s | 58 | 6.1 K / 8.3 K | both fail |
+| 90 deg | 3 m/s | 9.6e3 | 7.3 K / 13.0 K | chillers fail |
 
-The chiller limit fails at every condition, by three to six times. It is a layout problem, not a
-wind problem: each unit draws from a plant deck its neighbours have already heated, and the
-source-to-receptor matrix below shows which unit feeds which. The intake limit fails only when the
-flues sit upwind of it. These four rows come from the first pass on a zero-thickness parapet; the
-agreed eight-case matrix on the final geometry is running (see Status).
+Flue tip 3 m above the roof, 5,000 tracer iterations, receptor fractions flat to 0.01 % (1.6 % at
+3 m/s), scalar balance closed to 0.5 %. The chiller limit fails at every condition, by three to
+six times. It is a layout problem, not a wind problem: each unit draws from a plant deck its
+neighbours have already heated, and the source-to-receptor matrix below shows which unit feeds
+which. The intake limit fails whenever the flues are upwind of it, by a factor of 35 at 180 deg;
+the taller-flue variants at that direction are running (see Status).
 
 ![Source-to-receptor matrix, chiller inlet rise and convergence at 0 deg, 10 m/s](results/applied/first_pass_sheet_parapet/matrix_D0_dir000_U10.png)
 
@@ -97,11 +98,12 @@ Figures: `python3 postproc/figures/fig_*.py`; renders need the `viz` conda envir
 
 ## Status
 
-Done: validation V0 to V2b, pipeline, four first-pass conditions. Running: the eight-case matrix
-on the final geometry (0, 90, 180 deg at 10 m/s; 90 deg at 3 m/s; 6 m and 9 m flue tips at
-90 deg; coarse and fine grids at 90 deg). Not done: oblique directions (30 to 150 deg) fail the
-mesh skewness check at two chiller corners; a plant screen variant; the buoyant check in the
-brief. The study notebook in `docs/study/notebook.md` records the work in the order it happened,
+Done: validation V0 to V2b, pipeline, the four base conditions above on the final geometry
+(a first pass on a zero-thickness parapet is kept under `results/applied/first_pass_sheet_parapet`;
+the parapet change moved the chiller numbers by 0.05 K). Running: the 6 m and 9 m flue tips at
+the governing direction, 180 deg. Pending: the grid study (coarse and fine meshes at the governing
+condition). Not done: oblique directions (30 to 150 deg) fail the mesh skewness check at two
+chiller corners; a plant screen variant; the buoyant check in the brief. The study notebook in `docs/study/notebook.md` records the work in the order it happened,
 including what went wrong.
 
 ## Data and licences

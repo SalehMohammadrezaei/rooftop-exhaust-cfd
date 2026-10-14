@@ -2039,3 +2039,35 @@ limit. The convergence amplitude of the new run is 0.0007 percent. So the 0.5 m 
 nothing that matters at this wind, which is what one expects of a feature 1.2 m high on a 15 m
 building, and the check is recorded in 0012. The 90 and 180 degree cases and the 3 m/s case are
 in the last fifth of their tracer stages.
+
+## F4. The four base conditions on the solid parapet (2026-10-14, 07:20, autopilot)
+
+All four finished between 05:00 and 07:00, each at 5,000 tracer iterations, each with the
+receptor fractions flat to 0.01 percent over the last window except the 3 m/s case at 1.6
+percent, and the scalar balance closed to 0.5 percent or better. The table in
+results/applied/summary.md is the record; the numbers that matter:
+
+| condition | flue dilution at the intake | chiller rise mean / worst |
+|---|---|---|
+| 0 deg, 10 m/s | 9.6e7 | 6.0 / 8.1 K |
+| 90 deg, 10 m/s | 1,190 | 5.9 / 9.3 K |
+| 180 deg, 10 m/s | 58 | 6.1 / 8.3 K |
+| 90 deg, 3 m/s | 9,580 | 7.3 / 13.0 K |
+
+The new fact is the 180-degree row. With the wind reversed the four flues stand 13 m directly
+upwind of the intake and the dilution at the louvres is 58, thirty-five times short of the
+limit of 2,000; at 90 degrees it was 1,190, a near miss. So the governing direction for the
+intake is 180 degrees, not 90 as the reduced matrix assumed when it was written yesterday
+morning on the strength of three sheet-parapet results. The brief says the flue-height variants
+run at the governing condition, so the 6 m and 9 m tips (D1, D2) were generated and launched at
+180 degrees at 07:20 rather than at 90. This is a departure from the agreed list in
+params/applied_design.json (R3 says 90 degrees) made on the brief's own rule; Saleh decides
+whether the 90-degree variants are added, and the grid study (R4) waits for the same choice of
+direction because the coarse and fine mesh definitions also need his approval.
+
+The chiller side did not change its story. The worst unit is still a downwind unit in each row
+(unit 4 or 9 along the hall, unit 2 or 3 across it), the mean sits between 5.9 and 7.3 K, and
+the low-wind case is the worst at 13 K on unit 2, as the reduced matrix anticipated. The
+convergence amplitude of 1.6 percent at 3 m/s is above the 1 percent rule; the number is
+reported with that flag rather than run further, because the case is three times the limit
+either way.
