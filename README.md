@@ -23,13 +23,18 @@ temperature rise of at most 2 K mean and 4 K on the worst unit (about 3 and 5 % 
 | 90 deg (across the hall) | 10 m/s | 1.2e3 | 5.9 K / 9.3 K | both fail |
 | 180 deg (flues directly upwind of the intake) | 10 m/s | 58 | 6.1 K / 8.3 K | both fail |
 | 90 deg | 3 m/s | 9.6e3 | 7.3 K / 13.0 K | chillers fail |
+| 180 deg, flue tip raised to 6 m | 10 m/s | 112 | 6.5 K / 8.8 K | both fail |
+| 180 deg, flue tip raised to 9 m | 10 m/s | 822 | 6.8 K / 9.2 K | both fail |
 
-Flue tip 3 m above the roof, 5,000 tracer iterations, receptor fractions flat to 0.01 % (1.6 % at
-3 m/s), scalar balance closed to 0.5 %. The chiller limit fails at every condition, by three to
-six times. It is a layout problem, not a wind problem: each unit draws from a plant deck its
-neighbours have already heated, and the source-to-receptor matrix below shows which unit feeds
-which. The intake limit fails whenever the flues are upwind of it, by a factor of 35 at 180 deg;
-the taller-flue variants at that direction are running (see Status).
+Flue tip 3 m above the roof unless stated, 5,000 tracer iterations, receptor fractions flat to
+0.01 % (1.6 % at 3 m/s), scalar balance closed to 0.5 %. The chiller limit fails at every
+condition, by three to six times. It is a layout problem, not a wind problem: each unit draws
+from a plant deck its neighbours have already heated, and the source-to-receptor matrix below
+shows which unit feeds which. The intake limit fails whenever the flues are upwind of it, by a
+factor of 35 at 180 deg with the 3 m tip. Raising the tip to 9 m buys a factor of 14 and still
+misses the limit by 2.4; the design response at this layout is not flue height alone but moving
+the intake or the flues. The 9 m result sits inside the band where decision 0013 calls for a
+scale-resolving check of the jet.
 
 ![Source-to-receptor matrix, chiller inlet rise and convergence at 0 deg, 10 m/s](results/applied/first_pass_sheet_parapet/matrix_D0_dir000_U10.png)
 
@@ -100,9 +105,10 @@ Figures: `python3 postproc/figures/fig_*.py`; renders need the `viz` conda envir
 
 Done: validation V0 to V2b, pipeline, the four base conditions above on the final geometry
 (a first pass on a zero-thickness parapet is kept under `results/applied/first_pass_sheet_parapet`;
-the parapet change moved the chiller numbers by 0.05 K). Running: the 6 m and 9 m flue tips at
-the governing direction, 180 deg. Pending: the grid study (coarse and fine meshes at the governing
-condition). Not done: oblique directions (30 to 150 deg) fail the mesh skewness check at two
+the parapet change moved the chiller numbers by 0.05 K), the 6 m and 9 m flue tips at the
+governing direction. Running: the same two tips at 90 deg. Pending: the grid study (coarse and
+fine meshes at the governing condition) and the scale-resolving check of the 9 m jet that
+decision 0013 triggers. Not done: oblique directions (30 to 150 deg) fail the mesh skewness check at two
 chiller corners; a plant screen variant; the buoyant check in the brief. The study notebook in `docs/study/notebook.md` records the work in the order it happened,
 including what went wrong.
 

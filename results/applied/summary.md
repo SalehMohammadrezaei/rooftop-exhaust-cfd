@@ -8,6 +8,8 @@ Limits (decision 0011): intake dilution of flue exhaust >= 2000; chiller inlet r
 | D0 | 0 | 10 | 9.57e+07 | 1.04e-08 | 6.00 | 8.08 (4) | 0.164 | 0.38 | 0.00 | yes | NO |
 | D0 | 90 | 10 | 1.19e+03 | 8.44e-04 | 5.86 | 9.25 (3) | 0.163 | 0.51 | 0.00 | NO | NO |
 | D0 | 180 | 10 | 58.1 | 1.72e-02 | 6.14 | 8.31 (2) | 0.169 | 0.23 | 0.01 | NO | NO |
+| D1 | 180 | 10 | 112 | 8.90e-03 | 6.51 | 8.81 (2) | 0.172 | 0.25 | 0.00 | NO | NO |
+| D2 | 180 | 10 | 822 | 1.22e-03 | 6.77 | 9.19 (7) | 0.175 | 0.27 | 0.00 | NO | NO |
 
 Governing condition for intake dilution (D0): 180 deg at 10 m/s, dilution 58.1.
 Governing condition for chiller inlet rise (D0): 90 deg at 3 m/s, worst unit 12.96 K, mean 7.34 K.

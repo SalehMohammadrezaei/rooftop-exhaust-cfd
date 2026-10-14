@@ -2071,3 +2071,25 @@ the low-wind case is the worst at 13 K on unit 2, as the reduced matrix anticipa
 convergence amplitude of 1.6 percent at 3 m/s is above the 1 percent rule; the number is
 reported with that flag rather than run further, because the case is three times the limit
 either way.
+
+## F5. Flue height at the governing direction (2026-10-14, 18:15, autopilot)
+
+The 6 m and 9 m tips at 180 degrees and 10 m/s finished at 18:06, both converged (amplitude
+below 0.01 percent, balance 0.3 percent). The intake dilution goes 58, 112, 822 for tips of 3,
+6 and 9 m: each 3 m of flue buys a factor of two to seven, and the 9 m tip still misses the
+limit of 2,000 by a factor of 2.4. The flues stand 13 m upwind of the intake at this direction,
+so the plume has no room to rise before it reaches the louvres; the design response at this
+layout is to move the intake or the flues, not to keep raising the flues. The chiller rise crept
+up with flue height, 6.0, 6.5, 6.8 K mean, which is a flow-field effect of the taller pipes on
+the plant-deck wake and worth a look in the slices tomorrow rather than a conclusion tonight.
+
+The 9 m result at 822 lies inside the band of 700 to 6,000 in which decision 0013 says the
+RANS jet is not to be trusted for the verdict, because V2 showed this closure over-mixes a jet
+at momentum ratios of 3 and above and the flues run at 1.7 to 5.7. So the scale-resolving check
+is now triggered, on the D2 case at 180 degrees, 10 m/s. That is a new simulation type (LES or a
+hybrid), a mesh and a time-stepping decision, and a cost estimate; it is the first item for
+Saleh tomorrow, with the grid-study definitions.
+
+The two tips at 90 degrees, the direction the reduced matrix originally named, started at
+18:10 and run overnight; at 90 degrees the 3 m tip gave 1,190, so a taller flue has a fair chance
+of passing there, which would make the final verdict a direction-dependent one.
