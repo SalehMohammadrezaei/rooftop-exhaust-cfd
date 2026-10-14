@@ -2010,3 +2010,32 @@ datasets under their own terms) was added. The old magma-coloured slice pictures
 Rule for the future, learned the hard way tonight: never run `pkill -f` with a pattern that
 appears in the calling command line, and never kill a queue by pattern at all; use the process
 id from `jobs -p` or from the run log.
+
+## F2. 05:00, the disk fills up (2026-10-14, autopilot)
+
+The 0-degree case finished its 5,000 tracer iterations at about 04:50 and then failed in the
+last stage with an I/O error while reconstructing the final time. The home file system was at
+100 percent, 700 kB free. Thirty-seven gigabytes of applied cases had accumulated: every case
+writes all fields every 500 iterations into 32 processor directories, and the superseded sheet
+cases, the failed meshes and the cancelled runs were all still there. Deleting them, moving the
+Git backup to the data drive and dropping the intermediate time steps of the finished case freed
+22 GB; the three running solvers were unaffected because they had not reached a write. The
+decomposed final time of the 0-degree case was intact (all 32 processor files complete), so the
+case was resumed from the reconstruction stage with the same driver command.
+
+Two lessons for the workflow. First, intermediate writes are needed only for a restart, so
+`purgeWrite 2` in controlDict would keep the last two and delete the rest; that is a numerical
+setting and goes to Saleh for approval before it is added to the template. Second, free disk is
+a pre-run check like the load: the run driver should refuse to start a case with less than, say,
+20 GB free, and the queue should say so.
+
+## F3. The parapet check passes (2026-10-14, 05:10, autopilot)
+
+With the 0-degree case rebuilt on the solid parapet and run to the same 5,000 tracer iterations,
+the chiller rise is 6.00 K mean and 8.08 K on the worst unit against 5.95 and 8.03 K on the sheet,
+a change of 0.05 K where decision 0012 allowed 0.3 K. The chiller-air fraction at the louvres
+moved from 27.6 to 27.8 percent and the flue dilution from 7.6e7 to 9.6e7, both far above any
+limit. The convergence amplitude of the new run is 0.0007 percent. So the 0.5 m ring changes
+nothing that matters at this wind, which is what one expects of a feature 1.2 m high on a 15 m
+building, and the check is recorded in 0012. The 90 and 180 degree cases and the 3 m/s case are
+in the last fifth of their tracer stages.

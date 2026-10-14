@@ -31,3 +31,15 @@ the thin-sheet problem in a different form.
   reported as a model-form effect of the parapet, not hidden.
 - All block A directions are regenerated from the parameter file and re-run; the sheet results
   are kept in the record as the first pass.
+
+## Check (2026-10-14, 0 degrees 10 m/s, 5,000 tracer iterations on both geometries)
+
+| quantity | sheet parapet | solid 0.5 m parapet | change |
+|---|---|---|---|
+| chiller rise, mean | 5.95 K | 6.00 K | +0.05 K |
+| chiller rise, worst unit (4 and 9) | 8.03 K | 8.08 K | +0.06 K |
+| chiller air at the louvres | 27.6 % | 27.8 % | +0.2 points |
+| flue dilution at the intake | 7.6e7 | 9.6e7 | both far above 2000 |
+
+Both chiller numbers move by less than the 0.3 K agreed above: the change is accepted as small,
+and the solid parapet is the geometry of record for every applied result from here on.
