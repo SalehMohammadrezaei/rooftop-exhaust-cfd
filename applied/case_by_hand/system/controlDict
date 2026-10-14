@@ -18,7 +18,6 @@ timePrecision   6;
 runTimeModifiable yes;
 functions
 {
-    #include "scalarTransport"
     probes          // primary-quantity stand-ins for the flow run: U at the two louvres, above chiller row centres, at the flue tips
     {
         type probes; libs (sampling); fields (U k p); writeControl timeStep;

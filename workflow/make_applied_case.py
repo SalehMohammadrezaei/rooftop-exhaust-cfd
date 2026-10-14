@@ -47,6 +47,7 @@ def rot_probes(m):
         x, y, z = map(float, p.split()); X, Y = rot(x, y); out.append(f"({X:.2f} {Y:.2f} {z:g})")
     return "probeLocations ( " + " ".join(out) + " );"
 cd = re.sub(r"probeLocations \((.*?)\);", rot_probes, cd, flags=re.S); cd = re.sub(r"endTime\s+\d+;", f"endTime         {P['numerics']['flow_iters']};", cd)
+cd = cd.replace('    #include "scalarTransport"\n', "")   # the flow stage carries no tracers; make_scalars.py adds them
 open(os.path.join(C, "system", "controlDict"), "w").write(cd)
 cores = a.cores or P["numerics"]["cores"]; open(os.path.join(C, "system", "decomposeParDict"), "w").write(f"FoamFile {{ version 2.0; format ascii; class dictionary; object decomposeParDict; }}\nnumberOfSubdomains {cores};\nmethod scotch;\n")
 rec = {"case": name, "variant": a.variant, "direction_deg": a.dir, "U_H": a.speed, "flue_tip_m": tip, "ustar": ustar, "tau_top": tau, "k_abl": kabl, "cores": cores,

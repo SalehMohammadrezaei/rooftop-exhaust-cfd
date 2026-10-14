@@ -22,6 +22,7 @@ def history(case, recv):
             if line.startswith("# Time"): names = [re.sub(r"^\w+\((\w+)\)$", r"\1", h) for h in line[1:].split()][1:]; continue
             if line.startswith("#"): continue
             v = line.split(); rows.append((float(v[0]), dict(zip(names, map(float, v[1:])))))
+    while rows and sum(rows[0][1].values()) == 0: rows.pop(0)      # the flow stage, before the tracers were released
     return rows
 
 def main():
