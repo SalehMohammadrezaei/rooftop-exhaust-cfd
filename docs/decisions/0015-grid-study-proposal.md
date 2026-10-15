@@ -1,4 +1,4 @@
-# 0015 Grid study of the applied case (proposal, drafted under autopilot 2026-10-14, for Saleh's decision)
+# 0015 Grid study of the applied case (proposed under autopilot 2026-10-14; approved by Saleh 2026-10-15 as proposed: 180 deg, 10 m/s, D0, ratio 1.41)
 
 ## Purpose
 Every applied number is quoted without a grid band. Project.md section 7 asks for one; the

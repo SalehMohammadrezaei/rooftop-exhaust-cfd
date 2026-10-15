@@ -12,11 +12,17 @@ workflow/run_applied.sh.
 """
 import argparse, json, math, os, re, shutil, subprocess
 ap = argparse.ArgumentParser(); ap.add_argument("--dir", type=float, required=True); ap.add_argument("--speed", type=float, required=True)
-ap.add_argument("--variant", default="D0"); ap.add_argument("--out", required=True); ap.add_argument("--cores", type=int, default=None); a = ap.parse_args()
+ap.add_argument("--variant", default="D0"); ap.add_argument("--out", required=True); ap.add_argument("--cores", type=int, default=None)
+ap.add_argument("--mesh-scale", type=float, default=1.0, help="multiply the background cell by this (0.709 = finer by 1.41, 1.41 = coarser); refinement levels and boxes unchanged (decision 0015)")
+ap.add_argument("--name-suffix", default=""); a = ap.parse_args()
 repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); P = json.load(open(os.path.join(repo, "params", "applied_design.json")))
-src = os.path.join(repo, "applied", "case_by_hand"); name = f"{a.variant}_dir{int(round(a.dir)):03d}_U{a.speed:g}"
+src = os.path.join(repo, "applied", "case_by_hand"); name = f"{a.variant}_dir{int(round(a.dir)):03d}_U{a.speed:g}{a.name_suffix}"
 C = os.path.join(os.path.expanduser(a.out), name); shutil.rmtree(C, ignore_errors=True); os.makedirs(os.path.join(C, "constant"))
 shutil.copytree(os.path.join(src, "system"), os.path.join(C, "system")); shutil.copytree(os.path.join(src, "0.orig"), os.path.join(C, "0.orig"))
+if a.mesh_scale != 1.0:   # decision 0015: scale the background cell, keep every level and box
+    bp = os.path.join(C, "system", "blockMeshDict"); b = open(bp).read()
+    b = re.sub(r"dx\s+([\d.]+);", lambda mm: f"dx      {float(mm.group(1)) * a.mesh_scale:.4g};", b, count=1)
+    open(bp, "w").write(b)
 for f in ("transportProperties", "turbulenceProperties"): shutil.copy(os.path.join(src, "constant", f), os.path.join(C, "constant", f))
 tip = P["variants"][a.variant]["flue_tip_m"]
 subprocess.run(["python3", os.path.join(repo, "geometry", "make_hall.py"), os.path.join(repo, "params", "hall_geometry.json"), os.path.join(C, "constant", "triSurface"), "--flue-tip", str(tip), "--rotate", str(a.dir)], check=True, capture_output=True)

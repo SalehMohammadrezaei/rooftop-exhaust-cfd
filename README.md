@@ -77,6 +77,13 @@ triggered only if a result lands within a factor of three of the limit (decision
 
 ![Velocity and roof-source air fraction, 0 deg 10 m/s](results/applied/figures/fields_D0_dir000_U10.png)
 
+A hand check with the ASHRAE minimum-dilution method (Wilson and Lamb) gives 19 to 30 for the
+intake at the worst direction, against 58 from the CFD with the 3 m tip: the hand method is built
+as a lower bound and the two agree within the factor of three the method claims. The hand method
+carries no credit for stack height beyond the straight-line distance, so it stays near 25 while
+the CFD climbs to 822 at 9 m; that gain is plume rise, which only a flow model can give and which
+is also where the RANS jet is least trusted. Details in `results/applied/hand_method.md`.
+
 ## Repository
 
 ```

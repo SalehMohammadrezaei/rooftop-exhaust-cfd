@@ -2116,3 +2116,32 @@ moved from 6.0 to 6.8 K, which is the wake of four taller pipes on the deck flow
 Eight of the eight agreed cases minus the two grid meshes are now done, plus two 180-degree
 variants that the brief's governing-condition rule added. What remains needs Saleh: the grid
 study (0015), the jet check (0014), and the disk housekeeping.
+
+## F7. Grid study launched and a hand check of the intake dilution (2026-10-15, autopilot)
+
+Saleh approved the grid study as proposed in 0015 and asked for a comparison with a method
+outside CFD. Both are under way.
+
+The grid study: the generator got a `--mesh-scale` option that multiplies the background cell
+and leaves every refinement level and box alone, so the three meshes share the same level
+ladder and differ only in absolute size. Coarse (5.64 m background) came out at 1.05 million
+cells, fine (2.84 m) at 6.70 million, against 2.60 million for the base; the ratios are 2.5 and
+2.6 per step where a uniform 1.41 refinement would give 2.8, close enough for the GCI. Both
+meshed clean and are in their flow stages at 180 degrees, 10 m/s, D0; the fine one runs on 64
+cores.
+
+The hand check: the ASHRAE minimum-dilution method of Wilson and Lamb, as reproduced in RP-1635
+(the chapter text itself is not freely available, so the equations and the three constant sets
+are taken from that report and labelled as such). It is a lower bound for the worst wind
+direction: an initial dilution from the jet, 1 + C1 M^2, plus a distance dilution B1 U_H S^2 / Q,
+combined as the square of the sum of the square roots. With M = 1.72 and a stretched-string
+distance of 11.6 m from the nearest flue to the nearest louvre, the four flues together give 19
+to 30 depending on the constants. The CFD at 180 degrees gives 58 with the 3 m tip. That is the
+right relation, the lower bound below the model by a factor of two to three, and it says the
+CFD is not wildly optimistic at the worst direction. The disagreement is in the trend: the hand
+method has no stack-height term beyond S and barely moves with the tip (19 to 22), while the CFD
+climbs to 822 at 9 m. The difference is plume rise, which the hand method does not represent
+(ASHRAE's separate geometric method would, through the Briggs momentum rise of about 3 m), and
+which is also exactly where V2 found the RANS jet least reliable. So the hand check and the
+jet-check proposal point at the same place. Results in results/applied/hand_method.md and the
+figure beside the matrix figures.
