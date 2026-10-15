@@ -1,0 +1,26 @@
+{
+ "case": "D0_dir090_U10",
+ "variant": "D0",
+ "direction_deg": 90.0,
+ "U_H": 10.0,
+ "flue_tip_m": 3.0,
+ "ustar": 1.017339112576169,
+ "tau_top": 1.034978869977267,
+ "k_abl": 3.4499295665908902,
+ "cores": 32,
+ "repo_commit": "bc2dac360cb79c1bae9845f899bd967cbae5836b",
+ "params": "params/applied_design.json",
+ "flows": {
+  "chiller_in_m3ps": -90.0,
+  "chiller_out_m3ps": 90.0,
+  "flue_exit_m3ps": 19.4,
+  "louvre_m3ps": -5.0,
+  "kind": "decision 0010"
+ },
+ "wall_time_s": 67171,
+ "cells": 2599675,
+ "mesh_ok": true,
+ "flow_iterations": 2000,
+ "scalar_iterations": 5000,
+ "host": "b-11uxx6xvs954"
+}
