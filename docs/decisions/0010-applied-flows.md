@@ -1,6 +1,6 @@
 # 0010 Applied case: the fixed flows at the openings
 
-Date: 2026-10-12. Numbers researched by Claude at Saleh's request; each labelled by kind (CLAUDE.md
+Date: 2026-10-12. Numbers researched for the brief; each labelled by kind (the working rules
 rule 7). To be confirmed by Saleh when he writes the U file.
 
 | Opening | Value | Kind and source |

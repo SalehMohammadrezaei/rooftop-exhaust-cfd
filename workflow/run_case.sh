@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run one generated case serially: mesh, check, solve, y+, log extraction, run record.
 #   run_case.sh <case_dir>
-# Serial on purpose: V0 cases are a few thousand cells. Parallel runs need an agreed core count (CLAUDE.md rule 12).
+# Serial on purpose: V0 cases are a few thousand cells. Parallel runs need an agreed core count (working rule 12).
 # OpenFOAM's bashrc is not clean under "set -u", so source it first.
 source "$HOME/opt/openfoam2606.sh" >/dev/null 2>&1
 . "$WM_PROJECT_DIR/bin/tools/RunFunctions"

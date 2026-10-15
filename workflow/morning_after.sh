@@ -22,4 +22,5 @@ for c in "$@"; do
   T=$(ls -d "$A/$c"/[0-9]* | sed 's|.*/||' | sort -n | tail -1)
   python flow.py "$A/$c" --time "$T" --out "$REPO/results/applied/figures/plume_$c.png" 2>&1 | grep -v WARN
 done
+python3 $REPO/postproc/crop.py $REPO/results/applied/figures/plume_*.png --margin 60 >/dev/null
 echo "MORNING DONE $(date +%H:%M)"

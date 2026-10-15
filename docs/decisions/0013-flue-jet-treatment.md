@@ -1,4 +1,4 @@
-# 0013 How the flue jets are treated in the applied matrix (decided by Saleh 2026-10-13)
+# 0013 How the flue jets are treated in the applied matrix (decided 2026-10-13)
 
 ## Background
 V2 (decision 0008) showed that the realizable k-epsilon closure mixes a vertical stack jet out

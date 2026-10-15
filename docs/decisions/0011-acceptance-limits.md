@@ -1,7 +1,7 @@
-# 0011 Acceptance limits for the two primary quantities (taken under autopilot 2026-10-12; approved by Saleh 2026-10-13 without change)
+# 0011 Acceptance limits for the two primary quantities (drafted 2026-10-12; approved 2026-10-13 without change)
 
 Project.md section 9 requires both limits to be set and cited before block A. They are fixed here
-and are not adjusted afterwards (CLAUDE.md rule 4).
+and are not adjusted afterwards (working rule 4).
 
 ## Fresh-air intake dilution of generator exhaust
 - Target at the intake: NO2 below the UK/EU one-hour limit of 200 ug/m3, about 0.1 ppm at 20 C

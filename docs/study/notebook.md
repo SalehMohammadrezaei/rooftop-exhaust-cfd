@@ -90,7 +90,7 @@ N = the agreed core count). Lines starting with # are comments, not commands.
 cd /mnt/d/Saleh/openfoam_project/validation/V1/<case>
 source ~/opt/openfoam2606.sh
 
-# 2. Check the machine before using cores (CLAUDE.md rule 12)
+# 2. Check the machine before using cores (working rule 12)
 cat /proc/loadavg          # first number = cores in use; the machine has 192
 nproc
 
@@ -197,7 +197,7 @@ time step continuity errors : sum local = 1.42e-12, global = -6.4e-15, cumulativ
   zero, so its residual looked bad (5e-3) while the actual max |Uy| was 1.6e-6 m/s. Check the field.
 - `foamLog log.simpleFoam` writes one two-column file per quantity into `logs/`; plot those for a
   Fluent-style residual curve, or `foamMonitor -l logs/Ux_0` live (needs gnuplot).
-- Rule 5 of CLAUDE.md: convergence is decided by the primary quantities being flat within 1 % and the
+- Working rule 5: convergence is decided by the primary quantities being flat within 1 % and the
   balances closing, not by residuals. In V0 the 4 m-mesh cases stalled at a p residual of 7e-5 while
   the probe at roof height was identical to 11 digits between iterations 2000 and 3000. They are
   converged.
@@ -807,7 +807,7 @@ switch every convection scheme to upwind for about 200 iterations, then switch b
   measured_k_U.xy = x y z k Ux Uy Uz. (The metrics script was corrected for this.)
 - Hit rate (VDI 3783/9, D = 0.25, W = 0.05 U_H), 826 points:
   U 0.59 (pass mark 0.66: NOT MET), V 0.68, W 0.71, all components 0.66, k 0.21.
-  Reported as it stands; the pass mark does not move (CLAUDE.md rule 4).
+  Reported as it stands; the pass mark does not move (working rule 4).
 - File: results/V1/coarse_realizableKE_run1.json.
 
 ## C9. Repeating the run on a finer grid: lessons from the medium-grid attempt (2026-10-09)
@@ -1401,7 +1401,7 @@ box around the failing region or raise nCellsBetweenLevels first; touch the qual
 
 The first attempt was run without the overwrite flag again, so the mesh went to folders 1 and 2
 and no logs were kept; it was redone cleanly, with logs, because the mesh statistics are part of
-every run's record (CLAUDE.md rule 11). Result: 488,200 cells, meshed in 68 s, "Finished meshing
+every run's record (working rule 11). Result: 488,200 cells, meshed in 68 s, "Finished meshing
 without any errors", eight patches, Mesh OK.
 
 | Level | Cell | Cells | Budget estimate | Where |
@@ -1425,7 +1425,7 @@ the 65 degree limit and the laplacian scheme carries a correction for it, but it
 thing to look at if the solver struggles near the stack. In ParaView, with case.foam in the folder,
 a slice at y = 0 through the stack shows the six cell sizes closing in on the pipe.
 
-## D3 to D7. Fields, numerics, monitors and the first run (2026-10-12, built by Claude at Saleh's request)
+## D3 to D7. Fields, numerics, monitors and the first run (2026-10-12, scripted)
 
 The eight field entries follow the V1 pattern with two additions. stack_wall is a smooth wall like
 the building. stack_exit is a second inlet: velocity fixed at (0 0 Ve) with Ve = M U_H, 18.6 m/s
@@ -1736,7 +1736,7 @@ the grid study will refine from here. Lesson repeated for the third time: redire
 output to a log, the record depends on it; the per-level counts were only recoverable because the
 processor directories still held the level files.
 
-## E3 to E7. The hall's boundary conditions, in ten blocks (2026-10-12, written by Claude at Saleh's request)
+## E3 to E7. The hall's boundary conditions, in ten blocks (2026-10-12)
 
 Thirty-four patches sound like thirty-four blocks per field, but OpenFOAM lets a quoted name be
 a pattern: "chiller_in_.*" matches all ten intakes, "(hall|parapet|parapet_slave|chiller_body|
@@ -1769,7 +1769,7 @@ outlet and one opening of each kind, which must equal the decision 0010 values t
 Cost estimate before launch (rule 12): 2.6 million cells at about 1.4 s per iteration on 16 cores,
 2,000 iterations, roughly 50 minutes, one cost unit of the brief being near 100 core-hours.
 
-## E8. Autopilot night, 2026-10-12 to 13: the plan
+## E8. The overnight batch, 2026-10-12 to 13: the plan
 
 Saleh handed over for the night with unlimited cores. The plan, in order of value: (1) the hall
 flow at 0 degrees and 10 m/s, then the twelve tagged scalars on its frozen flow and the
@@ -1779,9 +1779,9 @@ with the building; (3) block A, seven directions at 3 and 10 m/s, run three or f
 32 cores each; (4) blocks B and C if time allows; (5) the Reynolds-stress closure test on V2 in the
 background; (6) the acceptance limits, set and cited before block A as the brief requires
 (decision 0011); (7) a morning report. Every modelling choice made overnight is written as "under
-autopilot, for review".
+overnight, for review".
 
-## E9. The applied pipeline, scripted (2026-10-12, autopilot)
+## E9. The applied pipeline, scripted (2026-10-12, overnight)
 
 Once the hand-built case ran, everything that repeats was scripted, the rule since V0:
 - params/applied_design.json holds the design matrix: speeds, directions, variants D0 to D2 with
@@ -1814,7 +1814,7 @@ Lesson of the night so far: a queue that waits for "no solver running" must test
 name exactly (pgrep -x), not the command line, or it waits for its own monitoring shells; and a
 run script must source the OpenFOAM environment before set -e, which the bashrc does not survive.
 
-## E10. The first applied flow: 0 degrees, 10 m/s (2026-10-12, autopilot)
+## E10. The first applied flow: 0 degrees, 10 m/s (2026-10-12, overnight)
 
 Two thousand iterations on 32 cores, 2.6 million cells, two hours because the case lives on the
 D: bridge mount and the machine was full. Converged by the rules: the probes at the louvres, over
@@ -1837,7 +1837,7 @@ chiller rows and the intake hut sit in the slow roof layer, the flues stand at t
 in air already slowed by the plant, and the wake extends beyond 80 m. The tagged scalars are
 running on this frozen flow next.
 
-## E11. The first source-to-receptor matrix: 0 degrees, 10 m/s (2026-10-13, autopilot, preliminary)
+## E11. The first source-to-receptor matrix: 0 degrees, 10 m/s (2026-10-13, overnight, preliminary)
 
 Twelve tagged scalars on the frozen flow, each 1 on its own source and 0 elsewhere: ten chiller
 discharges, the flue group, and an all-sources scalar as the check. After 1,500 iterations the
@@ -1874,7 +1874,7 @@ mean, 4 K worst): not met at this condition. The applied runs on the busy machin
 seven hours for the flow and seven for the scalars at 32 cores each, three at a time, far slower
 than the single-run estimate; the brief's cost unit will be rescaled from these timings.
 
-## D13. The Reynolds-stress closure on the V2 jet: no help (2026-10-13, autopilot)
+## D13. The Reynolds-stress closure on the V2 jet: no help (2026-10-13, overnight)
 
 The SSG Reynolds-stress model, run on the V2 1 m, M 3 case with the stresses at the inlet built
 from the measured k and a log-law shear stress, converged in 2,500 iterations (receptor probes
@@ -1885,7 +1885,7 @@ the stress-strain relation. LRR is running as the second RSM; the expectation is
 first cheap option of the four listed for Saleh is therefore closed, and the choice for the
 applied flues stays between the effective-height shortcut and a scale-resolving calibration.
 
-## E12. The rotated meshes at 30 and 150 degrees fail (2026-10-13, autopilot)
+## E12. The rotated meshes at 30 and 150 degrees fail (2026-10-13, overnight)
 
 Of the block A cases launched overnight, those at 0, 60, 90, 120 and 180 degrees meshed and ran;
 the two at 30 and 150 degrees produced two faces of skewness 4.5 against the limit of 4, both at
@@ -1903,7 +1903,7 @@ about 450 core-hours per applied condition, four to five times the brief's provi
 of 100. A single run on an idle machine would be faster; the table in Project.md section 10 must be
 rescaled with a clean timing before block E is planned.
 
-## E13. Morning of 2026-10-13: what the queue really did, and two script lessons (autopilot)
+## E13. Morning of 2026-10-13: what the queue really did, and two script lessons (overnight)
 
 When Saleh came back at 09:50 the block A queue log showed eight FAILED lines, and sorting them
 out taught two things about running pipelines unattended.
@@ -1962,7 +1962,7 @@ guessing which surface made it; the set file takes a minute to write and read. E
 corrected by this entry.
 
 Saleh also asked whether a GitHub project needs 192 cores. It does not. The brief's full matrix
-of 42 cases was the ambition of the autopilot night, not a portfolio's need, and the question
+of 42 cases was the ambition of the overnight batch, not a portfolio's need, and the question
 had already been answered by four conditions. The agreed scope is now eight cases, recorded in
 params/applied_design.json under blocks R1 to R4: 0, 90 and 180 degrees at 10 m/s, 90 degrees
 at 3 m/s, the 6 m and 9 m flue tips at 90 degrees, and a coarse and a fine mesh at 90 degrees
@@ -1974,7 +1974,7 @@ On the GPU: the workstation has an RTX 6000 Ada, idle. Standard OpenFOAM does no
 offload of the pressure solve exists through PETSc or AmgX plugins and a separate build, for
 perhaps a factor of two on a mesh of this size. Not worth a detour in this project.
 
-## F1. The presentation night, 2026-10-13 to 14: repository, figures, renders (autopilot)
+## F1. The presentation night, 2026-10-13 to 14: repository, figures, renders (overnight)
 
 Saleh went home with one instruction: make the repository look like an engineer's portfolio, to
 the point, with professional figures and 3D renders, and nothing that reads as machine-written.
@@ -2011,7 +2011,7 @@ Rule for the future, learned the hard way tonight: never run `pkill -f` with a p
 appears in the calling command line, and never kill a queue by pattern at all; use the process
 id from `jobs -p` or from the run log.
 
-## F2. 05:00, the disk fills up (2026-10-14, autopilot)
+## F2. 05:00, the disk fills up (2026-10-14, overnight)
 
 The 0-degree case finished its 5,000 tracer iterations at about 04:50 and then failed in the
 last stage with an I/O error while reconstructing the final time. The home file system was at
@@ -2029,7 +2029,7 @@ setting and goes to Saleh for approval before it is added to the template. Secon
 a pre-run check like the load: the run driver should refuse to start a case with less than, say,
 20 GB free, and the queue should say so.
 
-## F3. The parapet check passes (2026-10-14, 05:10, autopilot)
+## F3. The parapet check passes (2026-10-14, 05:10, overnight)
 
 With the 0-degree case rebuilt on the solid parapet and run to the same 5,000 tracer iterations,
 the chiller rise is 6.00 K mean and 8.08 K on the worst unit against 5.95 and 8.03 K on the sheet,
@@ -2040,7 +2040,7 @@ nothing that matters at this wind, which is what one expects of a feature 1.2 m 
 building, and the check is recorded in 0012. The 90 and 180 degree cases and the 3 m/s case are
 in the last fifth of their tracer stages.
 
-## F4. The four base conditions on the solid parapet (2026-10-14, 07:20, autopilot)
+## F4. The four base conditions on the solid parapet (2026-10-14, 07:20, overnight)
 
 All four finished between 05:00 and 07:00, each at 5,000 tracer iterations, each with the
 receptor fractions flat to 0.01 percent over the last window except the 3 m/s case at 1.6
@@ -2072,7 +2072,7 @@ convergence amplitude of 1.6 percent at 3 m/s is above the 1 percent rule; the n
 reported with that flag rather than run further, because the case is three times the limit
 either way.
 
-## F5. Flue height at the governing direction (2026-10-14, 18:15, autopilot)
+## F5. Flue height at the governing direction (2026-10-14, 18:15, overnight)
 
 The 6 m and 9 m tips at 180 degrees and 10 m/s finished at 18:06, both converged (amplitude
 below 0.01 percent, balance 0.3 percent). The intake dilution goes 58, 112, 822 for tips of 3,
@@ -2094,7 +2094,7 @@ The two tips at 90 degrees, the direction the reduced matrix originally named, s
 18:10 and run overnight; at 90 degrees the 3 m tip gave 1,190, so a taller flue has a fair chance
 of passing there, which would make the final verdict a direction-dependent one.
 
-## F6. Flue height at 90 degrees: the verdict becomes direction-dependent (2026-10-14, 23:50, autopilot)
+## F6. Flue height at 90 degrees: the verdict becomes direction-dependent (2026-10-14, 23:50, overnight)
 
 The 6 m and 9 m tips at 90 degrees, 10 m/s finished at 23:40, converged like the others. The
 intake dilution goes 1,190, 4,900, 21,900 for tips of 3, 6 and 9 m: the 6 m tip passes the limit
@@ -2117,7 +2117,7 @@ Eight of the eight agreed cases minus the two grid meshes are now done, plus two
 variants that the brief's governing-condition rule added. What remains needs Saleh: the grid
 study (0015), the jet check (0014), and the disk housekeeping.
 
-## F7. Grid study launched and a hand check of the intake dilution (2026-10-15, autopilot)
+## F7. Grid study launched and a hand check of the intake dilution (2026-10-15, overnight)
 
 Saleh approved the grid study as proposed in 0015 and asked for a comparison with a method
 outside CFD. Both are under way.

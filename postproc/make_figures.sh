@@ -21,3 +21,4 @@ if command -v conda >/dev/null 2>&1; then
     python mesh.py "$OLDPWD/$CASE0" --out "$OLDPWD/results/applied/figures/mesh_cut.png"
     python flow.py "$OLDPWD/$CASE0" --time "$(ls -d "$OLDPWD/$CASE0"/[0-9]* | sed 's|.*/||' | sort -n | tail -1)" --out "$OLDPWD/results/applied/figures/plume_D0_dir000_U10.png" )
 fi
+python3 postproc/crop.py results/applied/figures/plume_*.png results/applied/figures/geometry.png --margin 60 >/dev/null

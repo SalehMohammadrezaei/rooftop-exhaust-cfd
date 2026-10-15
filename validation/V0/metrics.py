@@ -61,7 +61,7 @@ def main():
             row[f"flat_{f}_prev_last_pct"] = round(100 * ef, 4)
         qi, qo = flow(case, "flowIn", t), flow(case, "flowOut", t)
         row["mass_imbalance_pct"] = round(100 * abs(qi + qo) / abs(qi), 6)
-        # CLAUDE.md rule 5: converged = primary quantities flat within 1 % over the monitoring
+        # working rule 5: converged = primary quantities flat within 1 % over the monitoring
         # window and balances closed within 1 %. residualControl is reported, not used.
         row["flat_ok"] = bool(row["flat_U_prev_last_pct"] < 1.0 and row["flat_k_prev_last_pct"] < 1.0)
         row["pass"] = bool(row["dU_building_pct"] < limit and row["dk_building_pct"] < limit

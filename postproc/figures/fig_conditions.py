@@ -24,13 +24,13 @@ def main():
     dil = np.array([r["intake_dilution_flues"] for *_, r in rows]); mean = np.array([r["chiller_rise_mean_K"] for *_, r in rows])
     worst = np.array([r["chiller_rise_max_K"] for *_, r in rows]); amp = np.array([r.get("convergence_max_rel_amplitude_pct_last_window", 0) for *_, r in rows])
     y = np.arange(len(rows))
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(style.FULL, 0.55 * len(rows) + 1.4), sharey=True, gridspec_kw={"wspace": 0.12})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(style.FULL, 0.36 * len(rows) + 1.1), sharey=True, gridspec_kw={"wspace": 0.12})
     for ax in (ax1, ax2):
         ax.set_yticks(y); ax.set_ylim(len(rows) - 0.5, -0.5); ax.tick_params(axis="y", length=0)
     ax1.set_yticklabels(lab)
     for i in y:
         h = "////" if amp[i] > 1 else None
-        ax1.barh(i, dil[i], color=style.CFD if dil[i] >= 2000 else style.CFD3, height=0.6, hatch=h, edgecolor="white", lw=0)
+        ax1.barh(i, dil[i], color=style.CFD if dil[i] >= 2000 else style.CFD3, height=0.62, hatch=h, edgecolor="white", lw=0)
         ax2.barh(i, mean[i], color=style.CFD if mean[i] <= 2 else style.CFD3, height=0.6, hatch=h, edgecolor="white", lw=0)
     ax2.plot(worst, y, "o", color=style.INK, ms=4, label="worst unit")
     ax1.set_xscale("log"); ax1.axvline(2000, color=style.INK, lw=0.8, ls="--"); ax1.text(2000, 1.02, "limit 2000", ha="center", fontsize=7, transform=ax1.get_xaxis_transform())

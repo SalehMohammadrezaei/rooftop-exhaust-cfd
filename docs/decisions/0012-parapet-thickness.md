@@ -1,4 +1,4 @@
-# 0012 The parapet gets a thickness (decided by Saleh 2026-10-13)
+# 0012 The parapet gets a thickness (decided 2026-10-13)
 
 ## Problem
 The parapet was a zero-thickness sheet on the roof perimeter, meshed as a snappyHexMesh baffle

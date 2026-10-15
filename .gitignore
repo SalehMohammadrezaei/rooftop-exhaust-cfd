@@ -34,3 +34,6 @@ results/**/figures_test/
 # interpolated initial fields (setExprFields) are regenerated from 0.orig; slice-figure PDFs are too heavy
 **/0/U
 results/applied/figures/fields_*.pdf
+
+# time directories without a decimal point (e.g. 2000/) were not caught by the pattern above
+[1-9]*/
