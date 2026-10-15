@@ -54,7 +54,7 @@ def main():
     axs[0, 0].set_ylabel("$y$ [m]   (1 m above the roof)"); axs[1, 0].set_ylabel("$z$ [m]   (centre plane)")
     axs[1, 0].set_xlabel("$x$ [m]"); axs[1, 1].set_xlabel("$x$ [m]")
     if a.title: fig.suptitle(a.title, x=0.01, ha="left", fontsize=9)
-    style.save(fig, a.out); print("wrote", a.out)
+    style.save(fig, a.out, pdf=False)   # a filled-contour PDF is several MB; print("wrote", a.out)
 
 if __name__ == "__main__":
     main()

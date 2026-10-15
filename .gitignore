@@ -30,3 +30,7 @@ data/raw/irsst_r848/*.pdf
 
 # generated figure sources that are too large or regenerable
 results/**/figures_test/
+
+# interpolated initial fields (setExprFields) are regenerated from 0.orig; slice-figure PDFs are too heavy
+**/0/U
+results/applied/figures/fields_*.pdf

@@ -42,12 +42,12 @@ def use():
         "axes.formatter.use_mathtext": True,
     })
 
-def save(fig, path):
+def save(fig, path, pdf=True):
     """PNG for the README, PDF for a report; same basename."""
     import os
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fig.savefig(path if path.endswith(".png") else path + ".png")
-    fig.savefig((path[:-4] if path.endswith(".png") else path) + ".pdf")
+    if pdf: fig.savefig((path[:-4] if path.endswith(".png") else path) + ".pdf")
     plt.close(fig)
 
 def panel_label(ax, s):
