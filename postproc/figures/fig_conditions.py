@@ -16,7 +16,7 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("results"); ap.add_argument("--out", required=True); a = ap.parse_args()
     rows = []
     for f in sorted(glob.glob(os.path.join(a.results, "*.json"))):
-        r = json.load(open(f)); m = re.match(r"(D\d)_dir(\d+)_U([\d.]+)", r["case"])
+        r = json.load(open(f)); m = re.match(r"(D\d)_dir(\d+)_U([\d.]+)$", r["case"])   # grid-study cases carry a suffix and are summarised by gci_applied.py
         if not m: continue
         rows.append((m.group(1), int(m.group(2)), float(m.group(3)), r))
     rows.sort(key=lambda t: (t[2], t[1], t[0]))

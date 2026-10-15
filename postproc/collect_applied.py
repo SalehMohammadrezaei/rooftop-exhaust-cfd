@@ -14,7 +14,7 @@ ap = argparse.ArgumentParser(); ap.add_argument("root"); ap.add_argument("--out"
 LIM = {"dilution": 2000.0, "mean_K": 2.0, "max_K": 4.0}
 rows = []
 for f in sorted(glob.glob(os.path.join(a.root, "*.json"))):
-    r = json.load(open(f)); m = re.match(r"(D\d)_dir(\d+)_U([\d.]+)", r["case"])
+    r = json.load(open(f)); m = re.match(r"(D\d)_dir(\d+)_U([\d.]+)$", r["case"])   # grid-study cases carry a suffix and are summarised by gci_applied.py
     if not m: continue
     rows.append({"variant": m.group(1), "dir": int(m.group(2)), "U": float(m.group(3)), "dilution": r["intake_dilution_flues"], "F_flue": r["intake_fraction_from_flues"],
                  "mean_K": r["chiller_rise_mean_K"], "max_K": r["chiller_rise_max_K"], "worst_unit": r["chiller_rise_argmax"], "self": max(r["chiller_self_recirculation_diag"]),
