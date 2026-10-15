@@ -2093,3 +2093,26 @@ Saleh tomorrow, with the grid-study definitions.
 The two tips at 90 degrees, the direction the reduced matrix originally named, started at
 18:10 and run overnight; at 90 degrees the 3 m tip gave 1,190, so a taller flue has a fair chance
 of passing there, which would make the final verdict a direction-dependent one.
+
+## F6. Flue height at 90 degrees: the verdict becomes direction-dependent (2026-10-14, 23:50, autopilot)
+
+The 6 m and 9 m tips at 90 degrees, 10 m/s finished at 23:40, converged like the others. The
+intake dilution goes 1,190, 4,900, 21,900 for tips of 3, 6 and 9 m: the 6 m tip passes the limit
+of 2,000 with a margin of 2.4, the 9 m tip by 11. Across the wind the flues are not in line with
+the intake and the plume has the width of the roof to rise and spread before anything reaches
+the louvres, so each 3 m of height buys a factor of four to five. Along the wind from the flue
+end (180 degrees) the same 3 m buys two to seven and the 9 m tip still fails. So the flue-height
+lever works at 90 degrees and does not work at 180, and the verdict a report must give is:
+6 m clears the limit for all directions except the one with the flues straight upwind of the
+intake, and that direction needs a layout change.
+
+The chiller numbers at 90 degrees are identical for the three tips to three figures (5.86 K
+mean, 9.25 K on unit 3, balance 0.51 percent). That is expected rather than suspicious: at 90
+degrees the chiller compound and the flues sit side by side across the wind, the flue pipes
+change nothing upstream of the chillers, and the three cases share every mesh setting except the
+flue box. At 180 degrees the taller pipes stand upwind of the plant deck and the chiller mean
+moved from 6.0 to 6.8 K, which is the wake of four taller pipes on the deck flow.
+
+Eight of the eight agreed cases minus the two grid meshes are now done, plus two 180-degree
+variants that the brief's governing-condition rule added. What remains needs Saleh: the grid
+study (0015), the jet check (0014), and the disk housekeeping.

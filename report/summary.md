@@ -1,7 +1,7 @@
 # Rooftop exhaust re-entrainment at a data hall: one-page summary
 
-Draft of 2026-10-14. Numbers are from `results/applied/summary.md`; the study is in progress
-(flue tips at 90 degrees running, grid study and jet check pending).
+Draft of 2026-10-15. Numbers are from `results/applied/summary.md`; the study is in progress
+(grid study and jet check pending).
 
 ## Question
 For a 60 x 40 x 15 m data hall with ten rooftop chillers, four generator flues and one fresh-air
@@ -31,15 +31,18 @@ over-mixes a vertical jet at momentum ratios above 3.
 | 180 deg | 10 m/s | 3 m | 58 | 6.1 / 8.3 K |
 | 180 deg | 10 m/s | 6 m | 112 | 6.5 / 8.8 K |
 | 180 deg | 10 m/s | 9 m | 822 | 6.8 / 9.2 K |
+| 90 deg | 10 m/s | 6 m | 4,900 | 5.9 / 9.3 K |
+| 90 deg | 10 m/s | 9 m | 21,900 | 5.9 / 9.3 K |
 
 ## Findings
 1. The chiller limit fails at every condition by three to six times. The matrix shows each
    downwind unit taking 13 to 17 % of its intake air from the single nearest neighbour alone,
    40 % from all chillers together; the upwind unit of each row is the only one near the limit. This is the row layout, not the wind, and the fix is spacing,
    taller discharge or ducted intakes.
-2. The intake limit fails whenever the flues are upwind of it. At 180 degrees the 3 m tip misses
-   by a factor of 35; 6 m by 18; 9 m by 2.4. Flue height alone does not reach the limit at this
-   layout with the flues 13 m from the intake.
+2. The intake limit fails whenever the flues are upwind of it. Across the wind (90 degrees) a
+   6 m tip passes with a margin of 2.4 and 9 m by 11. Along the wind from the flue end (180
+   degrees) the 3 m tip misses by a factor of 35, 6 m by 18 and 9 m by 2.4: with the flues 13 m
+   straight upwind of the intake, flue height alone does not reach the limit.
 3. The 9 m result sits in the band where the RANS jet cannot decide the verdict; a
    scale-resolving check is proposed (decision 0014).
 
