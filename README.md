@@ -5,7 +5,7 @@ boundary layer. Ten rooftop chillers, four generator flues and one fresh-air int
 roof; the study quantifies how much chiller discharge returns to the chiller inlets and how much
 flue exhaust reaches the intake, for a matrix of wind directions, speeds and flue heights.
 
-![Chiller discharge (coloured by height above the roof) and the flue plume (red), wind along the hall at 10 m/s](results/applied/figures/plume_D0_dir000_U10.png)
+![Chiller discharge and flue plume, wind along the hall at 10 m/s](results/applied/figures/plume_D0_dir000_U10_annot.png)
 
 ## Results
 
@@ -38,6 +38,8 @@ uncertain by at least its own margin.
 ![Source-to-receptor matrix, chiller rise per unit and convergence, 0° at 10 m/s](results/applied/figures/matrix_D0_dir000_U10.png)
 
 ## Method
+
+![The roof: chillers, intake, flues and parapet](results/applied/figures/geometry_annot.png)
 
 Each source on the roof carries its own passive scalar on the converged flow. The area average
 of each scalar at each receptor gives the matrix of air fractions above; chiller rise follows from

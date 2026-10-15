@@ -19,9 +19,23 @@ def kind(name):
         if name.startswith(k): return k
     return "hall"
 
+ANCHORS = {"chillers": (-12, 0, 17.5), "flues": (25, 0, 18.5), "intake": (12, 0, 18), "parapet": (0, 20, 16.2),
+           "wind_a": (-66, -8, 22), "wind_b": (-42, -8, 22), "roof_corner": (-30, -20, 15)}
+
+def export_anchors(p, path, extra=None):
+    """Display coordinates (pixels from the top-left of the uncropped image) of named world points,
+    so a matplotlib pass can place labels and leader lines in the house style."""
+    import json, vtk
+    p.render(); w, h = p.window_size; out = {}
+    pts = dict(ANCHORS); pts.update(extra or {})
+    for k, (x, y, z) in pts.items():
+        c = vtk.vtkCoordinate(); c.SetCoordinateSystemToWorld(); c.SetValue(x, y, z)
+        dx, dy = c.GetComputedDisplayValue(p.renderer); out[k] = [dx, h - dy]
+    out["_size"] = [w, h]; json.dump(out, open(path, "w"), indent=1)
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("tri"); ap.add_argument("--out", required=True)
-    ap.add_argument("--size", nargs=2, type=int, default=[2400, 1500]); ap.add_argument("--view", default="sw")
+    ap.add_argument("--size", nargs=2, type=int, default=[2400, 1500]); ap.add_argument("--view", default="sw"); ap.add_argument("--anchors", default=None)
     a = ap.parse_args()
     pv.global_theme.background = "white"
     p = pv.Plotter(off_screen=True, window_size=a.size, lighting="three lights")
@@ -40,6 +54,7 @@ def main():
     p.camera_position = views[a.view]
     p.camera.zoom(1.25)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
+    if a.anchors: export_anchors(p, a.anchors)
     p.screenshot(a.out, transparent_background=False)
     print("wrote", a.out)
 

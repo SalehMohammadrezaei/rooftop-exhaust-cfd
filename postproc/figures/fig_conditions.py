@@ -33,11 +33,14 @@ def main():
         ax1.barh(i, dil[i], color=style.CFD if dil[i] >= 2000 else style.CFD3, height=0.62, hatch=h, edgecolor="white", lw=0)
         ax2.barh(i, mean[i], color=style.CFD if mean[i] <= 2 else style.CFD3, height=0.6, hatch=h, edgecolor="white", lw=0)
     ax2.plot(worst, y, "o", color=style.INK, ms=4, label="worst unit")
+    for i in y:
+        ax1.text(dil[i] * 1.4, i, f"{dil[i]:,.0f}" if dil[i] < 1e5 else f"{dil[i]:.0e}", va="center", fontsize=6.5, color=style.GREY)
+        ax2.text(worst[i] + 0.35, i, f"{mean[i]:.1f} / {worst[i]:.1f}", va="center", fontsize=6.5, color=style.GREY)
     ax1.set_xscale("log"); ax1.axvline(2000, color=style.INK, lw=0.8, ls="--"); ax1.text(2000, 1.02, "limit 2000", ha="center", fontsize=7, transform=ax1.get_xaxis_transform())
     ax1.set_xlabel("flue dilution at the intake"); ax1.set_xlim(1e1, 1e9)
     ax2.axvline(2, color=style.INK, lw=0.8, ls="--"); ax2.axvline(4, color=style.INK, lw=0.8, ls=":")
     ax2.text(1.85, 1.02, "mean 2 K", ha="right", fontsize=7, transform=ax2.get_xaxis_transform()); ax2.text(4.15, 1.02, "unit 4 K", ha="left", fontsize=7, transform=ax2.get_xaxis_transform())
-    ax2.set_xlabel("chiller inlet rise [K]"); ax2.set_xlim(0, max(13, worst.max() * 1.1)); ax2.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), fontsize=7, handletextpad=0.3)
+    ax2.set_xlabel("chiller inlet rise [K]"); ax2.set_xlim(0, max(15, worst.max() * 1.25)); ax2.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), fontsize=7, handletextpad=0.3)
     if (amp > 1).any(): fig.text(0.01, 0.0, "hatched: tracer stage not settled (amplitude above 1 % over the last window)", fontsize=7, color=style.GREY, va="top")
     style.save(fig, a.out); print("wrote", a.out)
 

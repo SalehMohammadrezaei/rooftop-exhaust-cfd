@@ -10,11 +10,11 @@ sF is drawn as a separate isosurface at 0.05 so the thin jet is visible beside t
 """
 import argparse, os, glob
 import numpy as np, pyvista as pv, cmcrameri.cm as cmc
-from geometry import COL, kind
+from geometry import COL, kind, export_anchors
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("case"); ap.add_argument("--time", type=float, required=True); ap.add_argument("--out", required=True)
-    ap.add_argument("--iso", nargs="+", type=float, default=[0.1]); ap.add_argument("--flue-iso", type=float, default=0.05); ap.add_argument("--size", nargs=2, type=int, default=[2400, 1500])
+    ap.add_argument("--iso", nargs="+", type=float, default=[0.1]); ap.add_argument("--flue-iso", type=float, default=0.05); ap.add_argument("--anchors", default=None); ap.add_argument("--size", nargs=2, type=int, default=[2400, 1500])
     a = ap.parse_args()
     foam = os.path.join(a.case, "case.foam"); open(foam, "a").close()
     rd = pv.OpenFOAMReader(foam); rd.set_active_time_value(a.time)
@@ -39,6 +39,7 @@ def main():
     p.enable_anti_aliasing("ssaa")
     p.camera_position = ((-70, -170, 95), (15, 0, 8), (0, 0, 1)); p.camera.zoom(1.35)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
+    if a.anchors: export_anchors(p, a.anchors, {"cloud": (-5, 10, 24), "plume": (32, 0, 21)})
     p.screenshot(a.out); print("wrote", a.out)
 
 if __name__ == "__main__":
