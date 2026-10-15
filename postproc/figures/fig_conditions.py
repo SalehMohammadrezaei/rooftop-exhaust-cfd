@@ -20,7 +20,8 @@ def main():
         if not m: continue
         rows.append((m.group(1), int(m.group(2)), float(m.group(3)), r))
     rows.sort(key=lambda t: (t[2], t[1], t[0]))
-    lab = [f"{v}  {d}°  {u:g} m/s" for v, d, u, _ in rows]
+    tips = json.load(open("params/applied_design.json"))["variants"]
+    lab = [f"{d}°, {u:g} m/s, flue tip {tips[v]['flue_tip_m']:g} m" for v, d, u, _ in rows]
     dil = np.array([r["intake_dilution_flues"] for *_, r in rows]); mean = np.array([r["chiller_rise_mean_K"] for *_, r in rows])
     worst = np.array([r["chiller_rise_max_K"] for *_, r in rows]); amp = np.array([r.get("convergence_max_rel_amplitude_pct_last_window", 0) for *_, r in rows])
     y = np.arange(len(rows))
@@ -34,7 +35,8 @@ def main():
         ax2.barh(i, mean[i], color=style.CFD if mean[i] <= 2 else style.CFD3, height=0.6, hatch=h, edgecolor="white", lw=0)
     ax2.plot(worst, y, "o", color=style.INK, ms=4, label="worst unit")
     for i in y:
-        ax1.text(dil[i] * 1.4, i, f"{dil[i]:,.0f}" if dil[i] < 1e5 else f"{dil[i]:.0e}", va="center", fontsize=6.5, color=style.GREY)
+        txt = f"{dil[i]:,.0f}" if dil[i] < 1e5 else f"{dil[i] / 10 ** int(np.log10(dil[i])):.1f}e{int(np.log10(dil[i]))}"
+        ax1.text(dil[i] * 1.4, i, txt, va="center", fontsize=6.5, color=style.GREY, bbox=dict(fc="white", ec="none", pad=0.6))
         ax2.text(worst[i] + 0.35, i, f"{mean[i]:.1f} / {worst[i]:.1f}", va="center", fontsize=6.5, color=style.GREY)
     ax1.set_xscale("log"); ax1.axvline(2000, color=style.INK, lw=0.8, ls="--"); ax1.text(2000, 1.02, "limit 2000", ha="center", fontsize=7, transform=ax1.get_xaxis_transform())
     ax1.set_xlabel("flue dilution at the intake"); ax1.set_xlim(1e1, 1e9)
