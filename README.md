@@ -37,7 +37,9 @@ factor of 35 at 180 deg with the 3 m tip. Raising the tip helps where the plume 
 rise: at 90 deg a 6 m tip takes the dilution from 1,190 to 4,900 and passes. At 180 deg, with
 the flues 13 m straight upwind of the louvres, 9 m buys a factor of 14 and still misses by 2.4,
 so the design response there is moving the intake or the flues, not flue height alone. That 9 m
-result sits inside the band where decision 0013 calls for a scale-resolving check of the jet.
+result sits inside the band where decision 0013 says the RANS jet cannot settle the verdict; the
+check was not run (decision 0014), so the number is carried as "fails by 2.4, uncertain by at least
+that factor". The design conclusion does not rest on it.
 
 ![Source-to-receptor matrix, chiller inlet rise and convergence at 0 deg, 10 m/s](results/applied/first_pass_sheet_parapet/matrix_D0_dir000_U10.png)
 
@@ -116,9 +118,8 @@ Figures: `python3 postproc/figures/fig_*.py`; renders need the `viz` conda envir
 Done: validation V0 to V2b, pipeline, the four base conditions above on the final geometry
 (a first pass on a zero-thickness parapet is kept under `results/applied/first_pass_sheet_parapet`;
 the parapet change moved the chiller numbers by 0.05 K), the 6 m and 9 m flue tips at 90 and
-180 deg. Pending: the grid study (coarse and
-fine meshes at the governing condition) and the scale-resolving check of the 9 m jet that
-decision 0013 triggers. Not done: oblique directions (30 to 150 deg) fail the mesh skewness check at two
+180 deg. Running: the grid study (coarse and fine meshes at the
+governing condition). The scale-resolving check of the 9 m jet was declined (decision 0014). Not done: oblique directions (30 to 150 deg) fail the mesh skewness check at two
 chiller corners; a plant screen variant; the buoyant check in the brief. The study notebook in `docs/study/notebook.md` records the work in the order it happened,
 including what went wrong.
 

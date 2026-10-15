@@ -1,4 +1,4 @@
-# 0014 Scale-resolving check of the flue jet (proposal, drafted under autopilot 2026-10-14, for Saleh's decision)
+# 0014 Scale-resolving check of the flue jet (proposed under autopilot 2026-10-14; Saleh decided 2026-10-15: option C, no check)
 
 ## Why now
 Decision 0013 fixed a trigger: if an intake dilution lands within a factor of 3 of the limit
@@ -35,3 +35,13 @@ for the uncertainty to be quantified where it matters, and here it matters.
 ## What Saleh decides
 Option; core count and the 3,200 core-hour budget (rule 12); whether the 60 s averaging window
 is enough (checked by comparing the two halves of the window, flat within 5 % or run on).
+
+## Decision (Saleh, 2026-10-15)
+Option C. No scale-resolving run. The 180-degree, 9 m result (822) is reported with the caveat
+of decision 0013, and the report states the direction of the likely error: the RANS closure
+over-mixes the jet (V2), so near the stack the modelled plume is wider and lower than a resolved
+one would be, and the dilution at a receptor 13 m away can be either higher or lower than 822
+depending on where the true plume centreline sits relative to the louvres. The verdict at that
+condition is "fails by 2.4 on the model used, uncertain by at least that factor"; the design
+conclusion (move the intake or the flues for the flue-end wind) does not depend on it, since the
+3 m and 6 m tips fail by 35 and 18.

@@ -19,5 +19,5 @@ not edited after the result is known; a later check is appended under its own he
 | 0011 | Acceptance limits | intake dilution ≥ 2000 (NO2 hourly limit); chiller rise ≤ 2 K mean, ≤ 4 K worst unit |
 | 0012 | Parapet thickness | 0.5 m solid ring instead of a baffle; check at 0 deg moved the chiller numbers by 0.05 K |
 | 0013 | Flue jet treatment | RANS accepted with a stated caveat; scale-resolving check only if a result lands within a factor of 3 of the limit |
-| 0014 | Scale-resolving jet check (proposal) | triggered by the 9 m tip at 180 deg (822); DDES on the governing case proposed, awaiting decision |
+| 0014 | Scale-resolving jet check | triggered by the 9 m tip at 180 deg (822); not run (option C), result carried with the 0013 caveat |
 | 0015 | Grid study (proposal) | three meshes at ratio 1.41 on the governing condition, awaiting decision |

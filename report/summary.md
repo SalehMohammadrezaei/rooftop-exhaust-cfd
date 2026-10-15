@@ -43,8 +43,9 @@ over-mixes a vertical jet at momentum ratios above 3.
    6 m tip passes with a margin of 2.4 and 9 m by 11. Along the wind from the flue end (180
    degrees) the 3 m tip misses by a factor of 35, 6 m by 18 and 9 m by 2.4: with the flues 13 m
    straight upwind of the intake, flue height alone does not reach the limit.
-3. The 9 m result sits in the band where the RANS jet cannot decide the verdict; a
-   scale-resolving check is proposed (decision 0014).
+3. The 9 m result sits in the band where the RANS jet cannot decide the verdict. No
+   higher-fidelity check was run (decision 0014); the number is carried as uncertain by at least
+   its own margin, and the design conclusion does not depend on it.
 
 ## Not covered
 Oblique wind directions (mesh quality at the chiller corners), a plant screen, buoyancy of the
