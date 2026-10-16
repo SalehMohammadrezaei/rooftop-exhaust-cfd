@@ -1,0 +1,53 @@
+{
+ "cells": {
+  "coarse": 1051942,
+  "base": 2604946,
+  "fine": 6697868
+ },
+ "r": 1.361442573569063,
+ "intake_dilution_flues": {
+  "fine": 59.87867529907144,
+  "base": 58.08529854195596,
+  "coarse": 56.72647450587609,
+  "rel_change_fine_base_pct": 2.9950174217419474,
+  "order_p": null,
+  "GCI_fine_pct": null,
+  "note": "differences do not shrink with refinement (p <= 0); GCI undefined, fine-base difference reported"
+ },
+ "chiller_rise_mean_K": {
+  "fine": 6.159691628362867,
+  "base": 6.141791389330189,
+  "coarse": 6.171978447288085,
+  "rel_change_fine_base_pct": 0.2906028436594914,
+  "order_p": null,
+  "GCI_fine_pct": null,
+  "note": "not monotone; GCI undefined, fine-base difference reported"
+ },
+ "chiller_rise_max_K": {
+  "fine": 8.289726081435882,
+  "base": 8.310580543000782,
+  "coarse": 8.417752156019375,
+  "rel_change_fine_base_pct": 0.2515699717943848,
+  "order_p": 5.305107124866891,
+  "GCI_fine_pct": 0.07597499771646622,
+  "richardson": 8.284687586075025
+ },
+ "intake_fraction_from_flues": {
+  "fine": 0.016700436257238098,
+  "base": 0.017216060261404764,
+  "coarse": 0.01762845318188095,
+  "rel_change_fine_base_pct": 3.087488232190287,
+  "order_p": null,
+  "GCI_fine_pct": null,
+  "note": "differences do not shrink with refinement (p <= 0); GCI undefined, fine-base difference reported"
+ },
+ "intake_fraction_from_chillers_total": {
+  "fine": 2.4906425692179493e-05,
+  "base": 2.7842706189302363e-05,
+  "coarse": 3.0301010810769143e-05,
+  "rel_change_fine_base_pct": 11.789248820415246,
+  "order_p": null,
+  "GCI_fine_pct": null,
+  "note": "differences do not shrink with refinement (p <= 0); GCI undefined, fine-base difference reported"
+ }
+}

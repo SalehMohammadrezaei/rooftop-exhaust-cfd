@@ -2145,3 +2145,16 @@ climbs to 822 at 9 m. The difference is plume rise, which the hand method does n
 which is also exactly where V2 found the RANS jet least reliable. So the hand check and the
 jet-check proposal point at the same place. Results in results/applied/hand_method.md and the
 figure beside the matrix figures.
+
+## F8. The grid band (2026-10-16, overnight)
+
+The coarse and fine meshes of the governing case finished at 23:00 and 23:10; the fine one hit
+the disk-full wall a second time at its last stage (16 GB of intermediate writes on 64
+processors), and was resumed after the intermediate times were deleted. The three meshes give
+56.7, 58.1 and 59.9 for the intake dilution and 6.17, 6.14, 6.16 K for the chiller mean. The
+chiller side is grid-independent; the worst unit even fits an observed order of 5 with a GCI of
+0.1 percent. The dilution moves 2.5 percent coarse to base and 3 percent base to fine, which is
+not a converging sequence, so no order can be fitted and the 3 percent is quoted as the band.
+That is a tenth of the factor-of-three model-form band on the jet, and it changes no verdict.
+Recorded in 0015. The purgeWrite setting proposed in F2 would have prevented tonight's second
+disk incident; it still needs a decision.

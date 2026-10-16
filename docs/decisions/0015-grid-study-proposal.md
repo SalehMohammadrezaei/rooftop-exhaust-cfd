@@ -30,3 +30,17 @@ hold. Not recommended.
 The condition (180 degrees as proposed, or 90 where the 3 m tip was a near miss), the ratio
 (1.41 or 1.26 for a cheaper fine mesh at 5.2 M cells), and the budget (about 1,300 core-hours
 for the two extra meshes).
+
+## Result (2026-10-16)
+
+| quantity | coarse 1.05 M | base 2.60 M | fine 6.70 M | band quoted |
+|---|---|---|---|---|
+| intake dilution | 56.7 | 58.1 | 59.9 | 3 % (fine-base change; order not measurable) |
+| chiller rise, mean | 6.17 K | 6.14 K | 6.16 K | 0.3 % |
+| chiller rise, worst unit | 8.42 K | 8.31 K | 8.29 K | 0.1 % (GCI, p = 5.3) |
+
+The chiller numbers are grid-independent at the base mesh. The intake dilution moves 3 % from
+base to fine and 2.5 % from coarse to base, the same size, so no convergence order can be
+fitted; the 3 % is reported as the grid band on dilution. It is far smaller than the model-form
+uncertainty on the jet (decision 0013) and does not affect any verdict. Full table in
+results/applied/gci_D0_dir180_U10.md. Cost: coarse 7.1 h on 32 cores, fine 21 h on 64.

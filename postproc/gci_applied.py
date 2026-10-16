@@ -21,6 +21,8 @@ def gci(f1, f2, f3, r):
     if e21 == 0 or e32 == 0 or (e32 / e21) <= 0:
         out["order_p"] = None; out["GCI_fine_pct"] = None; out["note"] = "not monotone; GCI undefined, fine-base difference reported"; return out
     p = math.log(abs(e32 / e21)) / math.log(r)
+    if p <= 0:
+        out["order_p"] = None; out["GCI_fine_pct"] = None; out["note"] = "differences do not shrink with refinement (p <= 0); GCI undefined, fine-base difference reported"; return out
     out.update({"order_p": p, "GCI_fine_pct": 100 * 1.25 * abs(e21 / f1) / (r ** p - 1), "richardson": f1 - e21 / (r ** p - 1)})
     return out
 
@@ -44,7 +46,9 @@ def main():
         lines.append(f"| {lab} | {fmt(g['coarse'])} | {fmt(g['base'])} | {fmt(g['fine'])} | " + (f"{g['order_p']:.2f}" if g["order_p"] else "undefined") +
                      " | " + (f"{g['GCI_fine_pct']:.1f} %" if g["GCI_fine_pct"] is not None else "n/a") + f" | {g['rel_change_fine_base_pct']:.1f} % |")
     amps = {k: R[k].get("convergence_max_rel_amplitude_pct_last_window") for k in R}
-    lines += ["", "Receptor-fraction amplitude over the last window: " + ", ".join(f"{k} {v:.2f} %" for k, v in amps.items() if v is not None) + "."]
+    lines += ["", "Receptor-fraction amplitude over the last window: " + ", ".join(f"{k} {v:.2f} %" for k, v in amps.items() if v is not None) + ".",
+              "", "Where p is undefined the three solutions do not converge monotonically at a measurable order (the base-to-fine change is as large as or larger "
+              "than the coarse-to-base change), so no Richardson estimate exists; the fine-base change is then the band quoted for that quantity."]
     txt = "\n".join(lines) + "\n"; print(txt)
     if a.out: open(a.out, "w").write(txt); json.dump(res, open(a.out.replace(".md", ".json"), "w"), indent=1)
 

@@ -65,9 +65,10 @@ method gives 19 to 30 at the worst direction against 58 from the CFD, the relati
 lower bound; the hand method cannot credit plume rise, which is where the two part company at
 taller flues.
 
-Not covered: oblique wind directions (the mesh fails a skewness check at the chiller corners),
-plant screens, buoyancy of the flue gas, neighbouring buildings. The grid uncertainty band at the
-governing condition is being computed.
+Grid band at the governing condition (1.05, 2.60 and 6.70 million cells): 0.3 % on the chiller
+rise, 3 % on the intake dilution, both far below the model-form uncertainty above. Not covered:
+oblique wind directions (the mesh fails a skewness check at the chiller corners), plant screens,
+buoyancy of the flue gas, neighbouring buildings.
 
 ## Repository
 
