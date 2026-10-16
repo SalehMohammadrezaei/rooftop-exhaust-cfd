@@ -1,6 +1,6 @@
 # 0005 V1 tunnel-floor roughness sensitivity
 
-Date: 2026-10-09. Made under Saleh's instruction to finish the V1 runs; listed for confirmation or
+Date: 2026-10-09. Made under the standing instruction to finish the V1 runs; listed for confirmation or
 revocation. It adds one run; it does not change the baseline decided in V1 decision 2 (smooth floor).
 
 ## What was found
@@ -20,4 +20,4 @@ the range V0 showed to be fine with this wall set.
 
 ## Rule
 The result is a sensitivity on the velocity hit rate, reported beside the smooth-floor baseline.
-If it is adopted as the V1 baseline, that is a new decision for Saleh, not a consequence of this one.
+If it is adopted as the V1 baseline, that is a new decision, not a consequence of this one.

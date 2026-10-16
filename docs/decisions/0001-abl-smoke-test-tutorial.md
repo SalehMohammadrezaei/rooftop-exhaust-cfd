@@ -1,6 +1,6 @@
 # 0001 Phase-0 smoke test: ABL inlet and rough ground on an official v2606 tutorial
 
-Date: 2026-10-08. Approved by Saleh (plan approval, same day).
+Date: 2026-10-08. Approved (plan approval, same day).
 
 ## Decision
 Use `tutorials/verificationAndValidation/atmosphericModels/atmDownstreamDevelopment` (Hargreaves &

@@ -9,7 +9,7 @@ endTime         5000;
 deltaT          1;
 writeControl    timeStep;
 writeInterval   500;
-purgeWrite      0;
+purgeWrite      2;          // keep the last two written times only (decision 0016)
 writeFormat     binary;        // 2.6 M cells: binary files are a third of the size
 writePrecision  10;
 writeCompression off;

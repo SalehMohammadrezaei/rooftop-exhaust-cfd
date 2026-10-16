@@ -9,6 +9,9 @@ trap '' HUP                                      # a closed terminal must not st
 trap 'echo "run_applied.sh: stage at line $LINENO failed (status $?)" >&2' ERR
 REPO=$(cd "$(dirname "$0")/.." && pwd); C="$(cd "$1" && pwd)"; cd "$C"; N=$(grep numberOfSubdomains system/decomposeParDict | tr -dc 0-9)
 t0=$(date +%s)
+# free disk pre-check (decision 0016): a 2.6 M cell case writes about 6 GB; refuse to start with less than 20 GB free
+free_gb=$(df -BG --output=avail "$C" | tail -1 | tr -dc 0-9)
+[ "$free_gb" -ge 20 ] || { echo "ONLY ${free_gb} GB FREE, refusing to start (need 20 GB)"; exit 5; }
 done_log() { [ -f "$1" ] && grep -q "$2" "$1"; }    # done_log <log> <pattern>: stage already finished?
 
 # 1. mesh

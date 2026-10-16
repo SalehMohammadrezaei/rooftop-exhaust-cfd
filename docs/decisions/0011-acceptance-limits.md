@@ -24,5 +24,5 @@ and are not adjusted afterwards (working rule 4).
   (5.2 percent), from the source-to-receptor matrix with feedback. Kind: design choice from the
   cited derating.
 
-Both limits are provisional until Saleh confirms or replaces them; the runs report the quantities
+Both limits were provisional until confirmed (2026-10-13); the runs report the quantities
 either way.

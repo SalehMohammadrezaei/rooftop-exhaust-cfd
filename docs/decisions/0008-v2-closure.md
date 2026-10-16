@@ -1,6 +1,6 @@
 # 0008 V2 closing decisions
 
-Date: 2026-10-12. Approved by Saleh ("ok", with the request to run V2b in the background and start the applied case).
+Date: 2026-10-12. Approved ("ok", with the request to run V2b in the background and start the applied case).
 
 ## Outcome, as it stands (results/V2/summary.md, notebook D3 to D12)
 - Low-momentum cases, M = 1: FAC2 1.0 and 0.8 at Sct 0.4 (0.5 and 0.6 at Sct 0.7); mark met.
@@ -31,7 +31,7 @@ Date: 2026-10-12. Approved by Saleh ("ok", with the request to run V2b in the ba
 
 ## Scope note
 V3, V4 and V1-LES remain listed as finished-version items, not done. The MVP validation story is
-V0, V1, V2 and V2b. Saleh builds the applied case himself with guidance (Part E of the notebook).
+V0, V1, V2 and V2b. The applied case is built by hand (Part E of the notebook).
 
 ## V2b outcome (2026-10-12)
 Met: scale alone changes the dilution by 3 % (10/10 receptors inside the 18 % band) for both M = 1

@@ -1,7 +1,7 @@
 # 0002 V0 empty-domain setup
 
-Date: 2026-10-08. Decision 1 (ground wall functions: run both, choose by numbers) approved by Saleh
-explicitly ("C"). The remaining setup choices were delegated by Saleh in writing the same day
+Date: 2026-10-08. Decision 1 (ground wall functions: run both, choose by numbers) approved
+explicitly ("C"). The remaining setup choices were delegated in writing the same day
 ("decide yourself until we reach to our project then explain to me"), and are listed here so he can
 revoke any of them. Parameter file: params/V0_empty_domain.json. Every input there carries its kind.
 
@@ -29,7 +29,7 @@ revoke any of them. Parameter file: params/V0_empty_domain.json. Every input the
   needs no special treatment beyond using the atm wall functions. The 0.25 m cell was not run.
 - realizableKE and kOmegaSST are not separated by V0 (k within 1.7 to 1.9 % on mesh C).
 
-## Closing decision (Saleh, 2026-10-08)
+## Closing decision (2026-10-08)
 1. Ground baseline for V1 onward: atmNutkWallFunction with atmEpsilonWallFunction / atmOmegaWallFunction
    (the "atm" set), first ground cell 1 m or smaller.
 2. Top boundary: fixedShearStress with tau = u*^2.

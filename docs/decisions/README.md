@@ -20,4 +20,5 @@ not edited after the result is known; a later check is appended under its own he
 | 0012 | Parapet thickness | 0.5 m solid ring instead of a baffle; check at 0 deg moved the chiller numbers by 0.05 K |
 | 0013 | Flue jet treatment | RANS accepted with a stated caveat; scale-resolving check only if a result lands within a factor of 3 of the limit |
 | 0014 | Scale-resolving jet check | triggered by the 9 m tip at 180 deg (822); not run (option C), result carried with the 0013 caveat |
-| 0015 | Grid study | three meshes at ratio 1.41 on the governing condition, approved and running |
+| 0015 | Grid study | three meshes at ratio 1.41 at 180 deg: chiller rise grid-independent (0.3 %), dilution band 3 % |
+| 0016 | Run housekeeping | keep the last two written times; refuse to start below 20 GB free |

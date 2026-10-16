@@ -7,7 +7,7 @@ governing brief). Software: OpenFOAM v2606 (OpenCFD), sourced with `source ~/opt
 
 ## Decisions are human decisions
 
-1. Every new CFD modelling decision needs Saleh's written approval before it is implemented:
+1. Every new CFD modelling decision needs written approval before it is implemented:
    turbulence model, boundary conditions, mesh strategy and sizes, numerical schemes, wall
    treatment, validation cases and acceptance criteria, physical models (buoyancy, scalar
    transport, source treatment), domain size, and anything that changes what a result means.

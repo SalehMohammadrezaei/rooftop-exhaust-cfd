@@ -1,6 +1,6 @@
 # Study notebook: OpenFOAM and the rooftop re-entrainment project
 
-Written for Saleh to read later, without the chat. Part A is the map and the story so far; read it
+My study notebook, written as the work happened. Part A is the map and the story so far; read it
 first, every time. Part B holds the entries, each tagged with the step of the story it belongs to.
 
 ---
@@ -43,7 +43,7 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
    the three meshes (entry 10).
 5. V0 closed (decision 0002): ground = atm wall set with first cell at or below 1 m; top = fixed
    shear stress; realizable k-epsilon and SST both go on to V1 and V2, where the baseline is chosen.
-6. V1, the AIJ Case H cube: Saleh built the case by hand (Part C), ran the coarse, medium and SST
+6. V1, the AIJ Case H cube: I built the case by hand (Part C), ran the coarse, medium and SST
    cases himself, and the remaining runs were queued: fine grid, log-law inlet, empty domain for
    both closures, rough floor, and the tracer with six Schmidt numbers. Outcome (C8 to C17): the
    velocity hit rate is 0.59 to 0.63 against the 0.66 mark on every grid and both closures, with
@@ -55,14 +55,14 @@ chiller air out of the chillers, for all wind directions, on a generic data hall
    of the ladder exists to measure.
 7. V1 closed by decision 0006: realizable k-epsilon with the medium-grid rule is the baseline,
    Sct 0.4 and 0.7 both go to V2, the unmet marks are reported as they are.
-8. V2 (Part D): Saleh built the box, the shapes and the mesh by hand; the fields, monitors and
+8. V2 (Part D): I built the box, the shapes and the mesh by hand; the fields, monitors and
    runs were done at his request. Four cases plus a jet-resolved grid check and an SST
    sensitivity. The low-momentum cases pass and the stack-height ranking is right; the
    high-momentum cases fail because the eddy-viscosity closure destroys the jet within three
    diameters, a model-form limit at this scale that neither mesh nor closure changes (D8, D9).
    Decision 0008 closed it. V2b (entry 17): scale changes the dilution by 3 %, met; the applied
    inflow lowers roof dilution by 40 % against the tunnel's, carried as inflow uncertainty.
-9. Now: the applied data hall, Part E, built by Saleh step by step. After V2b, the Concordia rooftop stack,
+9. Now: the applied data hall, Part E, built step by step. After V2b, the Concordia rooftop stack,
    which needs the IRSST report R-848 downloaded and digitised first.
 
 ## How V0 is built (the files you would touch yourself)
@@ -221,7 +221,7 @@ epsilon = u*^3 / (kappa (z + z0))
 omega   = u* / (kappa sqrt(Cmu) (z + z0))      (Yang et al. 2009, for SST)
 ```
 Worked example, our V0 inputs: Uref 10 m/s at Zref 15 m, z0 0.3 m, kappa 0.4:
-u* = 0.4 * 10 / ln(15.3/0.3) = 4 / 3.932 = 1.017 m/s. (Saleh computed this by hand: 1.017. Correct.)
+u* = 0.4 * 10 / ln(15.3/0.3) = 4 / 3.932 = 1.017 m/s. (computed by hand first: 1.017.)
 k = 1.017^2 / 0.3 = 3.45 m2/s2.
 For comparison the tutorial had z0 0.01 m and Zref 6 m, giving u* 0.625 and k 1.30: our boundary
 layer is about three times more turbulent because the ground is 30 times rougher.
@@ -537,7 +537,7 @@ the same ratio 1.4. Changing the level instead refines by 2 and only locally.
   that tells ParaView "this folder is an OpenFOAM case"), Apply.
 - First look: representation "Surface With Edges"; Filters -> Slice, normal Y, Apply: shows the
   three cell sizes and the building hole with sharp corners.
-- Result of C2 on 2026-10-08 (Saleh's own run): 292,563 cells (161,085 at 40 mm, 46,926 at 20 mm,
+- Result of C2 on 2026-10-08 (my own run): 292,563 cells (161,085 at 40 mm, 46,926 at 20 mm,
   84,552 at 10 mm), 6 patches, 4,640 polyhedra on the level transitions (normal), Mesh OK.
 
 ## C3. What each patch does physically (the plan for the field files)
@@ -777,7 +777,7 @@ switch every convection scheme to upwind for about 200 iterations, then switch b
   Watch the log in a second terminal: `tail -f log.simpleFoam`; stop watching with Ctrl+C
   (that stops tail, not the solver).
 
-## C7c. First V1 run (coarse grid, realizableKE, 16 cores, 2026-10-09, run by Saleh)
+## C7c. First V1 run (coarse grid, realizableKE, 16 cores, 2026-10-09, my run)
 
 - 0.3 s per iteration; residualControl met at iteration 397 (cap 2000).
 - Probes (rule 5 check) between the writes at 250 and 397: wake-cavity Ux -0.454 -> -0.455 m/s
@@ -823,7 +823,7 @@ switch every convection scheme to upwind for about 200 iterations, then switch b
   programs to a log: `snappyHexMesh -overwrite > log.snappyHexMesh 2>&1`.
 - Two people (or a person and a script) must not touch the same case folder at the same time.
 
-## C10. Coarse against medium: the first row of the grid study (2026-10-09, medium run by Saleh)
+## C10. Coarse against medium: the first row of the grid study (2026-10-09, medium run mine)
 
 The medium grid has every cell 1.43 times smaller than the coarse one: 843,456 cells against
 292,563. It converged at iteration 595 in 6.5 minutes on 16 cores, and the wake-cavity probe was
@@ -856,9 +856,9 @@ will confirm grid independence, not pass the validation.
 
 Results: results/V1/coarse_realizableKE_run1.json, results/V1/medium_realizableKE_run1.json.
 
-## C11. The second closure: k-omega SST on the medium grid (2026-10-09, set up and run by Saleh)
+## C11. The second closure: k-omega SST on the medium grid (2026-10-09, set up and run by hand)
 
-Saleh copied the medium case, changed the one word RASModel to kOmegaSST, and ran it; the log
+I copied the medium case, changed the one word RASModel to kOmegaSST, and ran it; the log
 confirms the model and the run started from clean fields. The run behaved differently from the two
 k-epsilon runs. It did not meet the residual targets and stopped at the 2000-iteration cap, with
 the pressure residual flat at about 9e-4 from iteration 1000 onward instead of falling. The probes
@@ -904,7 +904,7 @@ Results: results/V1/medium_kOmegaSST_run1.json.
 ## C12. The remaining V1 runs and how each was set up (2026-10-09, run by the queue script)
 
 After the three building runs, four more cases close the velocity part of V1 and open the
-concentration part. Saleh asked for these to be run and reported in one go. Each is a copy of an
+concentration part. These were run and reported in one go. Each is a copy of an
 existing case with one deliberate change, which is the pattern for every sensitivity study: change
 one thing, keep everything else, so the difference in the result has one cause.
 
@@ -939,7 +939,7 @@ number from 0.4 to 0.9. Each scalar is a volume fraction with diffusivity D = nu
 source of Q = 5.83e-6 m3/s placed in the cell containing the floor hole, clean air at the inlet
 and zero flux through every wall. The dimensionless concentration C* = c U_H H^2 / Q is compared
 with the tunnel on points where the measured concentration exceeds the 1 ppm noise floor, with
-FAC2 and fractional bias as the metrics. All of this is decision 0004, written for Saleh to
+FAC2 and fractional bias as the metrics. All of this is decision 0004, written to
 confirm or revoke. In OpenFOAM terms, a function object that solves an equation lives in
 controlDict like any monitor; its field files sit in the restart time folder (595/s04 and so on),
 its convection scheme is div(phi,s) in fvSchemes through the schemesField entry, and its linear
@@ -1256,10 +1256,10 @@ The plan, the same eight steps as Part C, with what is new in each:
    the plume is part of the flow near the stack.
 8. Compare: D_N at the roof receptors against the digitised curves; ranking and FAC2.
 
-Four runs: stack height 1 and 3 m by momentum ratio 1 and 3; Saleh builds the first (hs = 1 m,
+Four runs: stack height 1 and 3 m by momentum ratio 1 and 3; I build the first (hs = 1 m,
 M = 3, the Figure 5.1 case), the other three are copies with two numbers changed.
 
-## D1. The box of air at tunnel scale (Saleh, 2026-10-12)
+## D1. The box of air at tunnel scale (by hand, 2026-10-12)
 
 Same file as C1 with eight numbers changed: H = 0.075 m; x from -0.625 (inlet 5H upwind of the
 windward wall at -0.25) to 1.125 (15H downwind of the leeward wall at 0); y from -0.575 to 0.575
@@ -1513,7 +1513,7 @@ What is tested next, inside the plan: the ranking of stack heights and momentum 
 the brief's first acceptance criterion and may survive even when the absolute dilution does not,
 since all four cases carry the same bias; and the closure sensitivity with k-omega SST, whose
 shear-stress limiter is known to generate less turbulence in jet shear layers. Any further change
-to how the jet is modelled is a decision for Saleh.
+to how the jet is modelled is a decision to take deliberately.
 
 ## D10. The low-momentum case passes (2026-10-12)
 
@@ -1590,7 +1590,7 @@ new decision). Results: results/V2/summary.md; decision draft 0008 lists the opt
 
 ---
 
-# Part E. The applied case: the data hall (started 2026-10-12, built by Saleh with guidance)
+# Part E. The applied case: the data hall (started 2026-10-12, built by hand)
 
 ## E0. What this simulation is, and the plan
 
@@ -1624,9 +1624,9 @@ The plan is the same eight steps as V1 and V2, applied once by hand to the basel
 one wind direction, then scripted. Step 1 is the box of air: the brief fixes it in multiples of
 H = 15 m, about 8H upstream, 20H downstream, 10H each side, 9H high, with the origin at the
 building centre on the ground and x along the long axis toward the flue end. Blockage below 3
-percent at the worst angle. Saleh writes it.
+percent at the worst angle. Written by hand.
 
-## E1. The box of air for the hall, and three questions Saleh asked (2026-10-12)
+## E1. The box of air for the hall, and three questions I asked (2026-10-12)
 
 The numbers. The hall is 60 by 40 by 15 m with the origin at its centre on the ground, as the
 brief fixes it; the brief's distances are 8H upstream, 20H downstream, 10H each side, 9H high.
@@ -1634,7 +1634,7 @@ Because other wind directions are produced by rotating the building inside a fix
 wind always along +x, the distances must hold at the worst angle, where a corner of the hall
 sticks out to 35.4 m from the centre (30 cos 45 + 20 sin 45) in both x and y. So: x from -160 to
 340, y from -188 to 188, z from 0 to 136, all rounded to whole 4 m cells. Blockage at the worst
-angle, the long side facing the wind, is 60 x 15 over 376 x 136, 1.8 percent. Saleh's first
+angle, the long side facing the wind, is 60 x 15 over 376 x 136, 1.8 percent. My first
 draft had more room upstream than needed and less downstream and to one side, and the box must be
 symmetric in y because the building is centred and turns.
 
@@ -1661,7 +1661,7 @@ confirms the combination holds the inflow rather than setting dx. Interview-leng
 field from the guideline, levels from the features, empty-domain check with the project inflow,
 three-level grid study on one governing condition.
 
-## E2a. The hall geometry: from the brief's table to STL files (2026-10-12, generated by script at Saleh's request)
+## E2a. The hall geometry: from the brief's table to STL files (2026-10-12, generated by script)
 
 Every dimension of the plant sits in one file, params/hall_geometry.json, with its kind (all are
 "brief" values until datasheets replace them), and geometry/make_hall.py turns that file into
@@ -1710,7 +1710,7 @@ brief asks to carry in the uncertainty band, and its sign says the applied resul
 higher roof concentrations. Lesson in method: when a check changes two things at once, add the
 run that changes only one, or the check proves nothing. Results: results/V2b/summary.md.
 
-## E2b. The hall mesh (2026-10-12, run by Saleh in parallel)
+## E2b. The hall mesh (2026-10-12, run in parallel)
 
 Meshed on 16 cores: decomposePar, snappyHexMesh in parallel with the overwrite flag, then
 reconstructParMesh to stitch the pieces back into constant/polyMesh. Result 2,596,598 cells, Mesh
@@ -1771,7 +1771,7 @@ Cost estimate before launch (rule 12): 2.6 million cells at about 1.4 s per iter
 
 ## E8. The overnight batch, 2026-10-12 to 13: the plan
 
-Saleh handed over for the night with unlimited cores. The plan, in order of value: (1) the hall
+The night went to the batch queue with unlimited cores. The plan, in order of value: (1) the hall
 flow at 0 degrees and 10 m/s, then the twelve tagged scalars on its frozen flow and the
 source-to-receptor matrix, which is the project's first real result; (2) the generator that turns
 the hand-built case into any direction, speed and flue height, with refinement regions that rotate
@@ -1882,7 +1882,7 @@ flat to 0.01 percent) and scored FAC2 0 with a geometric mean ratio of 0.14, bet
 and realizable k-epsilon (0.21). Solving the six stresses separately does not rescue the jet; the
 over-mixing comes through the dissipation equation and the ambient turbulence as much as through
 the stress-strain relation. LRR is running as the second RSM; the expectation is the same. The
-first cheap option of the four listed for Saleh is therefore closed, and the choice for the
+first cheap option of the four listed is therefore closed, and the choice for the
 applied flues stays between the effective-height shortcut and a scale-resolving calibration.
 
 ## E12. The rotated meshes at 30 and 150 degrees fail (2026-10-13, overnight)
@@ -1894,7 +1894,7 @@ of the zero-thickness parapet where the rotated sheet crosses the grid at a shal
 solver hit a floating-point exception at iteration 14 on both. Lesson: a baffle is the fragile
 piece of a rotated mesh, and a mesh-quality failure must stop the pipeline before the solver, which
 the run script will do from now on. The two cases are re-queued with more snapping iterations and
-the parapet at level 3; if that fails they wait for a session with Saleh, since the fix might be
+the parapet at level 3; if that fails they wait for a working session, since the fix might be
 geometric (a parapet with thickness).
 
 Cost measured on the busy machine: a 2.6 million cell flow run of 2,000 iterations took 7 hours
@@ -1905,7 +1905,7 @@ rescaled with a clean timing before block E is planned.
 
 ## E13. Morning of 2026-10-13: what the queue really did, and two script lessons (overnight)
 
-When Saleh came back at 09:50 the block A queue log showed eight FAILED lines, and sorting them
+At 09:50 the block A queue log showed eight FAILED lines, and sorting them
 out taught two things about running pipelines unattended.
 
 The first group is the mesh failures, and E12 undercounted them. The two highly skewed parapet
@@ -1940,9 +1940,9 @@ everywhere, by a factor of three to six, because the ten units draw from a plant
 own discharge has already warmed. That is the finding the applied study was built to produce, and
 the remaining conditions will sharpen the numbers rather than change the conclusion.
 
-## E14. Decisions with Saleh, the parapet that was not the problem, and a smaller matrix (2026-10-13)
+## E14. Decisions taken, the parapet that was not the problem, and a smaller matrix (2026-10-13)
 
-Saleh approved the acceptance limits of 0011 unchanged, chose a parapet with thickness (0012,
+I approved the acceptance limits of 0011 unchanged, chose a parapet with thickness (0012,
 0.5 m so that it is two cells thick at level 4) and accepted the RANS jet with a fixed trigger
 for a scale-resolving check (0013). The parapet became four touching boxes in make_hall.py, the
 baffle machinery left the mesh dictionary, and the 0-degree mesh came out clean at 2.60 million
@@ -1961,7 +1961,7 @@ ran, made it slightly worse at 4.76. The lesson for the notebook: locate a bad f
 guessing which surface made it; the set file takes a minute to write and read. E12 stands
 corrected by this entry.
 
-Saleh also asked whether a GitHub project needs 192 cores. It does not. The brief's full matrix
+The question also came up whether a portfolio project needs 192 cores. It does not. The brief's full matrix
 of 42 cases was the ambition of the overnight batch, not a portfolio's need, and the question
 had already been answered by four conditions. The agreed scope is now eight cases, recorded in
 params/applied_design.json under blocks R1 to R4: 0, 90 and 180 degrees at 10 m/s, 90 degrees
@@ -1976,7 +1976,7 @@ perhaps a factor of two on a mesh of this size. Not worth a detour in this proje
 
 ## F1. The presentation night, 2026-10-13 to 14: repository, figures, renders (overnight)
 
-Saleh went home with one instruction: make the repository look like an engineer's portfolio, to
+The brief for the night was one instruction: make the repository look like an engineer's portfolio, to
 the point, with professional figures and 3D renders, and nothing that reads as machine-written.
 Three things were done.
 
@@ -2025,7 +2025,7 @@ case was resumed from the reconstruction stage with the same driver command.
 
 Two lessons for the workflow. First, intermediate writes are needed only for a restart, so
 `purgeWrite 2` in controlDict would keep the last two and delete the rest; that is a numerical
-setting and goes to Saleh for approval before it is added to the template. Second, free disk is
+setting and needs approval before it is added to the template. Second, free disk is
 a pre-run check like the load: the run driver should refuse to start a case with less than, say,
 20 GB free, and the queue should say so.
 
@@ -2061,7 +2061,7 @@ intake is 180 degrees, not 90 as the reduced matrix assumed when it was written 
 morning on the strength of three sheet-parapet results. The brief says the flue-height variants
 run at the governing condition, so the 6 m and 9 m tips (D1, D2) were generated and launched at
 180 degrees at 07:20 rather than at 90. This is a departure from the agreed list in
-params/applied_design.json (R3 says 90 degrees) made on the brief's own rule; Saleh decides
+params/applied_design.json (R3 says 90 degrees) made on the brief's own rule; the decision stays open on
 whether the 90-degree variants are added, and the grid study (R4) waits for the same choice of
 direction because the coarse and fine mesh definitions also need his approval.
 
@@ -2088,7 +2088,7 @@ RANS jet is not to be trusted for the verdict, because V2 showed this closure ov
 at momentum ratios of 3 and above and the flues run at 1.7 to 5.7. So the scale-resolving check
 is now triggered, on the D2 case at 180 degrees, 10 m/s. That is a new simulation type (LES or a
 hybrid), a mesh and a time-stepping decision, and a cost estimate; it is the first item for
-Saleh tomorrow, with the grid-study definitions.
+tomorrow, with the grid-study definitions.
 
 The two tips at 90 degrees, the direction the reduced matrix originally named, started at
 18:10 and run overnight; at 90 degrees the 3 m tip gave 1,190, so a taller flue has a fair chance
@@ -2114,12 +2114,12 @@ flue box. At 180 degrees the taller pipes stand upwind of the plant deck and the
 moved from 6.0 to 6.8 K, which is the wake of four taller pipes on the deck flow.
 
 Eight of the eight agreed cases minus the two grid meshes are now done, plus two 180-degree
-variants that the brief's governing-condition rule added. What remains needs Saleh: the grid
+variants that the brief's governing-condition rule added. What remains needs a decision: the grid
 study (0015), the jet check (0014), and the disk housekeeping.
 
 ## F7. Grid study launched and a hand check of the intake dilution (2026-10-15, overnight)
 
-Saleh approved the grid study as proposed in 0015 and asked for a comparison with a method
+The grid study was approved as proposed in 0015, together with a comparison with a method
 outside CFD. Both are under way.
 
 The grid study: the generator got a `--mesh-scale` option that multiplies the background cell

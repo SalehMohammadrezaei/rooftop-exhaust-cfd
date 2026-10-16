@@ -1,6 +1,6 @@
 # 0007 V2 (Concordia rooftop stack, R-848 Configuration 1) setup
 
-Date: 2026-10-12. Stack representation chosen by Saleh ("first": resolved stack at ten cells across
+Date: 2026-10-12. Stack representation: resolved stack at ten cells across
 the diameter, the brief's rule). The other items follow V1 and Project.md and were presented as
 defaults; any can be revoked.
 

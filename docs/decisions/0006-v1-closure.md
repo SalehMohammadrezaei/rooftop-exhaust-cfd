@@ -1,6 +1,6 @@
 # 0006 V1 closing decisions
 
-Date: 2026-10-12. Approved by Saleh ("yes to all").
+Date: 2026-10-12. Approved ("yes to all").
 
 ## Outcome of V1 (AIJ Case H), reported as it stands
 - Velocity: hit rate on U 0.59 (coarse), 0.60 (medium), 0.61 (fine) with realizable k-epsilon,

@@ -1,6 +1,6 @@
 # 0004 V1 tracer (concentration) setup
 
-Date: 2026-10-09. Made under Saleh's instruction "do all remaining runs and report to finish V1";
+Date: 2026-10-09. Made under the standing instruction "do all remaining runs and report to finish V1";
 listed here for confirmation or revocation.
 
 | Item | Choice | Reason |

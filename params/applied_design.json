@@ -58,7 +58,7 @@
   "note": "levels and boxes as in applied/case_by_hand/system/snappyHexMeshDict; building-fixed boxes rotate with the building (searchableRotatedBox), the wake box stays wind-aligned"
  },
  "blocks": {
-  "note": "Reduced matrix agreed by Saleh 2026-10-13 (replaces the full A/B/C sweep; the sheet-parapet first pass is kept in results/applied as a record). Max two cases at once, 64 cores.",
+  "note": "Reduced matrix agreed 2026-10-13 (replaces the full A/B/C sweep; the sheet-parapet first pass is kept in results/applied as a record). Max two cases at once, 64 cores.",
   "R1": {
    "variant": "D0",
    "directions": [

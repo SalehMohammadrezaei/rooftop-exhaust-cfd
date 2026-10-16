@@ -32,7 +32,7 @@ value rather than a replacement for it. B is the better method but doubles the l
 C is acceptable for a portfolio if the reasoning is written out, but the brief's section 7 asks
 for the uncertainty to be quantified where it matters, and here it matters.
 
-## What Saleh decides
+## Open points for the decision
 Option; core count and the 3,200 core-hour budget (rule 12); whether the 60 s averaging window
 is enough (checked by comparing the two halves of the window, flat within 5 % or run on).
 

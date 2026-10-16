@@ -26,7 +26,7 @@ Refine only the plant-deck and flue boxes (levels 4 to 6) and leave the backgrou
 it changes the level ladder between meshes and the GCI assumption of uniform refinement does not
 hold. Not recommended.
 
-## What Saleh decides
+## Open points for the decision
 The condition (180 degrees as proposed, or 90 where the 3 m tip was a near miss), the ratio
 (1.41 or 1.26 for a cheaper fine mesh at 5.2 M cells), and the budget (about 1,300 core-hours
 for the two extra meshes).

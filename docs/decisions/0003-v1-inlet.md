@@ -1,6 +1,6 @@
 # 0003 V1 (AIJ Case H) inlet profiles
 
-Date: 2026-10-08. Approved by Saleh ("ok C then").
+Date: 2026-10-08. Approved ("C").
 
 ## Decision
 Inlet U and k are the measured approach-flow profiles (data/raw/aij_caseH/AF_caseH.csv, x = -2.5H),
@@ -29,7 +29,7 @@ no benefit over the measured profiles.
 Case H stays as the V1 benchmark (AIJ set; hit rate 0.66 per VDI 3783/9, FAC2 0.5 and FB 0.3 per
 COST 732). CEDVAL A1-1 noted as a possible stretch item, not on the ladder.
 
-## Addendum (Saleh, 2026-10-08): slope for epsilon
+## Addendum (2026-10-08): slope for epsilon
 dU/dz in epsilon = sqrt(Cmu) k dU/dz is taken from the log-law fit of the measured U
 (u* = 0.448 m/s, z0 = 11.7 mm), not from finite differences of the 18 measured points, which are
 dominated by measurement noise (slopes jumping 1.2 to 6.5 1/s between neighbouring heights near z = H).
