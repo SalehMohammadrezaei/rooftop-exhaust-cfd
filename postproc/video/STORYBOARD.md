@@ -1,19 +1,23 @@
-# Teaser storyboard (30 s, 1920 × 1080, dark stage)
+# Teaser storyboard, version 2 (about 43 s, 1920 × 1080, dark stage)
 
-One continuous camera language: every shot moves, every cut is a match on the building, and the
-on-screen text is one kicker word and one short line at most. All imagery is the converged
-solution (D0, 10 m/s; 90° and 180° for the wind shot), rotated into the building frame so the
-hall never moves and the wind does.
+The story runs in five chapters, one idea per scene, each scene with a kicker word and one short
+line. The engineering question comes before the method, the method before the result, and the film
+ends on the answer, not on a claim about the model.
 
-| # | time | shot | camera | on screen |
+| # | chapter | time | scene | on screen |
 |---|---|---|---|---|
-| 1 | 0–4 s | **Hook.** Glowing flow streaks race over the roof edge past the lens; the ten chiller plumes rise in their own colours; the exhaust plume burns red. | Starts low and tight at roof level behind the chillers, pulls back and up to reveal the whole hall. | *Where does the exhaust go?* |
-| 2 | 4–8 s | **Three winds.** A ground arrow swings 0° → 90° → 180°; the plume cloud cross-fades to the solution for each direction. | High three-quarter view, slow drift. | WIND · 0° / 90° / 180° |
-| 3 | 8–12.5 s | **Mesh, 3D then 2D.** The snapped surface mesh on the hall and plant, then a vertical cut wipes across a chiller row and reveals the volume cells, finest at the plant. | Glide in to the plant deck, then square up to the cut. | MESH · 2.6 M cells, six levels |
-| 4 | 12.5–16 s | **How it is solved.** An arrow rake upwind draws the log-law atmospheric profile, bottom to top. | Side view, slow push toward the hall. | STEADY RANS · realizable k-ε |
-| 5 | 16–22 s | **Flow and turbulence.** Velocity on the centre plane with streaks flowing over the roof and into the wake; the plane cross-fades to turbulent kinetic energy, the shear layer off the leading edge glowing. | Low side track along the hall. | VELOCITY → TURBULENT KINETIC ENERGY |
-| 6 | 22–27 s | **Plumes one by one.** Chillers 1 to 10 switch on in sequence, each a different colour; then the flue plume in red; together they show who feeds whom. | Slow orbit over the plant deck. | 12 TAGGED SCALARS |
-| 7 | 27–30 s | **End card.** The scene dims under the finding and the name. | Continues the orbit. | finding in one line · name · repository |
+| 1 | hook | 0–3 s | Flow streaks race over the roof past the lens; the plumes rise; pull back to the hall. | *Where does the exhaust go?* |
+| 2 | problem | 3–6 s | Clean roof on a slow orbit; the three kinds of plant labelled. | THE PROBLEM · everything shares one roof |
+| 3 | question | 6–10 s | Two arrows draw themselves: warm discharge curling back into the next chiller, exhaust arcing from the flues to the intake. | THE QUESTION · 1 hot air back into the chillers? · 2 exhaust into the fresh air? |
+| 4 | method | 10–14 s | Building fixed with its dimensions drawn on the ground; the wind arrow swings 0° → 90° → 180° and the plume follows. | METHOD · three wind directions, 10 m/s |
+| 5 | method | 14–16.2 s | Snapped surface mesh on hall and plant. | METHOD · snappyHexMesh, 2.6 M cells |
+| 6 | method | 16.2–18.5 s | Vertical cut wipes across a chiller row, cells finest at the plant. | METHOD · six levels, 4 m to 6 cm |
+| 7 | method | 18.5–21.5 s | Arrow rake builds the inflow profile; roof height marked. | METHOD · ABL inlet, log law z0 = 0.3 m |
+| 8 | method | 21.5–26.5 s | Streaks over a velocity plane, then the plane turns to turbulent kinetic energy. | METHOD · steady RANS, realizable k-ε |
+| 9 | method | 26.5–30 s | Ten chiller plumes switch on one by one, then the flue. | METHOD · one tracer per source |
+| 10 | result | 30–33.2 s | Close on the chillers, each tinted by its inlet temperature rise, numbers above. | RESULT 1 · chillers breathe their own heat |
+| 11 | result | 33.2–36.4 s | Wind from the flue side: the exhaust plume wraps the intake, which turns red. | RESULT 2 · exhaust reaches the intake |
+| 12 | result | 36.4–39.6 s | Flues grow from 3 m to 9 m; the plume lifts but still reaches the intake. | RESULT 3 · taller flues are not enough |
+| 13 | answer | 39.6–43 s | Scene dims under the answer, the credentials and the name. | THE ANSWER · the layout is the problem, not the wind |
 
-Rules: no charts, no sentences longer than eight words, name and repository in the corner of
-every shot, every number quoted from the case logs or `results/`.
+Every number on screen is quoted from `results/` or the case logs.
