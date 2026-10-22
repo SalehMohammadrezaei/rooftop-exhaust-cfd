@@ -7,6 +7,9 @@ flue exhaust reaches the intake, for a matrix of wind directions, speeds and flu
 
 ![Chiller discharge and flue plume, wind along the hall at 10 m/s](results/applied/figures/plume_D0_dir000_U10_annot.png)
 
+A 30-second overview: [results/video/rooftop_exhaust_cfd.mp4](results/video/rooftop_exhaust_cfd.mp4)
+(geometry, streamlines through the plant deck, the tracer cloud, the results against the limits).
+
 ## Results
 
 Acceptance limits were fixed before the runs: flue dilution at the intake of at least 2,000
