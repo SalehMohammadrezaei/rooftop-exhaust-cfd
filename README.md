@@ -7,8 +7,8 @@ flue exhaust reaches the intake, for a matrix of wind directions, speeds and flu
 
 ![Chiller discharge and flue plume, wind along the hall at 10 m/s](results/applied/figures/plume_D0_dir000_U10_annot.png)
 
-A 44-second overview: [results/video/rooftop_exhaust_cfd.mp4](results/video/rooftop_exhaust_cfd.mp4)
-(geometry, streamlines through the plant deck, the tracer cloud, the results against the limits).
+A 30-second teaser: [results/video/rooftop_exhaust_cfd.mp4](results/video/rooftop_exhaust_cfd.mp4)
+(geometry, mesh, the computed wind, the tagged scalars, verification and validation).
 
 ## Results
 
