@@ -225,10 +225,14 @@ def dims(img, S, items, alpha=1.0):
     return Image.alpha_composite(img.convert("RGBA"), lay).convert("RGB")
 
 def big_number(img, s, sub=None, alpha=1.0, colour=WHITE):
-    d = ImageDraw.Draw(img); x0 = int(W * 0.055)
-    d.text((x0, int(H * 0.87)), s, font=F(120, True), fill=tuple(int(c * alpha + 8 * (1 - alpha)) for c in colour), anchor="ls")
-    if sub: d.text((x0 + 8, int(H * 0.87) + 46), sub, font=F(32), fill=tuple(int(c * alpha + 8 * (1 - alpha)) for c in MUTED), anchor="ls")
-    return img
+    """large readout bottom left on a dark panel, so it reads over any surface"""
+    if alpha <= 0.01: return img
+    lay = Image.new("RGBA", img.size, (0, 0, 0, 0)); d = ImageDraw.Draw(lay); x0 = int(W * 0.055); yb = int(H * 0.87)
+    fb, fs = F(120, True), F(32); wb = d.textlength(s, font=fb); ws = d.textlength(sub, font=fs) if sub else 0
+    d.rounded_rectangle([(x0 - 26, yb - 128), (x0 + max(wb, ws + 8) + 26, yb + (64 if sub else 24))], radius=10, fill=(8, 11, 16, int(205 * alpha)))
+    d.text((x0, yb), s, font=fb, fill=rgba(colour, alpha), anchor="ls")
+    if sub: d.text((x0 + 8, yb + 46), sub, font=fs, fill=rgba((196, 203, 212), alpha), anchor="ls")
+    return Image.alpha_composite(img.convert("RGBA"), lay).convert("RGB")
 
 def tube_arrow(S, pts, frac, colour, radius=0.28):
     """a spline through pts drawn to fraction frac, with a cone at its head"""
@@ -248,14 +252,14 @@ def sc_hook(S, w):
     flue = S.add(S.flue0, color=FLUE, opacity=0.85, smooth_shading=True, specular=0.5)
     def upd(t, i): S.rm(st["c"]); st["c"] = S.comet_actor(comets(lines, 1.2 + t * 3.0 * 4.0), 4)
     run_scene(S, w, 3.0, [((-37, -3.5, 18.2), (12, 1.5, 17.6)), ((-60, -38, 28), (4, 0, 16)), ((-118, -92, 58), (6, 0, 13))],
-              dict(kicker="OPENFOAM  ·  EXTERNAL AERODYNAMICS", head="Where does the exhaust go?", big=True), update=upd, angle=38)
+              dict(kicker="OPENFOAM  ·  EXTERNAL CFD", head="Rooftop exhaust re-entrainment", lines=["data-centre hall, 60 × 40 × 15 m"], line_t=[0.6], big=True), update=upd, angle=38)
     S.rm(st["c"], flue, *plumes)
 
 def sc_problem(S, w):
     items = [((-12, -7.5, 18.6), "10 air-cooled chillers", (0.27, 0.30)), ((12, -2, 18.3), "fresh-air intake", (0.55, 0.24)),
              ((25, -3, 18.4), "4 generator flues", (0.80, 0.30))]
     w.dissolve(0.3)
-    run_scene(S, w, 3.0, [((-118, -92, 58), (6, 0, 13)), ((-70, -112, 62), (6, 0, 13))], dict(kicker="THE PROBLEM", head="Everything shares one roof"),
+    run_scene(S, w, 3.0, [((-118, -92, 58), (6, 0, 13)), ((-70, -112, 62), (6, 0, 13))], dict(kicker="LAYOUT", head="Roof plant"),
               post=lambda img, t: labels(img, S, items, ease((t - 0.2) / 0.2) * (1 - ease((t - 0.88) / 0.1))))
 
 def sc_question(S, w):
@@ -277,7 +281,7 @@ def sc_question(S, w):
             d.text((x, y - 44), s, font=F(34, True), fill=rgba((10, 12, 16), a), anchor="mm")
         return Image.alpha_composite(img.convert("RGBA"), lay).convert("RGB")
     run_scene(S, w, 4.0, [((-32, -70, 42), (4, -3, 17)), ((-22, -76, 44), (6, -3, 17))],
-              dict(kicker="THE QUESTION", head=None, lines=["1   Hot air back into the chillers?", "2   Exhaust into the fresh air?"], line_t=[1.0, 2.4], line_size=52),
+              dict(kicker="DESIGN CHECKS", head=None, lines=["1   Chiller discharge recirculation", "2   Exhaust ingestion at the fresh-air intake"], line_t=[1.0, 2.4], line_size=52),
               update=upd, post=post)
     S.rm(*st["a"])
 
@@ -307,7 +311,7 @@ def sc_wind(S, w):
         d.text((x, y - 18), s, font=F(78, True), fill=WHITE, anchor="mb"); d.text((x, y + 10), "wind", font=F(28), fill=MUTED, anchor="mt")
         return img
     w.dissolve(0.3)
-    run_scene(S, w, 4.0, [((-96, -96, 132), (2, 0, 4)), ((-62, -118, 136), (2, 0, 4))], dict(kicker="METHOD", head="3 wind directions  ·  10 m/s at roof height"),
+    run_scene(S, w, 4.0, [((-96, -96, 132), (2, 0, 4)), ((-62, -118, 136), (2, 0, 4))], dict(kicker="LOAD CASES", head="Wind 0°, 90°, 180°  ·  U = 10 m/s at roof height"),
               update=upd, post=post, smooth=False)
     S.rm(st["arrow"], *[a for pair in acts.values() for a in pair])
 
@@ -319,7 +323,7 @@ def sc_mesh3d(S, w):
             surf.append(S.add(b, color=COLOURS[kind(name.split("/")[-1])], show_edges=True, edge_color="#11161c", line_width=0.8, ambient=0.3, diffuse=0.75))
     for _, _, act in S.geo: act.SetVisibility(False)
     w.dissolve(0.3)
-    run_scene(S, w, 2.2, [((-62, -58, 40), (-10, 0, 16)), ((-44, -40, 30), (-12, 2, 16.5))], dict(kicker="METHOD", head="snappyHexMesh  ·  2.6 M cells"))
+    run_scene(S, w, 2.2, [((-62, -58, 40), (-10, 0, 16)), ((-44, -40, 30), (-12, 2, 16.5))], dict(kicker="MESH", head="snappyHexMesh  ·  2.6 M cells, 95 % hex"))
     S.rm(*surf)
     for _, _, act in S.geo: act.SetVisibility(True)
 
@@ -342,7 +346,7 @@ def sc_mesh2d(S, w):
         S.rm(st["a"]); part = s.extract_cells(np.flatnonzero(cx < -80 + 185 * ease(t / 0.7)))
         st["a"] = S.add(part, scalars="level", cmap=lvl, clim=[0, 6], show_edges=True, edge_color="#7fb3cc", line_width=0.7,
                         ambient=0.9, diffuse=0.1, show_scalar_bar=False) if part.n_cells else None
-    run_scene(S, w, 2.3, [((-8, Y_CUT - 150, 36), (8, Y_CUT, 21)), ((-15, Y_CUT - 72, 26), (-9, Y_CUT, 20))], dict(kicker="METHOD", head="6 refinement levels  ·  4 m to 6 cm"), update=upd)
+    run_scene(S, w, 2.3, [((-8, Y_CUT - 150, 36), (8, Y_CUT, 21)), ((-15, Y_CUT - 72, 26), (-9, Y_CUT, 20))], dict(kicker="MESH", head="6 refinement levels  ·  4 m to 0.06 m"), update=upd)
     S.rm(st["a"], *near)
     for _, _, act in S.geo: act.SetVisibility(True)
 
@@ -367,12 +371,12 @@ def sc_inlet(S, w):
         n = 22
         for j in range(n):
             if j % 2 == 0: d.line([tuple(p0 + (p1 - p0) * j / n), tuple(p0 + (p1 - p0) * (j + 1) / n)], fill=rgba(WHITE, 0.8 * a), width=2)
-        s = f"{u15:.0f} m/s at roof height, 15 m"; mid = (p0 + p1) / 2; f = F(30, True); tw = d.textlength(s, font=f)
+        s = f"U = {u15:.0f} m/s at H = 15 m"; mid = (p0 + p1) / 2; f = F(30, True); tw = d.textlength(s, font=f)
         d.rounded_rectangle([(mid[0] - tw / 2 - 12, mid[1] - 60), (mid[0] + tw / 2 + 12, mid[1] - 16)], radius=6, fill=(10, 14, 20, int(210 * a)))
         d.text((mid[0], mid[1] - 38), s, font=f, fill=rgba(WHITE, a), anchor="mm")
         return Image.alpha_composite(img.convert("RGBA"), lay).convert("RGB")
     run_scene(S, w, 3.0, [((-120, -150, 22), (-62, 0, 24)), ((-104, -158, 24), (-50, 0, 23))],
-              dict(kicker="METHOD", head="ABL inlet  ·  log law, z0 = 0.3 m"), update=upd, post=post)
+              dict(kicker="BOUNDARY CONDITIONS", head="Neutral ABL inlet  ·  log law, z0 = 0.3 m"), update=upd, post=post)
     S.rm(*st["acts"])
 
 def sc_flow(S, w):
@@ -389,9 +393,9 @@ def sc_flow(S, w):
         au.GetProperty().SetOpacity(0.9 * ease(t / 0.15) * (1 - mix)); ak.GetProperty().SetOpacity(0.9 * mix)
         S.rm(st["c"]); st["c"] = S.comet_actor(comets(lines, t * 5.0 * 3.0, period=4.0, dash=1.6), 5)
     run_scene(S, w, 5.0, [((-80, -92, 26), (-10, 0, 15)), ((10, -100, 30), (25, 0, 15)), ((95, -88, 26), (60, 0, 12))], None, update=upd, smooth=False,
-              post=lambda img, t: text_layer(img, (t * 5.0) if t < 0.5 else (t - 0.5) * 5.0, 2.5, kicker="METHOD",
-                                             head="steady RANS  ·  realizable k-ε" if t < 0.5 else "turbulent kinetic energy",
-                                             lines=["velocity"] if t < 0.5 else ["where the building makes turbulence"], line_t=[0.4]))
+              post=lambda img, t: text_layer(img, (t * 5.0) if t < 0.5 else (t - 0.5) * 5.0, 2.5, kicker="TURBULENCE MODEL",
+                                             head="Steady RANS  ·  realizable k-ε" if t < 0.5 else "Turbulent kinetic energy",
+                                             lines=["velocity magnitude, centre plane"] if t < 0.5 else ["k, centre plane"], line_t=[0.4]))
     S.rm(st["c"], au, ak)
 
 def sc_tracers(S, w):
@@ -402,7 +406,7 @@ def sc_tracers(S, w):
         for rank, o in enumerate(order): acts[o].GetProperty().SetOpacity(0.55 * ease((t - (0.06 + rank * 0.055)) / 0.08))
         fa.GetProperty().SetOpacity(0.9 * ease((t - 0.68) / 0.1))
     run_scene(S, w, 3.5, [((-82, -78, 56), (-4, 0, 15)), ((-30, -108, 66), (2, 0, 15)), ((10, -108, 64), (4, 0, 14))],
-              dict(kicker="METHOD", head="one tracer per source", lines=["10 chillers + flues, solved on the converged flow"], line_t=[0.6]), update=upd)
+              dict(kicker="SCALAR TRANSPORT", head="Passive scalar per source", lines=["10 chillers + flues, Sct = 0.4, frozen flow field"], line_t=[0.6]), update=upd)
     S.rm(fa, *acts)
 
 def sc_result_chillers(S, w):
@@ -422,9 +426,9 @@ def sc_result_chillers(S, w):
             d.rounded_rectangle([(x - tw / 2 - 8, y - 38), (x + tw / 2 + 8, y - 6)], radius=5, fill=(10, 14, 20, int(210 * a)))
             d.text((x, y - 22), s, font=f, fill=rgba(heat((r - 2) / 6.5)[:3] and tuple(int(255 * v) for v in heat((r - 2) / 6.5)[:3]), a), anchor="mm")
         img = Image.alpha_composite(img.convert("RGBA"), lay).convert("RGB")
-        return big_number(img, f"+{RES['D0_dir000_U10']['chiller_rise_mean_K']:.0f} K", "mean inlet rise   ·   limit 2 K", ease((t - 0.35) / 0.2) * (1 - ease((t - 0.9) / 0.1)), (255, 120, 80))
+        return big_number(img, f"{RES['D0_dir000_U10']['chiller_rise_mean_K']:.1f} K", "mean inlet temperature rise   ·   criterion 2 K", ease((t - 0.35) / 0.2) * (1 - ease((t - 0.9) / 0.1)), (255, 120, 80))
     run_scene(S, w, 3.2, [((-48, -52, 34), (-12, 0, 16)), ((-36, -60, 37), (-10, 0, 16))],
-              dict(kicker="RESULT 1", head="Chillers breathe their own heat", lines=["the downwind units take 13 to 17 % from their neighbour"], line_t=[0.7]), post=post)
+              dict(kicker="RESULT", head="Chiller inlet temperature rise", lines=["0°, 10 m/s  ·  per unit, from the tagged scalars"], line_t=[0.7]), post=post)
     S.rm(cloud, *boxes)
 
 def sc_result_intake(S, w):
@@ -438,9 +442,9 @@ def sc_result_intake(S, w):
         plume.GetProperty().SetOpacity(0.55 * ease((t - 0.1) / 0.3)); glow.GetProperty().SetOpacity(0.9 * ease((t - 0.4) / 0.15) * (0.75 + 0.25 * math.sin(t * 18)))
     dil = RES["D0_dir180_U10"]["intake_dilution_flues"]
     run_scene(S, w, 3.2, [((78, -62, 40), (8, 0, 15)), ((62, -76, 44), (10, 0, 15))],
-              dict(kicker="RESULT 2", head="Exhaust reaches the intake", lines=["with the wind from the flue side"], line_t=[0.6]),
+              dict(kicker="RESULT", head="Exhaust dilution at the intake", lines=["180°, 10 m/s  ·  flue tip 3 m"], line_t=[0.6]),
               update=upd, post=lambda img, t: big_number(labels(img, S, [((12, 2, 18.2), "fresh-air intake", (0.62, 0.36))], ease((t - 0.35) / 0.15) * (1 - ease((t - 0.9) / 0.1))),
-                                                          f"{dil:.0f}×", "dilution at the intake   ·   needs 2,000×", ease((t - 0.45) / 0.2) * (1 - ease((t - 0.9) / 0.1)), (255, 120, 80)))
+                                                          f"{dil:.0f}", "dilution at the louvres   ·   criterion 2,000", ease((t - 0.45) / 0.2) * (1 - ease((t - 0.9) / 0.1)), (255, 120, 80)))
     S.rm(plume, glow, arrow)
 
 def sc_result_flues(S, w):
@@ -464,25 +468,34 @@ def sc_result_flues(S, w):
 def sc_answer(S, w):
     plumes = [S.add(pl, color=c, opacity=0.5, smooth_shading=True, specular=0.4) for pl, c in zip(S.chiller_plumes, S.chiller_cols)]
     flue = S.add(S.flue0, color=FLUE, opacity=0.85, smooth_shading=True)
-    idx, n = frames_for(3.4, w); keys = [((40, -96, 62), (6, 0, 14)), ((78, -66, 58), (8, 0, 14))]; w.dissolve(0.3)
+    rows = [("TURBULENCE", "steady RANS, realizable k-ε, wall functions"),
+            ("INFLOW", "neutral atmospheric boundary layer, log law"),
+            ("GRID", "snappyHexMesh, three-mesh study, GCI"),
+            ("VALIDATION", "wind tunnel: AIJ Case H, IRSST R-848"),
+            ("TRANSPORT", "passive scalars for heat and exhaust")]
+    idx, n = frames_for(3.8, w); keys = [((40, -96, 62), (6, 0, 14)), ((78, -66, 58), (8, 0, 14))]; w.dissolve(0.3)
     for i in idx:
         t = i / max(n - 1, 1); S.cam(keys, t); img = S.grab()
-        img = Image.blend(img, Image.new("RGB", img.size, (7, 9, 12)), ease(t / 0.25) * 0.76)
-        d = ImageDraw.Draw(img); a = ease((t - 0.12) / 0.25); b = ease((t - 0.4) / 0.25)
-        col = lambda c, k: tuple(int(v * k + 7 * (1 - k)) for v in c); x0 = int(W * 0.08)
-        d.rectangle([(x0, int(H * 0.27)), (x0 + int(70 * a), int(H * 0.27) + 6)], fill=col(ACCENT, a))
-        d.text((x0, int(H * 0.29)), "THE ANSWER", font=F(28, True), fill=col(ACCENT, a))
-        d.text((x0, int(H * 0.33)), "The layout is the problem, not the wind.", font=F(66, True), fill=col(WHITE, a))
-        d.text((x0, int(H * 0.33) + 94), "Space the chillers.  Keep the intake off the flue axis.", font=F(42), fill=col((210, 216, 224), b))
-        c = ease((t - 0.55) / 0.25)
-        d.text((x0, int(H * 0.62)), "validated against two wind-tunnel datasets   ·   three-mesh grid study", font=F(28), fill=col(MUTED, c))
-        d.text((x0, int(H * 0.74)), "Saleh Mohammadrezaei", font=F(42, True), fill=col(WHITE, c))
-        d.text((x0, int(H * 0.74) + 58), "github.com/SalehMohammadrezaei/rooftop-exhaust-cfd", font=F(32), fill=col(ACCENT, c))
-        w.add(img)
+        img = Image.blend(img, Image.new("RGB", img.size, (7, 9, 12)), ease(t / 0.2) * 0.8)
+        lay = Image.new("RGBA", img.size, (0, 0, 0, 0)); d = ImageDraw.Draw(lay); x0, x1 = int(W * 0.08), int(W * 0.24)
+        a = ease((t - 0.08) / 0.2)
+        d.rectangle([(x0, int(H * 0.17)), (x0 + int(70 * a), int(H * 0.17) + 6)], fill=rgba(ACCENT, a))
+        d.text((x0, int(H * 0.2)), "Rooftop exhaust re-entrainment", font=F(58, True), fill=rgba(WHITE, a))
+        y = int(H * 0.33)
+        for j, (k, v) in enumerate(rows):
+            b = ease((t - 0.14 - 0.06 * j) / 0.18)
+            d.text((x0, y + 8 * (1 - b)), k, font=F(26, True), fill=rgba(ACCENT, b)); d.text((x1, y - 6 + 8 * (1 - b)), v, font=F(38), fill=rgba((214, 220, 228), b))
+            y += 62
+        c = ease((t - 0.5) / 0.2); y = int(H * 0.72)
+        d.line([(x0, y - 24), (int(W * 0.62), y - 24)], fill=rgba((60, 68, 80), c), width=2)
+        d.text((x0, y), "Saleh Mohammadrezaei", font=F(42, True), fill=rgba(WHITE, c))
+        d.text((x0, y + 62), "linkedin.com/in/saleh-mohammadrezaei", font=F(32), fill=rgba(ACCENT, c))
+        d.text((x0, y + 108), "github.com/SalehMohammadrezaei/rooftop-exhaust-cfd", font=F(32), fill=rgba(ACCENT, c))
+        w.add(Image.alpha_composite(img.convert("RGBA"), lay).convert("RGB"))
     S.rm(flue, *plumes)
 
 SCENES = [("hook", sc_hook), ("problem", sc_problem), ("question", sc_question), ("wind", sc_wind), ("mesh3d", sc_mesh3d), ("mesh2d", sc_mesh2d),
-          ("inlet", sc_inlet), ("flow", sc_flow), ("tracers", sc_tracers), ("r1", sc_result_chillers), ("r2", sc_result_intake), ("r3", sc_result_flues), ("answer", sc_answer)]
+          ("inlet", sc_inlet), ("flow", sc_flow), ("tracers", sc_tracers), ("r1", sc_result_chillers), ("r2", sc_result_intake), ("answer", sc_answer)]
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--out", default=None); ap.add_argument("--frames", required=True)
